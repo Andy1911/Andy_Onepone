@@ -258,8 +258,11 @@ void store_cpu_topology(unsigned int cpuid)
 	}
 
 	update_siblings_masks(cpuid);
+<<<<<<< HEAD
 
 	update_cpu_power(cpuid);
+=======
+>>>>>>> 15336eb... ARM: 7462/1: topology: factorize the update of sibling masks
 
 	printk(KERN_INFO "CPU%u: thread %d, cpu %d, socket %d, mpidr %x\n",
 		cpuid, cpu_topology[cpuid].thread_id,
