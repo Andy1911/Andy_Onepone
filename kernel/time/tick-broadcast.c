@@ -66,16 +66,46 @@ static void tick_broadcast_start_periodic(struct clock_event_device *bc)
 /*
  * Check, if the device can be utilized as broadcast device:
  */
+static bool tick_check_broadcast_device(struct clock_event_device *curdev,
+					struct clock_event_device *newdev)
+{
+	if ((newdev->features & CLOCK_EVT_FEAT_DUMMY) ||
+	    (newdev->features & CLOCK_EVT_FEAT_C3STOP))
+		return false;
+
+	if (tick_broadcast_device.mode == TICKDEV_MODE_ONESHOT &&
+	    !(newdev->features & CLOCK_EVT_FEAT_ONESHOT))
+		return false;
+
+	return !curdev || newdev->rating > curdev->rating;
+}
+
+/*
+ * Conditionally install/replace broadcast device
+ */
 void tick_install_broadcast_device(struct clock_event_device *dev)
 {
+<<<<<<< HEAD
 	if ((tick_broadcast_device.evtdev &&
 	     tick_broadcast_device.evtdev->rating >= dev->rating) ||
 	     (dev->features & CLOCK_EVT_FEAT_C3STOP))
+=======
+	struct clock_event_device *cur = tick_broadcast_device.evtdev;
+
+	if (!tick_check_broadcast_device(cur, dev))
+>>>>>>> 3355252... clockevents: Split out selection logic
 		return;
+
 	if (!try_module_get(dev->owner))
 		return;
 
+<<<<<<< HEAD
 	clockevents_exchange_device(tick_broadcast_device.evtdev, dev);
+=======
+	clockevents_exchange_device(cur, dev);
+	if (cur)
+		cur->event_handler = clockevents_handle_noop;
+>>>>>>> 3355252... clockevents: Split out selection logic
 	tick_broadcast_device.evtdev = dev;
 	if (!cpumask_empty(tick_broadcast_mask))
 		tick_broadcast_start_periodic(dev);
