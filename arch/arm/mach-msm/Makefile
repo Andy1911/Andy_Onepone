@@ -423,7 +423,7 @@ obj-$(CONFIG_WALL_CLK_SYSFS) += wallclk_sysfs.o
 obj-$(CONFIG_HAS_MACH_MEMUTILS) += memutils/
 obj-$(CONFIG_ARCH_RANDOM) += early_random.o
 obj-$(CONFIG_PERFMAP) += perfmap.o
-<<<<<<< HEAD
+
 obj-$(CONFIG_FORCE_FAST_CHARGE) += fastchg.o
 obj-$(CONFIG_MMI_UNIT_INFO) += mmi-unit-info.o
 obj-$(CONFIG_MMI_SOC_INFO) += mmi_soc_info.o
