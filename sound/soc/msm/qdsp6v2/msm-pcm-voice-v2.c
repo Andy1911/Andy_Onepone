@@ -521,7 +521,11 @@ static struct snd_kcontrol_new msm_voice_controls[] = {
 				msm_voice_tty_mode_put),
 	SOC_SINGLE_MULTI_EXT("Slowtalk Enable", SND_SOC_NOPM, 0, VSID_MAX, 0, 2,
 				NULL, msm_voice_slowtalk_put),
+<<<<<<< HEAD
 	/* Dummy control to expose stereo recording support in kernel to user-space */
+=======
+	// Dummy control to expose stereo recording support in kernel to user-space
+>>>>>>> 206a3d8... stereo call recording support
 	SOC_SINGLE_EXT("Stereo Recording", SND_SOC_NOPM, 1, VSID_MAX, 0, NULL, NULL),
 };
 

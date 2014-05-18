@@ -2993,15 +2993,12 @@ config FORCE_FAST_CHARGE
 	  A simple sysfs interface to increase input current limit to
 	  900mA when charging via USB.
 
-<<<<<<< HEAD
-=======
 config MSM_SLEEPER
 	bool "CPU hotplug driver"
 	default y
 	help
 	  CPU hotplug driver 
 
->>>>>>> 4941ff9... msm-sleeper: CPU hotplug driver
 config MSM_UARTDM_Core_v14
 	bool "Use MSM BLSP based HSUART Core v1.4"
 	depends on SERIAL_MSM_HS
