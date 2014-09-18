@@ -67,3 +67,4 @@ obj-$(CONFIG_LTC4088_CHARGER)	+= ltc4088-charger.o
 obj-$(CONFIG_CHARGER_SMB347)	+= smb347-charger.o
 obj-$(CONFIG_BATTERY_BCL)	+= battery_current_limit.o
 obj-$(CONFIG_PIC1503_FASTCG)	+= pic16F1503_fastcg.o
+obj-$(CONFIG_ANDY_CHARGER_CONTROL) += andy_charger_control.o
