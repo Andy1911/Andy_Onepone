@@ -1837,11 +1837,15 @@
 			< 2880000000 1075000  937 >;
 	};
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4670efb... msm8974pro: dts: cpufreq: added qcom cpufreq reference table
         qcom,msm-cpufreq@0 {
 		reg = <0 4>;
                 compatible = "qcom,msm-cpufreq";
                 qcom,cpufreq-table =
+<<<<<<< HEAD
 			<   69600 /*  50 MHz */ >,
 			<  146400 /*  50 MHz */ >,
                         <  223200 /*  50 MHz */ >,
@@ -1864,15 +1868,33 @@
                         < 1497600 /* 614 MHz */ >,
                         < 1574400 /* 800 MHz */ >,
 			< 1651200 /* 800 MHz */ >,
+=======
+                        <  268800 /*  75 MHz */ >,
+                        <  300000 /*  75 MHz */ >,
+                        <  422400 /* 150 MHz */ >,
+                        <  652800 /* 200 MHz */ >,
+                        <  729600 /* 307 MHz */ >,
+                        <  883200 /* 307 MHz */ >,
+                        <  960000 /* 460 MHz */ >,
+                        < 1036800 /* 460 MHz */ >,
+                        < 1190400 /* 460 MHz */ >,
+                        < 1267200 /* 614 MHz */ >,
+                        < 1497600 /* 614 MHz */ >,
+                        < 1574400 /* 800 MHz */ >,
+>>>>>>> 4670efb... msm8974pro: dts: cpufreq: added qcom cpufreq reference table
                         < 1728000 /* 800 MHz */ >,
                         < 1958400 /* 931 MHz */ >,
                         < 2265600 /* 931 MHz */ >,
                         < 2342400 /* 931 MHz */ >,
                         < 2419200 /* 931 MHz */ >,
+<<<<<<< HEAD
                         < 2457600 /* 931 MHz */ >,
 			< 2572800 /* 931 MHz */ >,
 			< 2726400 /* 931 MHz */ >,
 			< 2880000 /* 931 MHz */ >;
+=======
+                        < 2457600 /* 931 MHz */ >;
+>>>>>>> 4670efb... msm8974pro: dts: cpufreq: added qcom cpufreq reference table
 		};
 
 	i2c@f9928000 { /* BLSP-1 QUP-6 */
