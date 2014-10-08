@@ -3052,10 +3052,17 @@ config HAS_MACH_MEMUTILS
 	help
 	Faster memcpy performance for Krait
 
+<<<<<<< HEAD
 config PM_DEBUG_WAKEUP
 	depends on PM_DEBUG
     default n
     bool "Report wakeup source in a uevent"
+=======
+config PVS_LEVEL_INTERFACE
+	bool "Expose PVS level information in sys fs (Boeffla-Kernel)"
+	help
+	 Allow PVS level to be shown in Boeffla-Config app
+>>>>>>> dd1cbca... clock-krait-8974: Expose PVS level via sysfs
 
 endif
 
