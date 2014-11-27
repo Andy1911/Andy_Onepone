@@ -1565,6 +1565,7 @@ static __ref int do_freq_mitigation(void *data)
 			;
 		INIT_COMPLETION(freq_mitigation_complete);
 
+<<<<<<< HEAD
 		ret = therm_get_temp(msm_thermal_info.sensor_id,
 			THERM_TSENS_ID, &temp);
 		if (ret)
@@ -1575,6 +1576,8 @@ static __ref int do_freq_mitigation(void *data)
 		else
 			skip_mitig = false;
 
+=======
+>>>>>>> 3762775... msm: thermal: Optimize locking in thermal frequency mitigation thread
 		for_each_possible_cpu(cpu) {
 			max_freq_req = (cpus[cpu].max_freq) ?
 					msm_thermal_info.freq_limit :
