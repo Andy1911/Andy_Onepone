@@ -7907,10 +7907,6 @@ void WDA_SetTxPowerCallBack(WDI_SetTxPowerRspMsg * pwdiSetMaxTxPowerRsp,
        vos_mem_free(pWdaParams->wdaWdiApiMsgParam);
        vos_mem_free(pWdaParams->wdaMsgParam);
        vos_mem_free(pWdaParams);
-<<<<<<< HEAD
-
-=======
->>>>>>> aee45fb... wlan: Fix memory leak errors in HDD & WDA
        VOS_ASSERT(0);
        return ;
    }
