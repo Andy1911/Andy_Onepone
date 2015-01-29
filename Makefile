@@ -567,8 +567,7 @@ KBUILD_CFLAGS	+= -Os $(call cc-disable-warning,maybe-uninitialized,)
 else
 KBUILD_CFLAGS	+= -O2
 endif
-<<<<<<< HEAD
-=======
+
 ifdef CONFIG_CC_OPTIMIZE_DEFAULT
 KBUILD_CFLAGS += -O2
 endif
@@ -589,7 +588,6 @@ KBUILD_CFLAGS	+= $(call cc-option,--param=allow-store-data-races=0)
 # conserve stack if available
 # do this early so that an architecture can override it.
 KBUILD_CFLAGS   += $(call cc-option,-fconserve-stack)
->>>>>>> 361dfd2... makefile: added new -g0, -fivopts, -fno-inline-function optimizations
 
 include $(srctree)/arch/$(SRCARCH)/Makefile
 
