@@ -1060,7 +1060,10 @@ static int cpufreq_add_dev(struct device *dev, struct subsys_interface *sif)
 		pr_debug("Restoring governor %s for cpu %d\n",
 		       policy->governor->name, cpu);
 	}
+<<<<<<< HEAD
 
+=======
+>>>>>>> 86e3d25... cpufreq: Restore policy min-max properly
 	if (per_cpu(cpufreq_policy_save, cpu).min) {
 		policy->min = per_cpu(cpufreq_policy_save, cpu).min;
 		policy->user_policy.min = policy->min;
@@ -1071,8 +1074,11 @@ static int cpufreq_add_dev(struct device *dev, struct subsys_interface *sif)
 	}
 	pr_debug("Restoring CPU%d min %d and max %d\n",
 		cpu, policy->min, policy->max);
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 86e3d25... cpufreq: Restore policy min-max properly
 #endif
 
 	ret = cpufreq_add_dev_interface(cpu, policy, dev);
