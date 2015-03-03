@@ -50,6 +50,7 @@ static void __get_inode_rdev(struct inode *inode, struct f2fs_inode *ri)
 	}
 }
 
+<<<<<<< HEAD
 static bool __written_first_block(struct f2fs_inode *ri)
 {
 	block_t addr = le32_to_cpu(ri->i_addr[0]);
@@ -59,6 +60,8 @@ static bool __written_first_block(struct f2fs_inode *ri)
 	return false;
 }
 
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 static void __set_inode_rdev(struct inode *inode, struct f2fs_inode *ri)
 {
 	if (S_ISCHR(inode->i_mode) || S_ISBLK(inode->i_mode)) {
@@ -138,8 +141,12 @@ static int do_read_inode(struct inode *inode)
 	fi->i_pino = le32_to_cpu(ri->i_pino);
 	fi->i_dir_level = ri->i_dir_level;
 
+<<<<<<< HEAD
 	f2fs_init_extent_tree(inode, &ri->i_ext);
 
+=======
+	get_extent_info(&fi->ext, ri->i_ext);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	get_inline_info(fi, ri);
 
 	/* check data exist */
@@ -149,12 +156,17 @@ static int do_read_inode(struct inode *inode)
 	/* get rdev by using inline_info */
 	__get_inode_rdev(inode, ri);
 
+<<<<<<< HEAD
 	if (__written_first_block(ri))
 		set_inode_flag(F2FS_I(inode), FI_FIRST_BLOCK_WRITTEN);
 
 	f2fs_put_page(node_page, 1);
 
 	stat_inc_inline_xattr(inode);
+=======
+	f2fs_put_page(node_page, 1);
+
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	stat_inc_inline_inode(inode);
 	stat_inc_inline_dir(inode);
 
@@ -198,10 +210,14 @@ make_now:
 		inode->i_mapping->a_ops = &f2fs_dblock_aops;
 		mapping_set_gfp_mask(inode->i_mapping, GFP_F2FS_HIGH_ZERO);
 	} else if (S_ISLNK(inode->i_mode)) {
+<<<<<<< HEAD
 		if (f2fs_encrypted_inode(inode))
 			inode->i_op = &f2fs_encrypted_symlink_inode_operations;
 		else
 			inode->i_op = &f2fs_symlink_inode_operations;
+=======
+		inode->i_op = &f2fs_symlink_inode_operations;
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		inode->i_mapping->a_ops = &f2fs_dblock_aops;
 	} else if (S_ISCHR(inode->i_mode) || S_ISBLK(inode->i_mode) ||
 			S_ISFIFO(inode->i_mode) || S_ISSOCK(inode->i_mode)) {
@@ -236,12 +252,16 @@ void update_inode(struct inode *inode, struct page *node_page)
 	ri->i_links = cpu_to_le32(inode->i_nlink);
 	ri->i_size = cpu_to_le64(i_size_read(inode));
 	ri->i_blocks = cpu_to_le64(inode->i_blocks);
+<<<<<<< HEAD
 
 	if (F2FS_I(inode)->extent_tree)
 		set_raw_extent(&F2FS_I(inode)->extent_tree->largest,
 							&ri->i_ext);
 	else
 		memset(&ri->i_ext, 0, sizeof(ri->i_ext));
+=======
+	set_raw_extent(&F2FS_I(inode)->ext, &ri->i_ext);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	set_raw_inline(F2FS_I(inode), ri);
 
 	ri->i_atime = cpu_to_le64(inode->i_atime.tv_sec);
@@ -315,9 +335,13 @@ int f2fs_write_inode(struct inode *inode, struct writeback_control *wbc)
 void f2fs_evict_inode(struct inode *inode)
 {
 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
+<<<<<<< HEAD
 	struct f2fs_inode_info *fi = F2FS_I(inode);
 	nid_t xnid = fi->i_xattr_nid;
 	int err = 0;
+=======
+	nid_t xnid = F2FS_I(inode)->i_xattr_nid;
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	/* some remained atomic pages should discarded */
 	if (f2fs_is_atomic_file(inode))
@@ -333,6 +357,7 @@ void f2fs_evict_inode(struct inode *inode)
 	f2fs_bug_on(sbi, get_dirty_pages(inode));
 	remove_dirty_dir_inode(inode);
 
+<<<<<<< HEAD
 	f2fs_destroy_extent_tree(inode);
 
 	if (inode->i_nlink || is_bad_inode(inode))
@@ -388,6 +413,32 @@ out_clear:
 	if (fi->i_crypt_info)
 		f2fs_free_encryption_info(inode, fi->i_crypt_info);
 #endif
+=======
+	if (inode->i_nlink || is_bad_inode(inode))
+		goto no_delete;
+
+	set_inode_flag(F2FS_I(inode), FI_NO_ALLOC);
+	i_size_write(inode, 0);
+
+	if (F2FS_HAS_BLOCKS(inode))
+		f2fs_truncate(inode);
+
+	f2fs_lock_op(sbi);
+	remove_inode_page(inode);
+	f2fs_unlock_op(sbi);
+
+no_delete:
+	stat_dec_inline_dir(inode);
+	stat_dec_inline_inode(inode);
+	invalidate_mapping_pages(NODE_MAPPING(sbi), inode->i_ino, inode->i_ino);
+	if (xnid)
+		invalidate_mapping_pages(NODE_MAPPING(sbi), xnid, xnid);
+	if (is_inode_flag_set(F2FS_I(inode), FI_APPEND_WRITE))
+		add_dirty_inode(sbi, inode->i_ino, APPEND_INO);
+	if (is_inode_flag_set(F2FS_I(inode), FI_UPDATE_WRITE))
+		add_dirty_inode(sbi, inode->i_ino, UPDATE_INO);
+out_clear:
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	end_writeback(inode);
 }
 
@@ -395,7 +446,10 @@ out_clear:
 void handle_failed_inode(struct inode *inode)
 {
 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
+<<<<<<< HEAD
 	int err = 0;
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	clear_nlink(inode);
 	make_bad_inode(inode);
@@ -403,6 +457,7 @@ void handle_failed_inode(struct inode *inode)
 
 	i_size_write(inode, 0);
 	if (F2FS_HAS_BLOCKS(inode))
+<<<<<<< HEAD
 		err = f2fs_truncate(inode, false);
 
 	if (!err)
@@ -426,6 +481,15 @@ void handle_failed_inode(struct inode *inode)
 	}
 
 	set_inode_flag(F2FS_I(inode), FI_FREE_NID);
+=======
+		f2fs_truncate(inode);
+
+	remove_inode_page(inode);
+
+	clear_inode_flag(F2FS_I(inode), FI_INLINE_DATA);
+	clear_inode_flag(F2FS_I(inode), FI_INLINE_DENTRY);
+	alloc_nid_failed(sbi, inode->i_ino);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	f2fs_unlock_op(sbi);
 
 	/* iput will drop the inode object */

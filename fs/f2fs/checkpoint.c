@@ -52,11 +52,17 @@ struct page *get_meta_page(struct f2fs_sb_info *sbi, pgoff_t index)
 	struct address_space *mapping = META_MAPPING(sbi);
 	struct page *page;
 	struct f2fs_io_info fio = {
+<<<<<<< HEAD
 		.sbi = sbi,
 		.type = META,
 		.rw = READ_SYNC | REQ_META | REQ_PRIO,
 		.blk_addr = index,
 		.encrypted_page = NULL,
+=======
+		.type = META,
+		.rw = READ_SYNC | REQ_META | REQ_PRIO,
+		.blk_addr = index,
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	};
 repeat:
 	page = grab_cache_page(mapping, index);
@@ -67,18 +73,24 @@ repeat:
 	if (PageUptodate(page))
 		goto out;
 
+<<<<<<< HEAD
 	fio.page = page;
 
 	if (f2fs_submit_page_bio(&fio)) {
 		f2fs_put_page(page, 1);
 		goto repeat;
 	}
+=======
+	if (f2fs_submit_page_bio(sbi, page, &fio))
+		goto repeat;
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	lock_page(page);
 	if (unlikely(page->mapping != mapping)) {
 		f2fs_put_page(page, 1);
 		goto repeat;
 	}
+<<<<<<< HEAD
 
 	/*
 	 * if there is any IO error when accessing device, make our filesystem
@@ -87,12 +99,19 @@ repeat:
 	 */
 	if (unlikely(!PageUptodate(page)))
 		f2fs_stop_checkpoint(sbi);
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 out:
 	mark_page_accessed(page);
 	return page;
 }
 
+<<<<<<< HEAD
 bool is_valid_blkaddr(struct f2fs_sb_info *sbi, block_t blkaddr, int type)
+=======
+static inline bool is_valid_blkaddr(struct f2fs_sb_info *sbi,
+						block_t blkaddr, int type)
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 {
 	switch (type) {
 	case META_NAT:
@@ -132,10 +151,15 @@ int ra_meta_pages(struct f2fs_sb_info *sbi, block_t start, int nrpages, int type
 	struct page *page;
 	block_t blkno = start;
 	struct f2fs_io_info fio = {
+<<<<<<< HEAD
 		.sbi = sbi,
 		.type = META,
 		.rw = READ_SYNC | REQ_META | REQ_PRIO,
 		.encrypted_page = NULL,
+=======
+		.type = META,
+		.rw = READ_SYNC | REQ_META | REQ_PRIO
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	};
 
 	for (; nrpages-- > 0; blkno++) {
@@ -177,8 +201,12 @@ int ra_meta_pages(struct f2fs_sb_info *sbi, block_t start, int nrpages, int type
 			continue;
 		}
 
+<<<<<<< HEAD
 		fio.page = page;
 		f2fs_submit_page_mbio(&fio);
+=======
+		f2fs_submit_page_mbio(sbi, page, &fio);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		f2fs_put_page(page, 0);
 	}
 out:
@@ -293,7 +321,11 @@ continue_unlock:
 			if (!clear_page_dirty_for_io(page))
 				goto continue_unlock;
 
+<<<<<<< HEAD
 			if (mapping->a_ops->writepage(page, &wbc)) {
+=======
+			if (f2fs_write_meta_page(page, &wbc)) {
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 				unlock_page(page);
 				break;
 			}
@@ -337,6 +369,7 @@ const struct address_space_operations f2fs_meta_aops = {
 static void __add_ino_entry(struct f2fs_sb_info *sbi, nid_t ino, int type)
 {
 	struct inode_management *im = &sbi->im[type];
+<<<<<<< HEAD
 	struct ino_entry *e, *tmp;
 
 	tmp = f2fs_kmem_cache_alloc(ino_entry_slab, GFP_NOFS);
@@ -349,6 +382,28 @@ retry:
 		e = tmp;
 		if (radix_tree_insert(&im->ino_root, ino, e)) {
 			spin_unlock(&im->ino_lock);
+=======
+	struct ino_entry *e;
+retry:
+	if (radix_tree_preload(GFP_NOFS)) {
+		cond_resched();
+		goto retry;
+	}
+
+	spin_lock(&im->ino_lock);
+
+	e = radix_tree_lookup(&im->ino_root, ino);
+	if (!e) {
+		e = kmem_cache_alloc(ino_entry_slab, GFP_ATOMIC);
+		if (!e) {
+			spin_unlock(&im->ino_lock);
+			radix_tree_preload_end();
+			goto retry;
+		}
+		if (radix_tree_insert(&im->ino_root, ino, e)) {
+			spin_unlock(&im->ino_lock);
+			kmem_cache_free(ino_entry_slab, e);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 			radix_tree_preload_end();
 			goto retry;
 		}
@@ -361,9 +416,12 @@ retry:
 	}
 	spin_unlock(&im->ino_lock);
 	radix_tree_preload_end();
+<<<<<<< HEAD
 
 	if (e != tmp)
 		kmem_cache_free(ino_entry_slab, tmp);
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 static void __remove_ino_entry(struct f2fs_sb_info *sbi, nid_t ino, int type)
@@ -464,6 +522,7 @@ void remove_orphan_inode(struct f2fs_sb_info *sbi, nid_t ino)
 	__remove_ino_entry(sbi, ino, ORPHAN_INO);
 }
 
+<<<<<<< HEAD
 static int recover_orphan_inode(struct f2fs_sb_info *sbi, nid_t ino)
 {
 	struct inode *inode;
@@ -478,10 +537,17 @@ static int recover_orphan_inode(struct f2fs_sb_info *sbi, nid_t ino)
 		return PTR_ERR(inode);
 	}
 
+=======
+static void recover_orphan_inode(struct f2fs_sb_info *sbi, nid_t ino)
+{
+	struct inode *inode = f2fs_iget(sbi->sb, ino);
+	f2fs_bug_on(sbi, IS_ERR(inode));
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	clear_nlink(inode);
 
 	/* truncate all the data during iput */
 	iput(inode);
+<<<<<<< HEAD
 	return 0;
 }
 
@@ -499,23 +565,52 @@ int recover_orphan_inodes(struct f2fs_sb_info *sbi)
 	ra_meta_pages(sbi, start_blk, orphan_blocks, META_CP);
 
 	for (i = 0; i < orphan_blocks; i++) {
+=======
+}
+
+void recover_orphan_inodes(struct f2fs_sb_info *sbi)
+{
+	block_t start_blk, orphan_blkaddr, i, j;
+
+	if (!is_set_ckpt_flags(F2FS_CKPT(sbi), CP_ORPHAN_PRESENT_FLAG))
+		return;
+
+	set_sbi_flag(sbi, SBI_POR_DOING);
+
+	start_blk = __start_cp_addr(sbi) + 1 +
+		le32_to_cpu(F2FS_RAW_SUPER(sbi)->cp_payload);
+	orphan_blkaddr = __start_sum_addr(sbi) - 1;
+
+	ra_meta_pages(sbi, start_blk, orphan_blkaddr, META_CP);
+
+	for (i = 0; i < orphan_blkaddr; i++) {
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		struct page *page = get_meta_page(sbi, start_blk + i);
 		struct f2fs_orphan_block *orphan_blk;
 
 		orphan_blk = (struct f2fs_orphan_block *)page_address(page);
 		for (j = 0; j < le32_to_cpu(orphan_blk->entry_count); j++) {
 			nid_t ino = le32_to_cpu(orphan_blk->ino[j]);
+<<<<<<< HEAD
 			err = recover_orphan_inode(sbi, ino);
 			if (err) {
 				f2fs_put_page(page, 1);
 				return err;
 			}
+=======
+			recover_orphan_inode(sbi, ino);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		}
 		f2fs_put_page(page, 1);
 	}
 	/* clear Orphan Flag */
 	clear_ckpt_flags(F2FS_CKPT(sbi), CP_ORPHAN_PRESENT_FLAG);
+<<<<<<< HEAD
 	return 0;
+=======
+	clear_sbi_flag(sbi, SBI_POR_DOING);
+	return;
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 static void write_orphan_inodes(struct f2fs_sb_info *sbi, block_t start_blk)
@@ -523,7 +618,11 @@ static void write_orphan_inodes(struct f2fs_sb_info *sbi, block_t start_blk)
 	struct list_head *head;
 	struct f2fs_orphan_block *orphan_blk = NULL;
 	unsigned int nentries = 0;
+<<<<<<< HEAD
 	unsigned short index = 1;
+=======
+	unsigned short index;
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	unsigned short orphan_blocks;
 	struct page *page = NULL;
 	struct ino_entry *orphan = NULL;
@@ -531,20 +630,37 @@ static void write_orphan_inodes(struct f2fs_sb_info *sbi, block_t start_blk)
 
 	orphan_blocks = GET_ORPHAN_BLOCKS(im->ino_num);
 
+<<<<<<< HEAD
 	/*
 	 * we don't need to do spin_lock(&im->ino_lock) here, since all the
 	 * orphan inode operations are covered under f2fs_lock_op().
 	 * And, spin_lock should be avoided due to page operations below.
 	 */
+=======
+	for (index = 0; index < orphan_blocks; index++)
+		grab_meta_page(sbi, start_blk + index);
+
+	index = 1;
+	spin_lock(&im->ino_lock);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	head = &im->ino_list;
 
 	/* loop for each orphan inode entry and write them in Jornal block */
 	list_for_each_entry(orphan, head, list) {
 		if (!page) {
+<<<<<<< HEAD
 			page = grab_meta_page(sbi, start_blk++);
 			orphan_blk =
 				(struct f2fs_orphan_block *)page_address(page);
 			memset(orphan_blk, 0, sizeof(*orphan_blk));
+=======
+			page = find_get_page(META_MAPPING(sbi), start_blk++);
+			f2fs_bug_on(sbi, !page);
+			orphan_blk =
+				(struct f2fs_orphan_block *)page_address(page);
+			memset(orphan_blk, 0, sizeof(*orphan_blk));
+			f2fs_put_page(page, 0);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		}
 
 		orphan_blk->ino[nentries++] = cpu_to_le32(orphan->ino);
@@ -573,6 +689,11 @@ static void write_orphan_inodes(struct f2fs_sb_info *sbi, block_t start_blk)
 		set_page_dirty(page);
 		f2fs_put_page(page, 1);
 	}
+<<<<<<< HEAD
+=======
+
+	spin_unlock(&im->ino_lock);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 static struct page *validate_checkpoint(struct f2fs_sb_info *sbi,
@@ -635,7 +756,11 @@ int get_valid_checkpoint(struct f2fs_sb_info *sbi)
 	unsigned long blk_size = sbi->blocksize;
 	unsigned long long cp1_version = 0, cp2_version = 0;
 	unsigned long long cp_start_blk_no;
+<<<<<<< HEAD
 	unsigned int cp_blks = 1 + __cp_payload(sbi);
+=======
+	unsigned int cp_blks = 1 + le32_to_cpu(F2FS_RAW_SUPER(sbi)->cp_payload);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	block_t cp_blk_no;
 	int i;
 
@@ -716,8 +841,12 @@ void update_dirty_page(struct inode *inode, struct page *page)
 	struct inode_entry *new;
 	int ret = 0;
 
+<<<<<<< HEAD
 	if (!S_ISDIR(inode->i_mode) && !S_ISREG(inode->i_mode) &&
 			!S_ISLNK(inode->i_mode))
+=======
+	if (!S_ISDIR(inode->i_mode) && !S_ISREG(inode->i_mode))
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		return;
 
 	if (!S_ISDIR(inode->i_mode)) {
@@ -817,7 +946,10 @@ retry:
 		 * wribacking dentry pages in the freeing inode.
 		 */
 		f2fs_submit_merged_bio(sbi, DATA, WRITE);
+<<<<<<< HEAD
 		cond_resched();
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	}
 	goto retry;
 }
@@ -901,19 +1033,32 @@ static void do_checkpoint(struct f2fs_sb_info *sbi, struct cp_control *cpc)
 	unsigned long orphan_num = sbi->im[ORPHAN_INO].ino_num;
 	nid_t last_nid = nm_i->next_scan_nid;
 	block_t start_blk;
+<<<<<<< HEAD
 	unsigned int data_sum_blocks, orphan_blocks;
 	__u32 crc32 = 0;
 	int i;
 	int cp_payload_blks = __cp_payload(sbi);
 	block_t discard_blk = NEXT_FREE_BLKADDR(sbi, curseg);
 	bool invalidate = false;
+=======
+	struct page *cp_page;
+	unsigned int data_sum_blocks, orphan_blocks;
+	__u32 crc32 = 0;
+	void *kaddr;
+	int i;
+	int cp_payload_blks = le32_to_cpu(F2FS_RAW_SUPER(sbi)->cp_payload);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	/*
 	 * This avoids to conduct wrong roll-forward operations and uses
 	 * metapages, so should be called prior to sync_meta_pages below.
 	 */
+<<<<<<< HEAD
 	if (discard_next_dnode(sbi, discard_blk))
 		invalidate = true;
+=======
+	discard_next_dnode(sbi, NEXT_FREE_BLKADDR(sbi, curseg));
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	/* Flush all the NAT/SIT pages */
 	while (get_pages(sbi, F2FS_DIRTY_META)) {
@@ -1002,11 +1147,27 @@ static void do_checkpoint(struct f2fs_sb_info *sbi, struct cp_control *cpc)
 	start_blk = __start_cp_addr(sbi);
 
 	/* write out checkpoint buffer at block 0 */
+<<<<<<< HEAD
 	update_meta_page(sbi, ckpt, start_blk++);
 
 	for (i = 1; i < 1 + cp_payload_blks; i++)
 		update_meta_page(sbi, (char *)ckpt + i * F2FS_BLKSIZE,
 							start_blk++);
+=======
+	cp_page = grab_meta_page(sbi, start_blk++);
+	kaddr = page_address(cp_page);
+	memcpy(kaddr, ckpt, F2FS_BLKSIZE);
+	set_page_dirty(cp_page);
+	f2fs_put_page(cp_page, 1);
+
+	for (i = 1; i < 1 + cp_payload_blks; i++) {
+		cp_page = grab_meta_page(sbi, start_blk++);
+		kaddr = page_address(cp_page);
+		memcpy(kaddr, (char *)ckpt + i * F2FS_BLKSIZE, F2FS_BLKSIZE);
+		set_page_dirty(cp_page);
+		f2fs_put_page(cp_page, 1);
+	}
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	if (orphan_num) {
 		write_orphan_inodes(sbi, start_blk);
@@ -1021,7 +1182,15 @@ static void do_checkpoint(struct f2fs_sb_info *sbi, struct cp_control *cpc)
 	}
 
 	/* writeout checkpoint block */
+<<<<<<< HEAD
 	update_meta_page(sbi, ckpt, start_blk);
+=======
+	cp_page = grab_meta_page(sbi, start_blk);
+	kaddr = page_address(cp_page);
+	memcpy(kaddr, ckpt, F2FS_BLKSIZE);
+	set_page_dirty(cp_page);
+	f2fs_put_page(cp_page, 1);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	/* wait for previous submitted node/meta pages writeback */
 	wait_on_all_pages_writeback(sbi);
@@ -1042,6 +1211,7 @@ static void do_checkpoint(struct f2fs_sb_info *sbi, struct cp_control *cpc)
 	/* wait for previous submitted meta pages writeback */
 	wait_on_all_pages_writeback(sbi);
 
+<<<<<<< HEAD
 	/*
 	 * invalidate meta page which is used temporarily for zeroing out
 	 * block at the end of warm node chain.
@@ -1050,12 +1220,18 @@ static void do_checkpoint(struct f2fs_sb_info *sbi, struct cp_control *cpc)
 		invalidate_mapping_pages(META_MAPPING(sbi), discard_blk,
 								discard_blk);
 
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	release_dirty_inode(sbi);
 
 	if (unlikely(f2fs_cp_error(sbi)))
 		return;
 
+<<<<<<< HEAD
 	clear_prefree_segments(sbi, cpc);
+=======
+	clear_prefree_segments(sbi);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	clear_sbi_flag(sbi, SBI_IS_DIRTY);
 }
 
@@ -1067,19 +1243,31 @@ void write_checkpoint(struct f2fs_sb_info *sbi, struct cp_control *cpc)
 	struct f2fs_checkpoint *ckpt = F2FS_CKPT(sbi);
 	unsigned long long ckpt_ver;
 
+<<<<<<< HEAD
 	mutex_lock(&sbi->cp_mutex);
 
 	if (!is_sbi_flag_set(sbi, SBI_IS_DIRTY) &&
 		(cpc->reason == CP_FASTBOOT || cpc->reason == CP_SYNC ||
 		(cpc->reason == CP_DISCARD && !sbi->discard_blks)))
+=======
+	trace_f2fs_write_checkpoint(sbi->sb, cpc->reason, "start block_ops");
+
+	mutex_lock(&sbi->cp_mutex);
+
+	if (!is_sbi_flag_set(sbi, SBI_IS_DIRTY) &&
+			cpc->reason != CP_DISCARD && cpc->reason != CP_UMOUNT)
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		goto out;
 	if (unlikely(f2fs_cp_error(sbi)))
 		goto out;
 	if (f2fs_readonly(sbi->sb))
 		goto out;
+<<<<<<< HEAD
 
 	trace_f2fs_write_checkpoint(sbi->sb, cpc->reason, "start block_ops");
 
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	if (block_operations(sbi))
 		goto out;
 
@@ -1106,10 +1294,13 @@ void write_checkpoint(struct f2fs_sb_info *sbi, struct cp_control *cpc)
 
 	unblock_operations(sbi);
 	stat_inc_cp_count(sbi->stat_info);
+<<<<<<< HEAD
 
 	if (cpc->reason == CP_RECOVERY)
 		f2fs_msg(sbi->sb, KERN_NOTICE,
 			"checkpoint: version = %llx", ckpt_ver);
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 out:
 	mutex_unlock(&sbi->cp_mutex);
 	trace_f2fs_write_checkpoint(sbi->sb, cpc->reason, "finish checkpoint");
@@ -1128,9 +1319,20 @@ void init_ino_entry_info(struct f2fs_sb_info *sbi)
 		im->ino_num = 0;
 	}
 
+<<<<<<< HEAD
 	sbi->max_orphans = (sbi->blocks_per_seg - F2FS_CP_PACKS -
 			NR_CURSEG_TYPE - __cp_payload(sbi)) *
 				F2FS_ORPHANS_PER_BLOCK;
+=======
+	/*
+	 * considering 512 blocks in a segment 8 blocks are needed for cp
+	 * and log segment summaries. Remaining blocks are used to keep
+	 * orphan entries with the limitation one reserved segment
+	 * for cp pack we can have max 1020*504 orphan entries
+	 */
+	sbi->max_orphans = (sbi->blocks_per_seg - F2FS_CP_PACKS -
+			NR_CURSEG_TYPE) * F2FS_ORPHANS_PER_BLOCK;
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 int __init create_checkpoint_caches(void)

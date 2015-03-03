@@ -50,8 +50,11 @@
 #define MAX_ACTIVE_NODE_LOGS	8
 #define MAX_ACTIVE_DATA_LOGS	8
 
+<<<<<<< HEAD
 #define VERSION_LEN	256
 
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 /*
  * For superblock
  */
@@ -88,12 +91,15 @@ struct f2fs_super_block {
 	__le32 extension_count;		/* # of extensions below */
 	__u8 extension_list[F2FS_MAX_EXTENSION][8];	/* extension array */
 	__le32 cp_payload;
+<<<<<<< HEAD
 	__u8 version[VERSION_LEN];	/* the kernel version */
 	__u8 init_version[VERSION_LEN];	/* the initial kernel version */
 	__le32 feature;			/* defined features */
 	__u8 encryption_level;		/* versioning level for encryption */
 	__u8 encrypt_pw_salt[16];	/* Salt used for string2key algorithm */
 	__u8 reserved[871];		/* valid reserved region */
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 } __packed;
 
 /*
@@ -161,7 +167,11 @@ struct f2fs_orphan_block {
  */
 struct f2fs_extent {
 	__le32 fofs;		/* start file offset of the extent */
+<<<<<<< HEAD
 	__le32 blk;		/* start block address of the extent */
+=======
+	__le32 blk_addr;	/* start block address of the extent */
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	__le32 len;		/* lengh of the extent */
 } __packed;
 
@@ -186,7 +196,10 @@ struct f2fs_extent {
 #define F2FS_INLINE_DATA	0x02	/* file inline data flag */
 #define F2FS_INLINE_DENTRY	0x04	/* file inline dentry flag */
 #define F2FS_DATA_EXIST		0x08	/* file inline data exist flag */
+<<<<<<< HEAD
 #define F2FS_INLINE_DOTS	0x10	/* file having implicit dot dentries */
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 #define MAX_INLINE_DATA		(sizeof(__le32) * (DEF_ADDRS_PER_INODE - \
 						F2FS_INLINE_XATTR_ADDRS - 1))
@@ -417,12 +430,19 @@ typedef __le32	f2fs_hash_t;
 
 #define GET_DENTRY_SLOTS(x)	((x + F2FS_SLOT_LEN - 1) >> F2FS_SLOT_LEN_BITS)
 
+<<<<<<< HEAD
+=======
+/* the number of dentry in a block */
+#define NR_DENTRY_IN_BLOCK	214
+
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 /* MAX level for dir lookup */
 #define MAX_DIR_HASH_DEPTH	63
 
 /* MAX buckets in one level of dir */
 #define MAX_DIR_BUCKETS		(1 << ((MAX_DIR_HASH_DEPTH / 2) - 1))
 
+<<<<<<< HEAD
 /*
  * space utilization of regular dentry and inline dentry
  *		regular dentry			inline dentry
@@ -436,6 +456,8 @@ typedef __le32	f2fs_hash_t;
  * dentry, when converting inline dentry we should handle this carefully.
  */
 #define NR_DENTRY_IN_BLOCK	214	/* the number of dentry in a block */
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 #define SIZE_OF_DIR_ENTRY	11	/* by byte */
 #define SIZE_OF_DENTRY_BITMAP	((NR_DENTRY_IN_BLOCK + BITS_PER_BYTE - 1) / \
 					BITS_PER_BYTE)

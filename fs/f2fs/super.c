@@ -39,12 +39,15 @@ static struct proc_dir_entry *f2fs_proc_root;
 static struct kmem_cache *f2fs_inode_cachep;
 static struct kset *f2fs_kset;
 
+<<<<<<< HEAD
 /* f2fs-wide shrinker description */
 static struct shrinker f2fs_shrinker_info = {
 	.shrink = f2fs_shrink_scan,
 	.seeks = DEFAULT_SEEKS,
 };
 
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 enum {
 	Opt_gc_background,
 	Opt_disable_roll_forward,
@@ -63,9 +66,12 @@ enum {
 	Opt_flush_merge,
 	Opt_nobarrier,
 	Opt_fastboot,
+<<<<<<< HEAD
 	Opt_extent_cache,
 	Opt_noextent_cache,
 	Opt_noinline_data,
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	Opt_err,
 };
 
@@ -87,9 +93,12 @@ static match_table_t f2fs_tokens = {
 	{Opt_flush_merge, "flush_merge"},
 	{Opt_nobarrier, "nobarrier"},
 	{Opt_fastboot, "fastboot"},
+<<<<<<< HEAD
 	{Opt_extent_cache, "extent_cache"},
 	{Opt_noextent_cache, "noextent_cache"},
 	{Opt_noinline_data, "noinline_data"},
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	{Opt_err, NULL},
 };
 
@@ -266,7 +275,10 @@ static void init_once(void *foo)
 static int parse_options(struct super_block *sb, char *options)
 {
 	struct f2fs_sb_info *sbi = F2FS_SB(sb);
+<<<<<<< HEAD
 	struct request_queue *q;
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	substring_t args[MAX_OPT_ARGS];
 	char *p, *name;
 	int arg = 0;
@@ -311,6 +323,7 @@ static int parse_options(struct super_block *sb, char *options)
 				return -EINVAL;
 			break;
 		case Opt_discard:
+<<<<<<< HEAD
 			q = bdev_get_queue(sb->s_bdev);
 			if (blk_queue_discard(q)) {
 				set_opt(sbi, DISCARD);
@@ -319,6 +332,9 @@ static int parse_options(struct super_block *sb, char *options)
 					"mounting with \"discard\" option, but "
 					"the device does not support discard");
 			}
+=======
+			set_opt(sbi, DISCARD);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 			break;
 		case Opt_noheap:
 			set_opt(sbi, NOHEAP);
@@ -387,6 +403,7 @@ static int parse_options(struct super_block *sb, char *options)
 		case Opt_fastboot:
 			set_opt(sbi, FASTBOOT);
 			break;
+<<<<<<< HEAD
 		case Opt_extent_cache:
 			set_opt(sbi, EXTENT_CACHE);
 			break;
@@ -396,6 +413,8 @@ static int parse_options(struct super_block *sb, char *options)
 		case Opt_noinline_data:
 			clear_opt(sbi, INLINE_DATA);
 			break;
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		default:
 			f2fs_msg(sb, KERN_ERR,
 				"Unrecognized mount option \"%s\" or missing value",
@@ -421,7 +440,13 @@ static struct inode *f2fs_alloc_inode(struct super_block *sb)
 	atomic_set(&fi->dirty_pages, 0);
 	fi->i_current_depth = 1;
 	fi->i_advise = 0;
+<<<<<<< HEAD
 	init_rwsem(&fi->i_sem);
+=======
+	rwlock_init(&fi->ext.ext_lock);
+	init_rwsem(&fi->i_sem);
+	INIT_RADIX_TREE(&fi->inmem_root, GFP_NOFS);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	INIT_LIST_HEAD(&fi->inmem_pages);
 	mutex_init(&fi->inmem_lock);
 
@@ -433,9 +458,12 @@ static struct inode *f2fs_alloc_inode(struct super_block *sb)
 	/* Will be used by directory only */
 	fi->i_dir_level = F2FS_SB(sb)->dir_level;
 
+<<<<<<< HEAD
 #ifdef CONFIG_F2FS_FS_ENCRYPTION
 	fi->i_crypt_info = NULL;
 #endif
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	return &fi->vfs_inode;
 }
 
@@ -448,6 +476,7 @@ static int f2fs_drop_inode(struct inode *inode)
 	 *    - f2fs_gc -> iput -> evict
 	 *       - inode_wait_for_writeback(inode)
 	 */
+<<<<<<< HEAD
 	if (!inode_unhashed(inode) && inode->i_state & I_SYNC) {
 		if (!inode->i_nlink && !is_bad_inode(inode)) {
 			/* to avoid evict_inode call simultaneously */
@@ -473,6 +502,10 @@ static int f2fs_drop_inode(struct inode *inode)
 		}
 		return 0;
 	}
+=======
+	if (!inode_unhashed(inode) && inode->i_state & I_SYNC)
+		return 0;
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	return generic_drop_inode(inode);
 }
 
@@ -507,11 +540,17 @@ static void f2fs_put_super(struct super_block *sb)
 	}
 	kobject_del(&sbi->s_kobj);
 
+<<<<<<< HEAD
 	stop_gc_thread(sbi);
 
 	/* prevent remaining shrinker jobs */
 	mutex_lock(&sbi->umount_mutex);
 
+=======
+	f2fs_destroy_stats(sbi);
+	stop_gc_thread(sbi);
+
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	/*
 	 * We don't need to do checkpoint when superblock is clean.
 	 * But, the previous checkpoint was not done by umount, it needs to do
@@ -525,9 +564,12 @@ static void f2fs_put_super(struct super_block *sb)
 		write_checkpoint(sbi, &cpc);
 	}
 
+<<<<<<< HEAD
 	/* write_checkpoint can update stat informaion */
 	f2fs_destroy_stats(sbi);
 
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	/*
 	 * normally superblock is clean, so we need to release this.
 	 * In addition, EIO will skip do checkpoint, we need this as well.
@@ -535,9 +577,12 @@ static void f2fs_put_super(struct super_block *sb)
 	release_dirty_inode(sbi);
 	release_discard_addrs(sbi);
 
+<<<<<<< HEAD
 	f2fs_leave_shrinker(sbi);
 	mutex_unlock(&sbi->umount_mutex);
 
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	iput(sbi->node_inode);
 	iput(sbi->meta_inode);
 
@@ -571,7 +616,11 @@ int f2fs_sync_fs(struct super_block *sb, int sync)
 	} else {
 		f2fs_balance_fs(sbi);
 	}
+<<<<<<< HEAD
 	f2fs_trace_ios(NULL, 1);
+=======
+	f2fs_trace_ios(NULL, NULL, 1);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	return 0;
 }
@@ -652,8 +701,11 @@ static int f2fs_show_options(struct seq_file *seq, struct dentry *root)
 		seq_puts(seq, ",disable_ext_identify");
 	if (test_opt(sbi, INLINE_DATA))
 		seq_puts(seq, ",inline_data");
+<<<<<<< HEAD
 	else
 		seq_puts(seq, ",noinline_data");
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	if (test_opt(sbi, INLINE_DENTRY))
 		seq_puts(seq, ",inline_dentry");
 	if (!f2fs_readonly(sbi->sb) && test_opt(sbi, FLUSH_MERGE))
@@ -662,10 +714,13 @@ static int f2fs_show_options(struct seq_file *seq, struct dentry *root)
 		seq_puts(seq, ",nobarrier");
 	if (test_opt(sbi, FASTBOOT))
 		seq_puts(seq, ",fastboot");
+<<<<<<< HEAD
 	if (test_opt(sbi, EXTENT_CACHE))
 		seq_puts(seq, ",extent_cache");
 	else
 		seq_puts(seq, ",noextent_cache");
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	seq_printf(seq, ",active_logs=%u", sbi->active_logs);
 
 	return 0;
@@ -711,6 +766,7 @@ static const struct file_operations f2fs_seq_segment_info_fops = {
 	.release = single_release,
 };
 
+<<<<<<< HEAD
 static void default_options(struct f2fs_sb_info *sbi)
 {
 	/* init some FS parameters */
@@ -728,6 +784,8 @@ static void default_options(struct f2fs_sb_info *sbi)
 #endif
 }
 
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 static int f2fs_remount(struct super_block *sb, int *flags, char *data)
 {
 	struct f2fs_sb_info *sbi = F2FS_SB(sb);
@@ -746,7 +804,11 @@ static int f2fs_remount(struct super_block *sb, int *flags, char *data)
 	active_logs = sbi->active_logs;
 
 	sbi->mount_opt.opt = 0;
+<<<<<<< HEAD
 	default_options(sbi);
+=======
+	sbi->active_logs = NR_CURSEG_TYPE;
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	/* parse mount options */
 	err = parse_options(sb, data);
@@ -990,9 +1052,12 @@ static void init_sb_info(struct f2fs_sb_info *sbi)
 
 	sbi->dir_level = DEF_DIR_LEVEL;
 	clear_sbi_flag(sbi, SBI_NEED_FSCK);
+<<<<<<< HEAD
 
 	INIT_LIST_HEAD(&sbi->s_list);
 	mutex_init(&sbi->umount_mutex);
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 /*
@@ -1002,6 +1067,7 @@ static void init_sb_info(struct f2fs_sb_info *sbi)
  */
 static int read_raw_super_block(struct super_block *sb,
 			struct f2fs_super_block **raw_super,
+<<<<<<< HEAD
 			struct buffer_head **raw_super_buf,
 			int *recovery)
 {
@@ -1014,12 +1080,22 @@ retry:
 	buffer = sb_bread(sb, block);
 	if (!buffer) {
 		*recovery = 1;
+=======
+			struct buffer_head **raw_super_buf)
+{
+	int block = 0;
+
+retry:
+	*raw_super_buf = sb_bread(sb, block);
+	if (!*raw_super_buf) {
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		f2fs_msg(sb, KERN_ERR, "Unable to read %dth superblock",
 				block + 1);
 		if (block == 0) {
 			block++;
 			goto retry;
 		} else {
+<<<<<<< HEAD
 			err = -EIO;
 			goto out;
 		}
@@ -1032,6 +1108,18 @@ retry:
 	if (sanity_check_raw_super(sb, super)) {
 		brelse(buffer);
 		*recovery = 1;
+=======
+			return -EIO;
+		}
+	}
+
+	*raw_super = (struct f2fs_super_block *)
+		((char *)(*raw_super_buf)->b_data + F2FS_SUPER_OFFSET);
+
+	/* sanity checking of raw super */
+	if (sanity_check_raw_super(sb, *raw_super)) {
+		brelse(*raw_super_buf);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		f2fs_msg(sb, KERN_ERR,
 			"Can't find valid F2FS filesystem in %dth superblock",
 								block + 1);
@@ -1039,6 +1127,7 @@ retry:
 			block++;
 			goto retry;
 		} else {
+<<<<<<< HEAD
 			err = -EINVAL;
 			goto out;
 		}
@@ -1109,6 +1198,27 @@ try_onemore:
 	raw_super_buf = NULL;
 	recovery = 0;
 
+=======
+			return -EINVAL;
+		}
+	}
+
+	return 0;
+}
+
+static int f2fs_fill_super(struct super_block *sb, void *data, int silent)
+{
+	struct f2fs_sb_info *sbi;
+	struct f2fs_super_block *raw_super = NULL;
+	struct buffer_head *raw_super_buf;
+	struct inode *root;
+	long err = -EINVAL;
+	bool retry = true;
+	char *options = NULL;
+	int i;
+
+try_onemore:
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	/* allocate memory for f2fs-specific super block info */
 	sbi = kzalloc(sizeof(struct f2fs_sb_info), GFP_KERNEL);
 	if (!sbi)
@@ -1120,12 +1230,30 @@ try_onemore:
 		goto free_sbi;
 	}
 
+<<<<<<< HEAD
 	err = read_raw_super_block(sb, &raw_super, &raw_super_buf, &recovery);
+=======
+	err = read_raw_super_block(sb, &raw_super, &raw_super_buf);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	if (err)
 		goto free_sbi;
 
 	sb->s_fs_info = sbi;
+<<<<<<< HEAD
 	default_options(sbi);
+=======
+	/* init some FS parameters */
+	sbi->active_logs = NR_CURSEG_TYPE;
+
+	set_opt(sbi, BG_GC);
+
+#ifdef CONFIG_F2FS_FS_XATTR
+	set_opt(sbi, XATTR_USER);
+#endif
+#ifdef CONFIG_F2FS_FS_POSIX_ACL
+	set_opt(sbi, POSIX_ACL);
+#endif
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	/* parse mount options */
 	options = kstrdup((const char *)data, GFP_KERNEL);
 	if (data && !options) {
@@ -1158,9 +1286,13 @@ try_onemore:
 	mutex_init(&sbi->writepages);
 	mutex_init(&sbi->cp_mutex);
 	init_rwsem(&sbi->node_write);
+<<<<<<< HEAD
 
 	/* disallow all the data/node/meta page writes */
 	set_sbi_flag(sbi, SBI_POR_DOING);
+=======
+	clear_sbi_flag(sbi, SBI_POR_DOING);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	spin_lock_init(&sbi->stat_lock);
 
 	init_rwsem(&sbi->read_io.io_rwsem);
@@ -1209,8 +1341,11 @@ try_onemore:
 	INIT_LIST_HEAD(&sbi->dir_inode_list);
 	spin_lock_init(&sbi->dir_inode_lock);
 
+<<<<<<< HEAD
 	init_extent_cache_info(sbi);
 
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	init_ino_entry_info(sbi);
 
 	/* setup f2fs internal modules */
@@ -1237,12 +1372,17 @@ try_onemore:
 		goto free_nm;
 	}
 
+<<<<<<< HEAD
 	f2fs_join_shrinker(sbi);
 
 	/* if there are nt orphan nodes free them */
 	err = recover_orphan_inodes(sbi);
 	if (err)
 		goto free_node_inode;
+=======
+	/* if there are nt orphan nodes free them */
+	recover_orphan_inodes(sbi);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	/* read root inode and dentry */
 	root = f2fs_iget(sb, F2FS_ROOT_INO(sbi));
@@ -1274,6 +1414,17 @@ try_onemore:
 		proc_create_data("segment_info", S_IRUGO, sbi->s_proc,
 				 &f2fs_seq_segment_info_fops, sb);
 
+<<<<<<< HEAD
+=======
+	if (test_opt(sbi, DISCARD)) {
+		struct request_queue *q = bdev_get_queue(sb->s_bdev);
+		if (!blk_queue_discard(q))
+			f2fs_msg(sb, KERN_WARNING,
+					"mounting with \"discard\" option, but "
+					"the device does not support discard");
+	}
+
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	sbi->s_kobj.kset = f2fs_kset;
 	init_completion(&sbi->s_kobj_unregister);
 	err = kobject_init_and_add(&sbi->s_kobj, &f2fs_ktype, NULL,
@@ -1281,6 +1432,12 @@ try_onemore:
 	if (err)
 		goto free_proc;
 
+<<<<<<< HEAD
+=======
+	if (!retry)
+		set_sbi_flag(sbi, SBI_NEED_FSCK);
+
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	/* recover fsynced data */
 	if (!test_opt(sbi, DISABLE_ROLL_FORWARD)) {
 		/*
@@ -1292,6 +1449,7 @@ try_onemore:
 			err = -EROFS;
 			goto free_kobj;
 		}
+<<<<<<< HEAD
 
 		if (need_fsck)
 			set_sbi_flag(sbi, SBI_NEED_FSCK);
@@ -1299,13 +1457,20 @@ try_onemore:
 		err = recover_fsync_data(sbi);
 		if (err) {
 			need_fsck = true;
+=======
+		err = recover_fsync_data(sbi);
+		if (err) {
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 			f2fs_msg(sb, KERN_ERR,
 				"Cannot recover all fsync data errno=%ld", err);
 			goto free_kobj;
 		}
 	}
+<<<<<<< HEAD
 	/* recover_fsync_data() cleared this already */
 	clear_sbi_flag(sbi, SBI_POR_DOING);
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	/*
 	 * If filesystem is not mounted as read-only then
@@ -1318,6 +1483,7 @@ try_onemore:
 			goto free_kobj;
 	}
 	kfree(options);
+<<<<<<< HEAD
 
 	/* recover broken superblock */
 	if (recovery && !f2fs_readonly(sb) && !bdev_read_only(sb->s_bdev)) {
@@ -1325,6 +1491,8 @@ try_onemore:
 		f2fs_commit_super(sbi, true);
 	}
 
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	return 0;
 
 free_kobj:
@@ -1339,10 +1507,14 @@ free_root_inode:
 	dput(sb->s_root);
 	sb->s_root = NULL;
 free_node_inode:
+<<<<<<< HEAD
 	mutex_lock(&sbi->umount_mutex);
 	f2fs_leave_shrinker(sbi);
 	iput(sbi->node_inode);
 	mutex_unlock(&sbi->umount_mutex);
+=======
+	iput(sbi->node_inode);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 free_nm:
 	destroy_node_manager(sbi);
 free_sm:
@@ -1361,7 +1533,11 @@ free_sbi:
 
 	/* give only one another chance */
 	if (retry) {
+<<<<<<< HEAD
 		retry = false;
+=======
+		retry = 0;
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		shrink_dcache_sb(sb);
 		goto try_onemore;
 	}
@@ -1426,6 +1602,7 @@ static int __init init_f2fs_fs(void)
 	err = create_checkpoint_caches();
 	if (err)
 		goto free_segment_manager_caches;
+<<<<<<< HEAD
 	err = create_extent_cache();
 	if (err)
 		goto free_checkpoint_caches;
@@ -1443,10 +1620,21 @@ static int __init init_f2fs_fs(void)
 	err = register_filesystem(&f2fs_fs_type);
 	if (err)
 		goto free_shrinker;
+=======
+	f2fs_kset = kset_create_and_add("f2fs", NULL, fs_kobj);
+	if (!f2fs_kset) {
+		err = -ENOMEM;
+		goto free_checkpoint_caches;
+	}
+	err = register_filesystem(&f2fs_fs_type);
+	if (err)
+		goto free_kset;
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	f2fs_create_root_stats();
 	f2fs_proc_root = proc_mkdir("fs/f2fs", NULL);
 	return 0;
 
+<<<<<<< HEAD
 free_shrinker:
 	unregister_shrinker(&f2fs_shrinker_info);
 	f2fs_exit_crypto();
@@ -1454,6 +1642,10 @@ free_kset:
 	kset_unregister(f2fs_kset);
 free_extent_cache:
 	destroy_extent_cache();
+=======
+free_kset:
+	kset_unregister(f2fs_kset);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 free_checkpoint_caches:
 	destroy_checkpoint_caches();
 free_segment_manager_caches:
@@ -1470,10 +1662,14 @@ static void __exit exit_f2fs_fs(void)
 {
 	remove_proc_entry("fs/f2fs", NULL);
 	f2fs_destroy_root_stats();
+<<<<<<< HEAD
 	unregister_shrinker(&f2fs_shrinker_info);
 	unregister_filesystem(&f2fs_fs_type);
 	f2fs_exit_crypto();
 	destroy_extent_cache();
+=======
+	unregister_filesystem(&f2fs_fs_type);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	destroy_checkpoint_caches();
 	destroy_segment_manager_caches();
 	destroy_node_manager_caches();

@@ -134,8 +134,12 @@ static int f2fs_xattr_advise_get(struct dentry *dentry, const char *name,
 	if (strcmp(name, "") != 0)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (buffer)
 		*((char *)buffer) = F2FS_I(inode)->i_advise;
+=======
+	*((char *)buffer) = F2FS_I(inode)->i_advise;
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	return sizeof(char);
 }
 
@@ -152,7 +156,10 @@ static int f2fs_xattr_advise_set(struct dentry *dentry, const char *name,
 		return -EINVAL;
 
 	F2FS_I(inode)->i_advise |= *(char *)value;
+<<<<<<< HEAD
 	mark_inode_dirty(inode);
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	return 0;
 }
 
@@ -498,12 +505,18 @@ static int __f2fs_setxattr(struct inode *inode, int index,
 
 	len = strlen(name);
 
+<<<<<<< HEAD
 	if (len > F2FS_NAME_LEN)
 		return -ERANGE;
 
 	if (size > MAX_VALUE_LEN(inode))
 		return -E2BIG;
 
+=======
+	if (len > F2FS_NAME_LEN || size > MAX_VALUE_LEN(inode))
+		return -ERANGE;
+
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	base_addr = read_all_xattrs(inode, ipage);
 	if (!base_addr)
 		goto exit;
@@ -586,9 +599,12 @@ static int __f2fs_setxattr(struct inode *inode, int index,
 		inode->i_ctime = CURRENT_TIME;
 		clear_inode_flag(fi, FI_ACL_MODE);
 	}
+<<<<<<< HEAD
 	if (index == F2FS_XATTR_INDEX_ENCRYPTION &&
 			!strcmp(name, F2FS_XATTR_NAME_ENCRYPTION_CONTEXT))
 		f2fs_set_encrypted_inode(inode);
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	if (ipage)
 		update_inode(inode, ipage);

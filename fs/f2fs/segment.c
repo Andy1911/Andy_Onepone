@@ -79,9 +79,15 @@ struct llist_node *llist_reverse_order(struct llist_node *head)
 /**
  * Copied from latest linux/list.h
  * list_last_entry - get the last element from a list
+<<<<<<< HEAD
  * @ptr:        the list head to take the element from.
  * @type:       the type of the struct this is embedded in.
  * @member:     the name of the list_struct within the struct.
+=======
+ * @ptr:	the list head to take the element from.
+ * @type:	the type of the struct this is embedded in.
+ * @member:	the name of the list_struct within the struct.
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
  *
  * Note, that list is expected to be not empty.
  */
@@ -134,6 +140,7 @@ static inline unsigned long __reverse_ffs(unsigned long word)
 static unsigned long __find_rev_next_bit(const unsigned long *addr,
 			unsigned long size, unsigned long offset)
 {
+<<<<<<< HEAD
 	while (!f2fs_test_bit(offset, (unsigned char *)addr))
 		offset++;
 
@@ -142,6 +149,8 @@ static unsigned long __find_rev_next_bit(const unsigned long *addr,
 
 	return offset;
 #if 0
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	const unsigned long *p = addr + BIT_WORD(offset);
 	unsigned long result = offset & ~(BITS_PER_LONG - 1);
 	unsigned long tmp;
@@ -188,12 +197,16 @@ found_first:
 		return result + size;   /* Nope. */
 found_middle:
 	return result + __reverse_ffs(tmp);
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 static unsigned long __find_rev_next_zero_bit(const unsigned long *addr,
 			unsigned long size, unsigned long offset)
 {
+<<<<<<< HEAD
 	while (f2fs_test_bit(offset, (unsigned char *)addr))
 		offset++;
 
@@ -202,6 +215,8 @@ static unsigned long __find_rev_next_zero_bit(const unsigned long *addr,
 
 	return offset;
 #if 0
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	const unsigned long *p = addr + BIT_WORD(offset);
 	unsigned long result = offset & ~(BITS_PER_LONG - 1);
 	unsigned long tmp;
@@ -249,48 +264,85 @@ found_first:
 		return result + size;   /* Nope. */
 found_middle:
 	return result + __reverse_ffz(tmp);
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 void register_inmem_page(struct inode *inode, struct page *page)
 {
 	struct f2fs_inode_info *fi = F2FS_I(inode);
 	struct inmem_pages *new;
+<<<<<<< HEAD
 
 	f2fs_trace_pid(page);
 
 	set_page_private(page, (unsigned long)ATOMIC_WRITTEN_PAGE);
 	SetPagePrivate(page);
+=======
+	int err;
+
+	SetPagePrivate(page);
+	f2fs_trace_pid(page);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	new = f2fs_kmem_cache_alloc(inmem_entry_slab, GFP_NOFS);
 
 	/* add atomic page indices to the list */
 	new->page = page;
 	INIT_LIST_HEAD(&new->list);
+<<<<<<< HEAD
 
 	/* increase reference count with clean state */
 	mutex_lock(&fi->inmem_lock);
+=======
+retry:
+	/* increase reference count with clean state */
+	mutex_lock(&fi->inmem_lock);
+	err = radix_tree_insert(&fi->inmem_root, page->index, new);
+	if (err == -EEXIST) {
+		mutex_unlock(&fi->inmem_lock);
+		kmem_cache_free(inmem_entry_slab, new);
+		return;
+	} else if (err) {
+		mutex_unlock(&fi->inmem_lock);
+		goto retry;
+	}
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	get_page(page);
 	list_add_tail(&new->list, &fi->inmem_pages);
 	inc_page_count(F2FS_I_SB(inode), F2FS_INMEM_PAGES);
 	mutex_unlock(&fi->inmem_lock);
+<<<<<<< HEAD
 
 	trace_f2fs_register_inmem_page(page, INMEM);
 }
 
 int commit_inmem_pages(struct inode *inode, bool abort)
+=======
+}
+
+void commit_inmem_pages(struct inode *inode, bool abort)
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 {
 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
 	struct f2fs_inode_info *fi = F2FS_I(inode);
 	struct inmem_pages *cur, *tmp;
 	bool submit_bio = false;
 	struct f2fs_io_info fio = {
+<<<<<<< HEAD
 		.sbi = sbi,
 		.type = DATA,
 		.rw = WRITE_SYNC | REQ_PRIO,
 		.encrypted_page = NULL,
 	};
 	int err = 0;
+=======
+		.type = DATA,
+		.rw = WRITE_SYNC | REQ_PRIO,
+	};
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	/*
 	 * The abort is true only when f2fs_evict_inode is called.
@@ -306,6 +358,7 @@ int commit_inmem_pages(struct inode *inode, bool abort)
 
 	mutex_lock(&fi->inmem_lock);
 	list_for_each_entry_safe(cur, tmp, &fi->inmem_pages, list) {
+<<<<<<< HEAD
 		lock_page(cur->page);
 		if (!abort) {
 			if (cur->page->mapping == inode->i_mapping) {
@@ -329,6 +382,22 @@ int commit_inmem_pages(struct inode *inode, bool abort)
 		ClearPagePrivate(cur->page);
 		f2fs_put_page(cur->page, 1);
 
+=======
+		if (!abort) {
+			lock_page(cur->page);
+			if (cur->page->mapping == inode->i_mapping) {
+				f2fs_wait_on_page_writeback(cur->page, DATA);
+				if (clear_page_dirty_for_io(cur->page))
+					inode_dec_dirty_pages(inode);
+				do_write_data_page(cur->page, &fio);
+				submit_bio = true;
+			}
+			f2fs_put_page(cur->page, 1);
+		} else {
+			put_page(cur->page);
+		}
+		radix_tree_delete(&fi->inmem_root, cur->page->index);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		list_del(&cur->list);
 		kmem_cache_free(inmem_entry_slab, cur);
 		dec_page_count(F2FS_I_SB(inode), F2FS_INMEM_PAGES);
@@ -340,7 +409,10 @@ int commit_inmem_pages(struct inode *inode, bool abort)
 		if (submit_bio)
 			f2fs_submit_merged_bio(sbi, DATA, WRITE);
 	}
+<<<<<<< HEAD
 	return err;
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 /*
@@ -361,6 +433,7 @@ void f2fs_balance_fs(struct f2fs_sb_info *sbi)
 
 void f2fs_balance_fs_bg(struct f2fs_sb_info *sbi)
 {
+<<<<<<< HEAD
 	/* try to shrink extent cache when there is no enough memory */
 	if (!available_free_memory(sbi, EXTENT_CACHE))
 		f2fs_shrink_extent_tree(sbi, EXTENT_CACHE_SHRINK_NUMBER);
@@ -374,6 +447,10 @@ void f2fs_balance_fs_bg(struct f2fs_sb_info *sbi)
 
 	/* checkpoint is the only way to shrink partial cached entries */
 	if (!available_free_memory(sbi, NAT_ENTRIES) ||
+=======
+	/* check the # of cached NAT entries and prefree segments */
+	if (try_to_free_nats(sbi, NAT_ENTRY_PER_BLOCK) ||
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 			excess_prefree_segs(sbi) ||
 			!available_free_memory(sbi, INO_ENTRIES))
 		f2fs_sync_fs(sbi->sb, true);
@@ -416,12 +493,19 @@ repeat:
 		return 0;
 
 	if (!llist_empty(&fcc->issue_list)) {
+<<<<<<< HEAD
 		struct bio *bio;
 		struct flush_cmd *cmd, *next;
 		int ret;
 
 		bio = f2fs_bio_alloc(0);
 
+=======
+		struct bio *bio = bio_alloc(GFP_NOIO, 0);
+		struct flush_cmd *cmd, *next;
+		int ret;
+
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		fcc->dispatch_list = llist_del_all(&fcc->issue_list);
 		fcc->dispatch_list = llist_reverse_order(fcc->dispatch_list);
 
@@ -453,6 +537,7 @@ int f2fs_issue_flush(struct f2fs_sb_info *sbi)
 	if (test_opt(sbi, NOBARRIER))
 		return 0;
 
+<<<<<<< HEAD
 	if (!test_opt(sbi, FLUSH_MERGE)) {
 		struct bio *bio = f2fs_bio_alloc(0);
 		int ret;
@@ -462,6 +547,10 @@ int f2fs_issue_flush(struct f2fs_sb_info *sbi)
 		bio_put(bio);
 		return ret;
 	}
+=======
+	if (!test_opt(sbi, FLUSH_MERGE))
+		return blkdev_issue_flush(sbi->sb->s_bdev, GFP_KERNEL, NULL);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	init_completion(&cmd.wait);
 
@@ -590,6 +679,7 @@ static int f2fs_issue_discard(struct f2fs_sb_info *sbi,
 {
 	sector_t start = SECTOR_FROM_BLOCK(blkstart);
 	sector_t len = SECTOR_FROM_BLOCK(blklen);
+<<<<<<< HEAD
 	struct seg_entry *se;
 	unsigned int offset;
 	block_t i;
@@ -601,10 +691,13 @@ static int f2fs_issue_discard(struct f2fs_sb_info *sbi,
 		if (!f2fs_test_and_set_bit(offset, se->discard_map))
 			sbi->discard_blks--;
 	}
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	trace_f2fs_issue_discard(sbi->sb, blkstart, blklen);
 	return blkdev_issue_discard(sbi->sb->s_bdev, start, len, GFP_NOFS, 0);
 }
 
+<<<<<<< HEAD
 bool discard_next_dnode(struct f2fs_sb_info *sbi, block_t blkaddr)
 {
 	int err = -ENOTSUPP;
@@ -630,6 +723,20 @@ bool discard_next_dnode(struct f2fs_sb_info *sbi, block_t blkaddr)
 static void __add_discard_entry(struct f2fs_sb_info *sbi,
 		struct cp_control *cpc, struct seg_entry *se,
 		unsigned int start, unsigned int end)
+=======
+void discard_next_dnode(struct f2fs_sb_info *sbi, block_t blkaddr)
+{
+	if (f2fs_issue_discard(sbi, blkaddr, 1)) {
+		struct page *page = grab_meta_page(sbi, blkaddr);
+		/* zero-filled page */
+		set_page_dirty(page);
+		f2fs_put_page(page, 1);
+	}
+}
+
+static void __add_discard_entry(struct f2fs_sb_info *sbi,
+		struct cp_control *cpc, unsigned int start, unsigned int end)
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 {
 	struct list_head *head = &SM_I(sbi)->discard_list;
 	struct discard_entry *new, *last;
@@ -650,6 +757,10 @@ static void __add_discard_entry(struct f2fs_sb_info *sbi,
 	list_add_tail(&new->list, head);
 done:
 	SM_I(sbi)->nr_discards += end - start;
+<<<<<<< HEAD
+=======
+	cpc->trimmed += end - start;
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 static void add_discard_addrs(struct f2fs_sb_info *sbi, struct cp_control *cpc)
@@ -659,12 +770,16 @@ static void add_discard_addrs(struct f2fs_sb_info *sbi, struct cp_control *cpc)
 	struct seg_entry *se = get_seg_entry(sbi, cpc->trim_start);
 	unsigned long *cur_map = (unsigned long *)se->cur_valid_map;
 	unsigned long *ckpt_map = (unsigned long *)se->ckpt_valid_map;
+<<<<<<< HEAD
 	unsigned long *discard_map = (unsigned long *)se->discard_map;
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	unsigned long *dmap = SIT_I(sbi)->tmp_map;
 	unsigned int start = 0, end = -1;
 	bool force = (cpc->reason == CP_DISCARD);
 	int i;
 
+<<<<<<< HEAD
 	if (se->valid_blocks == max_blocks)
 		return;
 
@@ -677,6 +792,38 @@ static void add_discard_addrs(struct f2fs_sb_info *sbi, struct cp_control *cpc)
 	/* SIT_VBLOCK_MAP_SIZE should be multiple of sizeof(unsigned long) */
 	for (i = 0; i < entries; i++)
 		dmap[i] = force ? ~ckpt_map[i] & ~discard_map[i] :
+=======
+	if (!force && (!test_opt(sbi, DISCARD) ||
+			SM_I(sbi)->nr_discards >= SM_I(sbi)->max_discards))
+		return;
+
+	if (force && !se->valid_blocks) {
+		struct dirty_seglist_info *dirty_i = DIRTY_I(sbi);
+		/*
+		 * if this segment is registered in the prefree list, then
+		 * we should skip adding a discard candidate, and let the
+		 * checkpoint do that later.
+		 */
+		mutex_lock(&dirty_i->seglist_lock);
+		if (test_bit(cpc->trim_start, dirty_i->dirty_segmap[PRE])) {
+			mutex_unlock(&dirty_i->seglist_lock);
+			cpc->trimmed += sbi->blocks_per_seg;
+			return;
+		}
+		mutex_unlock(&dirty_i->seglist_lock);
+
+		__add_discard_entry(sbi, cpc, 0, sbi->blocks_per_seg);
+		return;
+	}
+
+	/* zero block will be discarded through the prefree list */
+	if (!se->valid_blocks || se->valid_blocks == max_blocks)
+		return;
+
+	/* SIT_VBLOCK_MAP_SIZE should be multiple of sizeof(unsigned long) */
+	for (i = 0; i < entries; i++)
+		dmap[i] = force ? ~ckpt_map[i] :
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 				(cur_map[i] ^ ckpt_map[i]) & ckpt_map[i];
 
 	while (force || SM_I(sbi)->nr_discards <= SM_I(sbi)->max_discards) {
@@ -685,7 +832,15 @@ static void add_discard_addrs(struct f2fs_sb_info *sbi, struct cp_control *cpc)
 			break;
 
 		end = __find_rev_next_zero_bit(dmap, max_blocks, start + 1);
+<<<<<<< HEAD
 		__add_discard_entry(sbi, cpc, se, start, end);
+=======
+
+		if (end - start < cpc->trim_minlen)
+			continue;
+
+		__add_discard_entry(sbi, cpc, start, end);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	}
 }
 
@@ -715,7 +870,11 @@ static void set_prefree_as_free_segments(struct f2fs_sb_info *sbi)
 	mutex_unlock(&dirty_i->seglist_lock);
 }
 
+<<<<<<< HEAD
 void clear_prefree_segments(struct f2fs_sb_info *sbi, struct cp_control *cpc)
+=======
+void clear_prefree_segments(struct f2fs_sb_info *sbi)
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 {
 	struct list_head *head = &(SM_I(sbi)->discard_list);
 	struct discard_entry *entry, *this;
@@ -748,11 +907,15 @@ void clear_prefree_segments(struct f2fs_sb_info *sbi, struct cp_control *cpc)
 
 	/* send small discards */
 	list_for_each_entry_safe(entry, this, head, list) {
+<<<<<<< HEAD
 		if (cpc->reason == CP_DISCARD && entry->len < cpc->trim_minlen)
 			goto skip;
 		f2fs_issue_discard(sbi, entry->blkaddr, entry->len);
 		cpc->trimmed += entry->len;
 skip:
+=======
+		f2fs_issue_discard(sbi, entry->blkaddr, entry->len);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		list_del(&entry->list);
 		SM_I(sbi)->nr_discards -= entry->len;
 		kmem_cache_free(discard_entry_slab, entry);
@@ -803,6 +966,7 @@ static void update_sit_entry(struct f2fs_sb_info *sbi, block_t blkaddr, int del)
 	if (del > 0) {
 		if (f2fs_test_and_set_bit(offset, se->cur_valid_map))
 			f2fs_bug_on(sbi, 1);
+<<<<<<< HEAD
 		if (!f2fs_test_and_set_bit(offset, se->discard_map))
 			sbi->discard_blks--;
 	} else {
@@ -810,6 +974,11 @@ static void update_sit_entry(struct f2fs_sb_info *sbi, block_t blkaddr, int del)
 			f2fs_bug_on(sbi, 1);
 		if (f2fs_test_and_clear_bit(offset, se->discard_map))
 			sbi->discard_blks++;
+=======
+	} else {
+		if (!f2fs_test_and_clear_bit(offset, se->cur_valid_map))
+			f2fs_bug_on(sbi, 1);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	}
 	if (!f2fs_test_bit(offset, se->ckpt_valid_map))
 		se->ckpt_valid_blocks += del;
@@ -903,6 +1072,7 @@ struct page *get_sum_page(struct f2fs_sb_info *sbi, unsigned int segno)
 	return get_meta_page(sbi, GET_SUM_BLOCK(sbi, segno));
 }
 
+<<<<<<< HEAD
 void update_meta_page(struct f2fs_sb_info *sbi, void *src, block_t blk_addr)
 {
 	struct page *page = grab_meta_page(sbi, blk_addr);
@@ -912,16 +1082,27 @@ void update_meta_page(struct f2fs_sb_info *sbi, void *src, block_t blk_addr)
 		memcpy(dst, src, PAGE_CACHE_SIZE);
 	else
 		memset(dst, 0, PAGE_CACHE_SIZE);
+=======
+static void write_sum_page(struct f2fs_sb_info *sbi,
+			struct f2fs_summary_block *sum_blk, block_t blk_addr)
+{
+	struct page *page = grab_meta_page(sbi, blk_addr);
+	void *kaddr = page_address(page);
+	memcpy(kaddr, sum_blk, PAGE_CACHE_SIZE);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	set_page_dirty(page);
 	f2fs_put_page(page, 1);
 }
 
+<<<<<<< HEAD
 static void write_sum_page(struct f2fs_sb_info *sbi,
 			struct f2fs_summary_block *sum_blk, block_t blk_addr)
 {
 	update_meta_page(sbi, (void *)sum_blk, blk_addr);
 }
 
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 static int is_next_segment_free(struct f2fs_sb_info *sbi, int type)
 {
 	struct curseg_info *curseg = CURSEG_I(sbi, type);
@@ -1203,7 +1384,12 @@ int f2fs_trim_fs(struct f2fs_sb_info *sbi, struct fstrim_range *range)
 	unsigned int start_segno, end_segno;
 	struct cp_control cpc;
 
+<<<<<<< HEAD
 	if (start >= MAX_BLKADDR(sbi) || range->len < sbi->blocksize)
+=======
+	if (range->minlen > SEGMENT_SIZE(sbi) || start >= MAX_BLKADDR(sbi) ||
+						range->len < sbi->blocksize)
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		return -EINVAL;
 
 	cpc.trimmed = 0;
@@ -1215,11 +1401,16 @@ int f2fs_trim_fs(struct f2fs_sb_info *sbi, struct fstrim_range *range)
 	end_segno = (end >= MAX_BLKADDR(sbi)) ? MAIN_SEGS(sbi) - 1 :
 						GET_SEGNO(sbi, end);
 	cpc.reason = CP_DISCARD;
+<<<<<<< HEAD
 	cpc.trim_minlen = max_t(__u64, 1, F2FS_BYTES_TO_BLK(range->minlen));
+=======
+	cpc.trim_minlen = F2FS_BYTES_TO_BLK(range->minlen);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	/* do checkpoint to issue discard commands safely */
 	for (; start_segno <= end_segno; start_segno = cpc.trim_end + 1) {
 		cpc.trim_start = start_segno;
+<<<<<<< HEAD
 
 		if (sbi->discard_blks == 0)
 			break;
@@ -1228,6 +1419,9 @@ int f2fs_trim_fs(struct f2fs_sb_info *sbi, struct fstrim_range *range)
 		else
 			cpc.trim_end = min_t(unsigned int,
 				rounddown(start_segno +
+=======
+		cpc.trim_end = min_t(unsigned int, rounddown(start_segno +
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 				BATCHED_TRIM_SEGMENTS(sbi),
 				sbi->segs_per_sec) - 1, end_segno);
 
@@ -1320,11 +1514,17 @@ void allocate_data_block(struct f2fs_sb_info *sbi, struct page *page,
 	curseg = CURSEG_I(sbi, type);
 
 	mutex_lock(&curseg->curseg_mutex);
+<<<<<<< HEAD
 	mutex_lock(&sit_i->sentry_lock);
 
 	/* direct_io'ed data is aligned to the segment for better performance */
 	if (direct_io && curseg->next_blkoff &&
 				!has_not_enough_free_secs(sbi, 0))
+=======
+
+	/* direct_io'ed data is aligned to the segment for better performance */
+	if (direct_io && curseg->next_blkoff)
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		__allocate_new_segments(sbi, type);
 
 	*new_blkaddr = NEXT_FREE_BLKADDR(sbi, curseg);
@@ -1336,6 +1536,10 @@ void allocate_data_block(struct f2fs_sb_info *sbi, struct page *page,
 	 */
 	__add_sum_entry(sbi, type, sum);
 
+<<<<<<< HEAD
+=======
+	mutex_lock(&sit_i->sentry_lock);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	__refresh_next_blkoff(sbi, curseg);
 
 	stat_inc_block_count(sbi, curseg);
@@ -1356,6 +1560,7 @@ void allocate_data_block(struct f2fs_sb_info *sbi, struct page *page,
 	mutex_unlock(&curseg->curseg_mutex);
 }
 
+<<<<<<< HEAD
 static void do_write_page(struct f2fs_summary *sum, struct f2fs_io_info *fio)
 {
 	int type = __get_segment_type(fio->page, fio->type);
@@ -1365,11 +1570,24 @@ static void do_write_page(struct f2fs_summary *sum, struct f2fs_io_info *fio)
 
 	/* writeout dirty page into bdev */
 	f2fs_submit_page_mbio(fio);
+=======
+static void do_write_page(struct f2fs_sb_info *sbi, struct page *page,
+			struct f2fs_summary *sum,
+			struct f2fs_io_info *fio)
+{
+	int type = __get_segment_type(page, fio->type);
+
+	allocate_data_block(sbi, page, fio->blk_addr, &fio->blk_addr, sum, type);
+
+	/* writeout dirty page into bdev */
+	f2fs_submit_page_mbio(sbi, page, fio);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 void write_meta_page(struct f2fs_sb_info *sbi, struct page *page)
 {
 	struct f2fs_io_info fio = {
+<<<<<<< HEAD
 		.sbi = sbi,
 		.type = META,
 		.rw = WRITE_SYNC | REQ_META | REQ_PRIO,
@@ -1393,12 +1611,36 @@ void write_node_page(unsigned int nid, struct f2fs_io_info *fio)
 void write_data_page(struct dnode_of_data *dn, struct f2fs_io_info *fio)
 {
 	struct f2fs_sb_info *sbi = fio->sbi;
+=======
+		.type = META,
+		.rw = WRITE_SYNC | REQ_META | REQ_PRIO,
+		.blk_addr = page->index,
+	};
+
+	set_page_writeback(page);
+	f2fs_submit_page_mbio(sbi, page, &fio);
+}
+
+void write_node_page(struct f2fs_sb_info *sbi, struct page *page,
+			unsigned int nid, struct f2fs_io_info *fio)
+{
+	struct f2fs_summary sum;
+	set_summary(&sum, nid, 0, 0);
+	do_write_page(sbi, page, &sum, fio);
+}
+
+void write_data_page(struct page *page, struct dnode_of_data *dn,
+				struct f2fs_io_info *fio)
+{
+	struct f2fs_sb_info *sbi = F2FS_I_SB(dn->inode);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	struct f2fs_summary sum;
 	struct node_info ni;
 
 	f2fs_bug_on(sbi, dn->data_blkaddr == NULL_ADDR);
 	get_node_info(sbi, dn->nid, &ni);
 	set_summary(&sum, dn->nid, dn->ofs_in_node, ni.version);
+<<<<<<< HEAD
 	do_write_page(&sum, fio);
 	dn->data_blkaddr = fio->blk_addr;
 }
@@ -1413,18 +1655,37 @@ static void __f2fs_replace_block(struct f2fs_sb_info *sbi,
 				struct f2fs_summary *sum,
 				block_t old_blkaddr, block_t new_blkaddr,
 				bool recover_curseg)
+=======
+	do_write_page(sbi, page, &sum, fio);
+	dn->data_blkaddr = fio->blk_addr;
+}
+
+void rewrite_data_page(struct page *page, struct f2fs_io_info *fio)
+{
+	stat_inc_inplace_blocks(F2FS_P_SB(page));
+	f2fs_submit_page_mbio(F2FS_P_SB(page), page, fio);
+}
+
+void recover_data_page(struct f2fs_sb_info *sbi,
+			struct page *page, struct f2fs_summary *sum,
+			block_t old_blkaddr, block_t new_blkaddr)
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 {
 	struct sit_info *sit_i = SIT_I(sbi);
 	struct curseg_info *curseg;
 	unsigned int segno, old_cursegno;
 	struct seg_entry *se;
 	int type;
+<<<<<<< HEAD
 	unsigned short old_blkoff;
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	segno = GET_SEGNO(sbi, new_blkaddr);
 	se = get_seg_entry(sbi, segno);
 	type = se->type;
 
+<<<<<<< HEAD
 	if (!recover_curseg) {
 		/* for recovery flow */
 		if (se->valid_blocks == 0 && !IS_CURSEG(sbi, segno)) {
@@ -1438,13 +1699,24 @@ static void __f2fs_replace_block(struct f2fs_sb_info *sbi,
 			type = CURSEG_WARM_DATA;
 	}
 
+=======
+	if (se->valid_blocks == 0 && !IS_CURSEG(sbi, segno)) {
+		if (old_blkaddr == NULL_ADDR)
+			type = CURSEG_COLD_DATA;
+		else
+			type = CURSEG_WARM_DATA;
+	}
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	curseg = CURSEG_I(sbi, type);
 
 	mutex_lock(&curseg->curseg_mutex);
 	mutex_lock(&sit_i->sentry_lock);
 
 	old_cursegno = curseg->segno;
+<<<<<<< HEAD
 	old_blkoff = curseg->next_blkoff;
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	/* change the current segment */
 	if (segno != curseg->segno) {
@@ -1458,6 +1730,7 @@ static void __f2fs_replace_block(struct f2fs_sb_info *sbi,
 	refresh_sit_entry(sbi, old_blkaddr, new_blkaddr);
 	locate_dirty_segment(sbi, old_cursegno);
 
+<<<<<<< HEAD
 	if (recover_curseg) {
 		if (old_cursegno != curseg->segno) {
 			curseg->next_segno = old_cursegno;
@@ -1466,10 +1739,13 @@ static void __f2fs_replace_block(struct f2fs_sb_info *sbi,
 		curseg->next_blkoff = old_blkoff;
 	}
 
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	mutex_unlock(&sit_i->sentry_lock);
 	mutex_unlock(&curseg->curseg_mutex);
 }
 
+<<<<<<< HEAD
 void f2fs_replace_block(struct f2fs_sb_info *sbi, struct dnode_of_data *dn,
 				block_t old_addr, block_t new_addr,
 				unsigned char version, bool recover_curseg)
@@ -1485,12 +1761,15 @@ void f2fs_replace_block(struct f2fs_sb_info *sbi, struct dnode_of_data *dn,
 	f2fs_update_extent_cache(dn);
 }
 
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 static inline bool is_merged_page(struct f2fs_sb_info *sbi,
 					struct page *page, enum page_type type)
 {
 	enum page_type btype = PAGE_TYPE_OF_BIO(type);
 	struct f2fs_bio_info *io = &sbi->write_io[btype];
 	struct bio_vec *bvec;
+<<<<<<< HEAD
 	struct page *target;
 	int i;
 
@@ -1514,11 +1793,25 @@ static inline bool is_merged_page(struct f2fs_sb_info *sbi,
 		}
 
 		if (page == target) {
+=======
+	int i;
+
+	down_read(&io->io_rwsem);
+	if (!io->bio)
+		goto out;
+
+	__bio_for_each_segment(bvec, io->bio, i, 0) {
+		if (page == bvec->bv_page) {
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 			up_read(&io->io_rwsem);
 			return true;
 		}
 	}
 
+<<<<<<< HEAD
+=======
+out:
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	up_read(&io->io_rwsem);
 	return false;
 }
@@ -1839,7 +2132,11 @@ static struct page *get_next_sit_page(struct f2fs_sb_info *sbi,
 static struct sit_entry_set *grab_sit_entry_set(void)
 {
 	struct sit_entry_set *ses =
+<<<<<<< HEAD
 			f2fs_kmem_cache_alloc(sit_entry_set_slab, GFP_NOFS);
+=======
+			f2fs_kmem_cache_alloc(sit_entry_set_slab, GFP_ATOMIC);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	ses->entry_cnt = 0;
 	INIT_LIST_HEAD(&ses->set_list);
@@ -1935,9 +2232,12 @@ void flush_sit_entries(struct f2fs_sb_info *sbi, struct cp_control *cpc)
 	mutex_lock(&curseg->curseg_mutex);
 	mutex_lock(&sit_i->sentry_lock);
 
+<<<<<<< HEAD
 	if (!sit_i->dirty_sentries)
 		goto out;
 
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	/*
 	 * add and account sit entries of dirty bitmap in sit entry
 	 * set temporarily
@@ -1952,6 +2252,12 @@ void flush_sit_entries(struct f2fs_sb_info *sbi, struct cp_control *cpc)
 	if (!__has_cursum_space(sum, sit_i->dirty_sentries, SIT_JOURNAL))
 		remove_sits_in_journal(sbi);
 
+<<<<<<< HEAD
+=======
+	if (!sit_i->dirty_sentries)
+		goto out;
+
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	/*
 	 * there are two steps to flush sit entries:
 	 * #1, flush sit entries to journal in current cold data summary block.
@@ -2055,11 +2361,16 @@ static int build_sit_info(struct f2fs_sb_info *sbi)
 			= kzalloc(SIT_VBLOCK_MAP_SIZE, GFP_KERNEL);
 		sit_i->sentries[start].ckpt_valid_map
 			= kzalloc(SIT_VBLOCK_MAP_SIZE, GFP_KERNEL);
+<<<<<<< HEAD
 		sit_i->sentries[start].discard_map
 			= kzalloc(SIT_VBLOCK_MAP_SIZE, GFP_KERNEL);
 		if (!sit_i->sentries[start].cur_valid_map ||
 				!sit_i->sentries[start].ckpt_valid_map ||
 				!sit_i->sentries[start].discard_map)
+=======
+		if (!sit_i->sentries[start].cur_valid_map
+				|| !sit_i->sentries[start].ckpt_valid_map)
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 			return -ENOMEM;
 	}
 
@@ -2197,11 +2508,14 @@ static void build_sit_entries(struct f2fs_sb_info *sbi)
 got_it:
 			check_block_count(sbi, start, &sit);
 			seg_info_from_raw_sit(se, &sit);
+<<<<<<< HEAD
 
 			/* build discard map only one time */
 			memcpy(se->discard_map, se->cur_valid_map, SIT_VBLOCK_MAP_SIZE);
 			sbi->discard_blks += sbi->blocks_per_seg - se->valid_blocks;
 
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 			if (sbi->segs_per_sec > 1) {
 				struct sec_entry *e = get_sec_entry(sbi, start);
 				e->valid_blocks += se->valid_blocks;
@@ -2451,7 +2765,10 @@ static void destroy_sit_info(struct f2fs_sb_info *sbi)
 		for (start = 0; start < MAIN_SEGS(sbi); start++) {
 			kfree(sit_i->sentries[start].cur_valid_map);
 			kfree(sit_i->sentries[start].ckpt_valid_map);
+<<<<<<< HEAD
 			kfree(sit_i->sentries[start].discard_map);
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		}
 	}
 	kfree(sit_i->tmp_map);

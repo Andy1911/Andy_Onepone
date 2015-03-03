@@ -19,7 +19,10 @@
 #include <linux/magic.h>
 #include <linux/kobject.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
 #include <linux/bio.h>
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 #ifdef CONFIG_F2FS_CHECK_FS
 #define f2fs_bug_on(sbi, condition)	BUG_ON(condition)
@@ -52,7 +55,10 @@
 #define F2FS_MOUNT_FLUSH_MERGE		0x00000400
 #define F2FS_MOUNT_NOBARRIER		0x00000800
 #define F2FS_MOUNT_FASTBOOT		0x00001000
+<<<<<<< HEAD
 #define F2FS_MOUNT_EXTENT_CACHE		0x00002000
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 #define clear_opt(sbi, option)	(sbi->mount_opt.opt &= ~F2FS_MOUNT_##option)
 #define set_opt(sbi, option)	(sbi->mount_opt.opt |= F2FS_MOUNT_##option)
@@ -72,6 +78,7 @@ struct f2fs_mount_info {
 	unsigned int	opt;
 };
 
+<<<<<<< HEAD
 #define F2FS_FEATURE_ENCRYPT	0x0001
 
 #define F2FS_HAS_FEATURE(sb, mask)					\
@@ -81,6 +88,8 @@ struct f2fs_mount_info {
 #define F2FS_CLEAR_FEATURE(sb, mask)					\
 	F2FS_SB(sb)->raw_super->feature &= ~cpu_to_le32(mask)
 
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 #define CRCPOLY_LE 0xedb88320
 
 static inline __u32 f2fs_crc32(void *buf, size_t len)
@@ -114,15 +123,21 @@ enum {
 	CP_UMOUNT,
 	CP_FASTBOOT,
 	CP_SYNC,
+<<<<<<< HEAD
 	CP_RECOVERY,
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	CP_DISCARD,
 };
 
 #define DEF_BATCHED_TRIM_SECTIONS	32
 #define BATCHED_TRIM_SEGMENTS(sbi)	\
 		(SM_I(sbi)->trim_sections * (sbi)->segs_per_sec)
+<<<<<<< HEAD
 #define BATCHED_TRIM_BLOCKS(sbi)	\
 		(BATCHED_TRIM_SEGMENTS(sbi) << (sbi)->log_blocks_per_seg)
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 struct cp_control {
 	int reason;
@@ -223,6 +238,7 @@ static inline bool __has_cursum_space(struct f2fs_summary_block *sum, int size,
 #define F2FS_IOC_GETFLAGS		FS_IOC_GETFLAGS
 #define F2FS_IOC_SETFLAGS		FS_IOC_SETFLAGS
 #define F2FS_IOC_GETVERSION		FS_IOC_GETVERSION
+<<<<<<< HEAD
 #define FS_IOC_SHUTDOWN        _IOR('X', 125, __u32)   /* Shutdown */
 
 /*
@@ -231,6 +247,8 @@ static inline bool __has_cursum_space(struct f2fs_summary_block *sum, int size,
 #define FS_GOING_DOWN_FULLSYNC 0x0     /* going down with full sync */
 #define FS_GOING_DOWN_METASYNC 0x1     /* going down with metadata */
 #define FS_GOING_DOWN_NOSYNC   0x2     /* going down */
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 #define F2FS_IOCTL_MAGIC		0xf5
 #define F2FS_IOC_START_ATOMIC_WRITE	_IO(F2FS_IOCTL_MAGIC, 1)
@@ -238,6 +256,7 @@ static inline bool __has_cursum_space(struct f2fs_summary_block *sum, int size,
 #define F2FS_IOC_START_VOLATILE_WRITE	_IO(F2FS_IOCTL_MAGIC, 3)
 #define F2FS_IOC_RELEASE_VOLATILE_WRITE	_IO(F2FS_IOCTL_MAGIC, 4)
 #define F2FS_IOC_ABORT_VOLATILE_WRITE	_IO(F2FS_IOCTL_MAGIC, 5)
+<<<<<<< HEAD
 #define F2FS_IOC_GARBAGE_COLLECT	_IO(F2FS_IOCTL_MAGIC, 6)
 
 #define F2FS_IOC_SET_ENCRYPTION_POLICY					\
@@ -246,6 +265,8 @@ static inline bool __has_cursum_space(struct f2fs_summary_block *sum, int size,
 		_IOW('f', 20, __u8[16])
 #define F2FS_IOC_GET_ENCRYPTION_POLICY					\
 		_IOW('f', 21, struct f2fs_encryption_policy)
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 #if defined(__KERNEL__) && defined(CONFIG_COMPAT)
 /*
@@ -259,6 +280,7 @@ static inline bool __has_cursum_space(struct f2fs_summary_block *sum, int size,
  * For INODE and NODE manager
  */
 /* for directory operations */
+<<<<<<< HEAD
 struct f2fs_str {
 	unsigned char *name;
 	u32 len;
@@ -281,17 +303,26 @@ struct f2fs_filename {
 
 struct f2fs_dentry_ptr {
 	struct inode *inode;
+=======
+struct f2fs_dentry_ptr {
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	const void *bitmap;
 	struct f2fs_dir_entry *dentry;
 	__u8 (*filename)[F2FS_SLOT_LEN];
 	int max;
 };
 
+<<<<<<< HEAD
 static inline void make_dentry_ptr(struct inode *inode,
 		struct f2fs_dentry_ptr *d, void *src, int type)
 {
 	d->inode = inode;
 
+=======
+static inline void make_dentry_ptr(struct f2fs_dentry_ptr *d,
+					void *src, int type)
+{
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	if (type == 1) {
 		struct f2fs_dentry_block *t = (struct f2fs_dentry_block *)src;
 		d->max = NR_DENTRY_IN_BLOCK;
@@ -323,6 +354,7 @@ enum {
 					 */
 };
 
+<<<<<<< HEAD
 #define F2FS_LINK_MAX	0xffffffff	/* maximum link count per file */
 
 #define MAX_DIR_RA_PAGES	4	/* maximum ra pages of dir */
@@ -383,10 +415,28 @@ struct f2fs_map_blocks {
 #define F2FS_GET_BLOCK_BMAP		3
 
 /*
+=======
+#define F2FS_LINK_MAX		32000	/* maximum link count per file */
+
+#define MAX_DIR_RA_PAGES	4	/* maximum ra pages of dir */
+
+/* for in-memory extent cache entry */
+#define F2FS_MIN_EXTENT_LEN	16	/* minimum extent length */
+
+struct extent_info {
+	rwlock_t ext_lock;	/* rwlock for consistency */
+	unsigned int fofs;	/* start offset in a file */
+	u32 blk_addr;		/* start block address of the extent */
+	unsigned int len;	/* length of the extent */
+};
+
+/*
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
  * i_advise uses FADVISE_XXX_BIT. We can add additional hints later.
  */
 #define FADVISE_COLD_BIT	0x01
 #define FADVISE_LOST_PINO_BIT	0x02
+<<<<<<< HEAD
 #define FADVISE_ENCRYPT_BIT	0x04
 #define FADVISE_ENC_NAME_BIT	0x08
 
@@ -410,6 +460,8 @@ struct f2fs_map_blocks {
 #define F2FS_ENCRYPTION_MODE_AES_256_CTS	4
 
 #include "f2fs_crypto.h"
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 #define DEF_DIR_LEVEL		0
 
@@ -430,6 +482,7 @@ struct f2fs_inode_info {
 	unsigned int clevel;		/* maximum level of given file name */
 	nid_t i_xattr_nid;		/* node id that contains xattrs */
 	unsigned long long xattr_ver;	/* cp version of xattr modification */
+<<<<<<< HEAD
 	struct inode_entry *dirty_dir;	/* the pointer of dirty dir */
 
 	struct list_head inmem_pages;	/* inmemory pages managed by f2fs */
@@ -441,19 +494,36 @@ struct f2fs_inode_info {
 	/* Encryption params */
 	struct f2fs_crypt_info *i_crypt_info;
 #endif
+=======
+	struct extent_info ext;		/* in-memory extent cache entry */
+	struct inode_entry *dirty_dir;	/* the pointer of dirty dir */
+
+	struct radix_tree_root inmem_root;	/* radix tree for inmem pages */
+	struct list_head inmem_pages;	/* inmemory pages managed by f2fs */
+	struct mutex inmem_lock;	/* lock for inmemory pages */
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 };
 
 static inline void get_extent_info(struct extent_info *ext,
 					struct f2fs_extent i_ext)
 {
+<<<<<<< HEAD
 	ext->fofs = le32_to_cpu(i_ext.fofs);
 	ext->blk = le32_to_cpu(i_ext.blk);
 	ext->len = le32_to_cpu(i_ext.len);
+=======
+	write_lock(&ext->ext_lock);
+	ext->fofs = le32_to_cpu(i_ext.fofs);
+	ext->blk_addr = le32_to_cpu(i_ext.blk_addr);
+	ext->len = le32_to_cpu(i_ext.len);
+	write_unlock(&ext->ext_lock);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 static inline void set_raw_extent(struct extent_info *ext,
 					struct f2fs_extent *i_ext)
 {
+<<<<<<< HEAD
 	i_ext->fofs = cpu_to_le32(ext->fofs);
 	i_ext->blk = cpu_to_le32(ext->blk);
 	i_ext->len = cpu_to_le32(ext->len);
@@ -491,6 +561,13 @@ static inline bool __is_front_mergeable(struct extent_info *cur,
 						struct extent_info *front)
 {
 	return __is_extent_mergeable(cur, front);
+=======
+	read_lock(&ext->ext_lock);
+	i_ext->fofs = cpu_to_le32(ext->fofs);
+	i_ext->blk_addr = cpu_to_le32(ext->blk_addr);
+	i_ext->len = cpu_to_le32(ext->len);
+	read_unlock(&ext->ext_lock);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 struct f2fs_nm_info {
@@ -659,6 +736,7 @@ enum page_type {
 	META,
 	NR_PAGE_TYPE,
 	META_FLUSH,
+<<<<<<< HEAD
 	INMEM,		/* the below types are used by tracepoints only. */
 	INMEM_DROP,
 	IPU,
@@ -676,6 +754,17 @@ struct f2fs_io_info {
 
 #define is_read_io(rw)	(((rw) & 1) == READ)
 
+=======
+};
+
+struct f2fs_io_info {
+	enum page_type type;	/* contains DATA/NODE/META/META_FLUSH */
+	int rw;			/* contains R/RS/W/WS with REQ_META/REQ_PRIO */
+	block_t blk_addr;	/* block address to be written */
+};
+
+#define is_read_io(rw)	(((rw) & 1) == READ)
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 struct f2fs_bio_info {
 	struct f2fs_sb_info *sbi;	/* f2fs superblock */
 	struct bio *bio;		/* bios to merge */
@@ -736,6 +825,7 @@ struct f2fs_sb_info {
 	struct list_head dir_inode_list;	/* dir inode list */
 	spinlock_t dir_inode_lock;		/* for dir inode list lock */
 
+<<<<<<< HEAD
 	/* for extent tree cache */
 	struct radix_tree_root extent_tree_root;/* cache extent cache entries */
 	struct rw_semaphore extent_tree_lock;	/* locking extent radix tree */
@@ -744,6 +834,8 @@ struct f2fs_sb_info {
 	int total_ext_tree;			/* extent tree count */
 	atomic_t total_ext_node;		/* extent info count */
 
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	/* basic filesystem units */
 	unsigned int log_sectors_per_block;	/* log2 sectors per block */
 	unsigned int log_blocksize;		/* log2 block size */
@@ -765,7 +857,10 @@ struct f2fs_sb_info {
 	block_t user_block_count;		/* # of user blocks */
 	block_t total_valid_block_count;	/* # of valid blocks */
 	block_t alloc_valid_block_count;	/* # of allocated blocks */
+<<<<<<< HEAD
 	block_t discard_blks;			/* discard command candidats */
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	block_t last_valid_block_count;		/* for recovery */
 	u32 s_next_generation;			/* for NFS support */
 	atomic_t nr_pages[NR_COUNT_TYPE];	/* # of pages, see count_type */
@@ -789,11 +884,15 @@ struct f2fs_sb_info {
 	unsigned int segment_count[2];		/* # of allocated segments */
 	unsigned int block_count[2];		/* # of allocated blocks */
 	atomic_t inplace_count;		/* # of inplace update */
+<<<<<<< HEAD
 	atomic_t total_hit_ext;			/* # of lookup extent cache */
 	atomic_t read_hit_rbtree;		/* # of hit rbtree extent node */
 	atomic_t read_hit_largest;		/* # of hit largest extent node */
 	atomic_t read_hit_cached;		/* # of hit cached extent node */
 	atomic_t inline_xattr;			/* # of inline_xattr inodes */
+=======
+	int total_hit_ext, read_hit_ext;	/* extent cache hit ratio */
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	atomic_t inline_inode;			/* # of inline_data inodes */
 	atomic_t inline_dir;			/* # of inline_dentry inodes */
 	int bg_gc;				/* background gc calls */
@@ -805,11 +904,14 @@ struct f2fs_sb_info {
 	/* For sysfs suppport */
 	struct kobject s_kobj;
 	struct completion s_kobj_unregister;
+<<<<<<< HEAD
 
 	/* For shrinker support */
 	struct list_head s_list;
 	struct mutex umount_mutex;
 	unsigned int shrinker_run_no;
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 };
 
 /*
@@ -1058,8 +1160,12 @@ static inline void dec_page_count(struct f2fs_sb_info *sbi, int count_type)
 
 static inline void inode_dec_dirty_pages(struct inode *inode)
 {
+<<<<<<< HEAD
 	if (!S_ISDIR(inode->i_mode) && !S_ISREG(inode->i_mode) &&
 			!S_ISLNK(inode->i_mode))
+=======
+	if (!S_ISDIR(inode->i_mode) && !S_ISREG(inode->i_mode))
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		return;
 
 	atomic_dec(&F2FS_I(inode)->dirty_pages);
@@ -1104,17 +1210,24 @@ static inline unsigned long __bitmap_size(struct f2fs_sb_info *sbi, int flag)
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline block_t __cp_payload(struct f2fs_sb_info *sbi)
 {
 	return le32_to_cpu(F2FS_RAW_SUPER(sbi)->cp_payload);
 }
 
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 static inline void *__bitmap_ptr(struct f2fs_sb_info *sbi, int flag)
 {
 	struct f2fs_checkpoint *ckpt = F2FS_CKPT(sbi);
 	int offset;
 
+<<<<<<< HEAD
 	if (__cp_payload(sbi) > 0) {
+=======
+	if (le32_to_cpu(F2FS_RAW_SUPER(sbi)->cp_payload) > 0) {
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		if (flag == NAT_BITMAP)
 			return &ckpt->sit_nat_version_bitmap;
 		else
@@ -1254,6 +1367,7 @@ static inline void *f2fs_kmem_cache_alloc(struct kmem_cache *cachep,
 						gfp_t flags)
 {
 	void *entry;
+<<<<<<< HEAD
 
 	entry = kmem_cache_alloc(cachep, flags);
 	if (!entry)
@@ -1270,6 +1384,16 @@ static inline struct bio *f2fs_bio_alloc(int npages)
 	if (!bio)
 		bio = bio_alloc(GFP_NOIO | __GFP_NOFAIL, npages);
 	return bio;
+=======
+retry:
+	entry = kmem_cache_alloc(cachep, flags);
+	if (!entry) {
+		cond_resched();
+		goto retry;
+	}
+
+	return entry;
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 static inline void f2fs_radix_tree_insert(struct radix_tree_root *root,
@@ -1311,6 +1435,7 @@ static inline int f2fs_test_bit(unsigned int nr, char *addr)
 	return mask & *addr;
 }
 
+<<<<<<< HEAD
 static inline void f2fs_set_bit(unsigned int nr, char *addr)
 {
 	int mask;
@@ -1329,6 +1454,8 @@ static inline void f2fs_clear_bit(unsigned int nr, char *addr)
 	*addr &= ~mask;
 }
 
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 static inline int f2fs_test_and_set_bit(unsigned int nr, char *addr)
 {
 	int mask;
@@ -1370,7 +1497,10 @@ enum {
 	FI_INC_LINK,		/* need to increment i_nlink */
 	FI_ACL_MODE,		/* indicate acl mode */
 	FI_NO_ALLOC,		/* should not allocate any blocks */
+<<<<<<< HEAD
 	FI_FREE_NID,		/* free allocated nide */
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	FI_UPDATE_DIR,		/* should update inode block for consistency */
 	FI_DELAY_IPUT,		/* used for the recovery */
 	FI_NO_EXTENT,		/* not to use the extent cache */
@@ -1382,10 +1512,15 @@ enum {
 	FI_NEED_IPU,		/* used for ipu per file */
 	FI_ATOMIC_FILE,		/* indicate atomic file */
 	FI_VOLATILE_FILE,	/* indicate volatile file */
+<<<<<<< HEAD
 	FI_FIRST_BLOCK_WRITTEN,	/* indicate #0 data block was written */
 	FI_DROP_CACHE,		/* drop dirty page cache */
 	FI_DATA_EXIST,		/* indicate data exists */
 	FI_INLINE_DOTS,		/* indicate inline dot dentries */
+=======
+	FI_DROP_CACHE,		/* drop dirty page cache */
+	FI_DATA_EXIST,		/* indicate data exists */
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 };
 
 static inline void set_inode_flag(struct f2fs_inode_info *fi, int flag)
@@ -1422,8 +1557,11 @@ static inline void get_inline_info(struct f2fs_inode_info *fi,
 		set_inode_flag(fi, FI_INLINE_DENTRY);
 	if (ri->i_inline & F2FS_DATA_EXIST)
 		set_inode_flag(fi, FI_DATA_EXIST);
+<<<<<<< HEAD
 	if (ri->i_inline & F2FS_INLINE_DOTS)
 		set_inode_flag(fi, FI_INLINE_DOTS);
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 static inline void set_raw_inline(struct f2fs_inode_info *fi,
@@ -1439,8 +1577,11 @@ static inline void set_raw_inline(struct f2fs_inode_info *fi,
 		ri->i_inline |= F2FS_INLINE_DENTRY;
 	if (is_inode_flag_set(fi, FI_DATA_EXIST))
 		ri->i_inline |= F2FS_DATA_EXIST;
+<<<<<<< HEAD
 	if (is_inode_flag_set(fi, FI_INLINE_DOTS))
 		ri->i_inline |= F2FS_INLINE_DOTS;
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 static inline int f2fs_has_inline_xattr(struct inode *inode)
@@ -1486,11 +1627,14 @@ static inline int f2fs_exist_data(struct inode *inode)
 	return is_inode_flag_set(F2FS_I(inode), FI_DATA_EXIST);
 }
 
+<<<<<<< HEAD
 static inline int f2fs_has_inline_dots(struct inode *inode)
 {
 	return is_inode_flag_set(F2FS_I(inode), FI_INLINE_DOTS);
 }
 
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 static inline bool f2fs_is_atomic_file(struct inode *inode)
 {
 	return is_inode_flag_set(F2FS_I(inode), FI_ATOMIC_FILE);
@@ -1501,11 +1645,14 @@ static inline bool f2fs_is_volatile_file(struct inode *inode)
 	return is_inode_flag_set(F2FS_I(inode), FI_VOLATILE_FILE);
 }
 
+<<<<<<< HEAD
 static inline bool f2fs_is_first_block_written(struct inode *inode)
 {
 	return is_inode_flag_set(F2FS_I(inode), FI_FIRST_BLOCK_WRITTEN);
 }
 
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 static inline bool f2fs_is_drop_cache(struct inode *inode)
 {
 	return is_inode_flag_set(F2FS_I(inode), FI_DROP_CACHE);
@@ -1522,6 +1669,7 @@ static inline int f2fs_has_inline_dentry(struct inode *inode)
 	return is_inode_flag_set(F2FS_I(inode), FI_INLINE_DENTRY);
 }
 
+<<<<<<< HEAD
 static inline void f2fs_dentry_kunmap(struct inode *dir, struct page *page)
 {
 	if (!f2fs_has_inline_dentry(dir))
@@ -1541,6 +1689,18 @@ static inline void set_file(struct inode *inode, int type)
 static inline void clear_file(struct inode *inode, int type)
 {
 	F2FS_I(inode)->i_advise &= ~type;
+=======
+static inline void *inline_dentry_addr(struct page *page)
+{
+	struct f2fs_inode *ri = F2FS_INODE(page);
+	return (void *)&(ri->i_addr[1]);
+}
+
+static inline void f2fs_dentry_kunmap(struct inode *dir, struct page *page)
+{
+	if (!f2fs_has_inline_dentry(dir))
+		kunmap(page);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 static inline int f2fs_readonly(struct super_block *sb)
@@ -1564,6 +1724,7 @@ static inline struct inode *file_inode(struct file *f)
 	return f->f_path.dentry->d_inode;
 }
 
+<<<<<<< HEAD
 static inline bool is_dot_dotdot(const struct qstr *str)
 {
 	if (str->len == 1 && str->name[0] == '.')
@@ -1586,6 +1747,8 @@ static inline bool f2fs_may_extent_tree(struct inode *inode)
 	return S_ISREG(mode);
 }
 
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 #define get_inode_mode(i) \
 	((is_inode_flag_set(F2FS_I(i), FI_ACL_MODE)) ? \
 	 (F2FS_I(i)->i_acl_mode) : ((i)->i_mode))
@@ -1602,7 +1765,11 @@ static inline bool f2fs_may_extent_tree(struct inode *inode)
 int f2fs_sync_file(struct file *, loff_t, loff_t, int);
 void truncate_data_blocks(struct dnode_of_data *);
 int truncate_blocks(struct inode *, u64, bool);
+<<<<<<< HEAD
 int f2fs_truncate(struct inode *, bool);
+=======
+void f2fs_truncate(struct inode *);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 int f2fs_getattr(struct vfsmount *, struct dentry *, struct kstat *);
 int f2fs_setattr(struct dentry *, struct iattr *);
 int truncate_hole(struct inode *, pgoff_t, pgoff_t);
@@ -1631,11 +1798,19 @@ struct dentry *f2fs_get_parent(struct dentry *child);
  * dir.c
  */
 extern unsigned char f2fs_filetype_table[F2FS_FT_MAX];
+<<<<<<< HEAD
 void set_de_type(struct f2fs_dir_entry *, umode_t);
 struct f2fs_dir_entry *find_target_dentry(struct f2fs_filename *,
 			f2fs_hash_t, int *, struct f2fs_dentry_ptr *);
 bool f2fs_fill_dentries(struct file *, void *, filldir_t,
 			struct f2fs_dentry_ptr *, unsigned int, unsigned int, struct f2fs_str *);
+=======
+void set_de_type(struct f2fs_dir_entry *, struct inode *);
+struct f2fs_dir_entry *find_target_dentry(struct qstr *, int *,
+			struct f2fs_dentry_ptr *);
+bool f2fs_fill_dentries(struct file *, void *, filldir_t,
+			struct f2fs_dentry_ptr *, unsigned int, unsigned int);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 void do_make_empty_dir(struct inode *, struct inode *,
 			struct f2fs_dentry_ptr *);
 struct page *init_inode_metadata(struct inode *, struct inode *,
@@ -1649,6 +1824,7 @@ struct f2fs_dir_entry *f2fs_parent_dir(struct inode *, struct page **);
 ino_t f2fs_inode_by_name(struct inode *, struct qstr *);
 void f2fs_set_link(struct inode *, struct f2fs_dir_entry *,
 				struct page *, struct inode *);
+<<<<<<< HEAD
 int update_dent_inode(struct inode *, struct inode *, const struct qstr *);
 void f2fs_update_dentry(nid_t ino, umode_t mode, struct f2fs_dentry_ptr *,
 			const struct qstr *, f2fs_hash_t , unsigned int);
@@ -1657,18 +1833,33 @@ int __f2fs_add_link(struct inode *, const struct qstr *, struct inode *, nid_t,
 void f2fs_delete_entry(struct f2fs_dir_entry *, struct page *, struct inode *,
 							struct inode *);
 int f2fs_do_tmpfile(struct inode *, struct inode *);
+=======
+int update_dent_inode(struct inode *, const struct qstr *);
+int __f2fs_add_link(struct inode *, const struct qstr *, struct inode *);
+void f2fs_delete_entry(struct f2fs_dir_entry *, struct page *, struct inode *,
+							struct inode *);
+int f2fs_do_tmpfile(struct inode *, struct inode *);
+int f2fs_make_empty(struct inode *, struct inode *);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 bool f2fs_empty_dir(struct inode *);
 
 static inline int f2fs_add_link(struct dentry *dentry, struct inode *inode)
 {
 	return __f2fs_add_link(dentry->d_parent->d_inode, &dentry->d_name,
+<<<<<<< HEAD
 				inode, inode->i_ino, inode->i_mode);
+=======
+				inode);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 /*
  * super.c
  */
+<<<<<<< HEAD
 int f2fs_commit_super(struct f2fs_sb_info *, bool);
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 int f2fs_sync_fs(struct super_block *, int);
 extern __printf(3, 4)
 void f2fs_msg(struct super_block *, const char *, const char *, ...);
@@ -1685,15 +1876,24 @@ struct dnode_of_data;
 struct node_info;
 
 bool available_free_memory(struct f2fs_sb_info *, int);
+<<<<<<< HEAD
 int need_dentry_mark(struct f2fs_sb_info *, nid_t);
 bool is_checkpointed_node(struct f2fs_sb_info *, nid_t);
+=======
+bool is_checkpointed_node(struct f2fs_sb_info *, nid_t);
+bool has_fsynced_inode(struct f2fs_sb_info *, nid_t);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 bool need_inode_block_update(struct f2fs_sb_info *, nid_t);
 void get_node_info(struct f2fs_sb_info *, nid_t, struct node_info *);
 int get_dnode_of_data(struct dnode_of_data *, pgoff_t, int);
 int truncate_inode_blocks(struct inode *, pgoff_t);
 int truncate_xattr_node(struct inode *, struct page *);
 int wait_on_node_pages_writeback(struct f2fs_sb_info *, nid_t);
+<<<<<<< HEAD
 int remove_inode_page(struct inode *);
+=======
+void remove_inode_page(struct inode *);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 struct page *new_inode_page(struct inode *);
 struct page *new_node_page(struct dnode_of_data *, unsigned int, struct page *);
 void ra_node_page(struct f2fs_sb_info *, nid_t);
@@ -1704,7 +1904,10 @@ int sync_node_pages(struct f2fs_sb_info *, nid_t, struct writeback_control *);
 bool alloc_nid(struct f2fs_sb_info *, nid_t *);
 void alloc_nid_done(struct f2fs_sb_info *, nid_t);
 void alloc_nid_failed(struct f2fs_sb_info *, nid_t);
+<<<<<<< HEAD
 int try_to_free_nids(struct f2fs_sb_info *, int);
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 void recover_inline_xattr(struct inode *, struct page *);
 void recover_xattr_data(struct inode *, struct page *, block_t);
 int recover_inode_page(struct f2fs_sb_info *, struct page *);
@@ -1720,7 +1923,11 @@ void destroy_node_manager_caches(void);
  * segment.c
  */
 void register_inmem_page(struct inode *, struct page *);
+<<<<<<< HEAD
 int commit_inmem_pages(struct inode *, bool);
+=======
+void commit_inmem_pages(struct inode *, bool);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 void f2fs_balance_fs(struct f2fs_sb_info *);
 void f2fs_balance_fs_bg(struct f2fs_sb_info *);
 int f2fs_issue_flush(struct f2fs_sb_info *);
@@ -1728,13 +1935,20 @@ int create_flush_cmd_control(struct f2fs_sb_info *);
 void destroy_flush_cmd_control(struct f2fs_sb_info *);
 void invalidate_blocks(struct f2fs_sb_info *, block_t);
 void refresh_sit_entry(struct f2fs_sb_info *, block_t, block_t);
+<<<<<<< HEAD
 void clear_prefree_segments(struct f2fs_sb_info *, struct cp_control *);
 void release_discard_addrs(struct f2fs_sb_info *);
 bool discard_next_dnode(struct f2fs_sb_info *, block_t);
+=======
+void clear_prefree_segments(struct f2fs_sb_info *);
+void release_discard_addrs(struct f2fs_sb_info *);
+void discard_next_dnode(struct f2fs_sb_info *, block_t);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 int npages_for_summary_flush(struct f2fs_sb_info *, bool);
 void allocate_new_segments(struct f2fs_sb_info *);
 int f2fs_trim_fs(struct f2fs_sb_info *, struct fstrim_range *);
 struct page *get_sum_page(struct f2fs_sb_info *, unsigned int);
+<<<<<<< HEAD
 void update_meta_page(struct f2fs_sb_info *, void *, block_t);
 void write_meta_page(struct f2fs_sb_info *, struct page *);
 void write_node_page(unsigned int, struct f2fs_io_info *);
@@ -1742,6 +1956,16 @@ void write_data_page(struct dnode_of_data *, struct f2fs_io_info *);
 void rewrite_data_page(struct f2fs_io_info *);
 void f2fs_replace_block(struct f2fs_sb_info *, struct dnode_of_data *,
 				block_t, block_t, unsigned char, bool);
+=======
+void write_meta_page(struct f2fs_sb_info *, struct page *);
+void write_node_page(struct f2fs_sb_info *, struct page *,
+				unsigned int, struct f2fs_io_info *);
+void write_data_page(struct page *, struct dnode_of_data *,
+			struct f2fs_io_info *);
+void rewrite_data_page(struct page *, struct f2fs_io_info *);
+void recover_data_page(struct f2fs_sb_info *, struct page *,
+				struct f2fs_summary *, block_t, block_t);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 void allocate_data_block(struct f2fs_sb_info *, struct page *,
 		block_t, block_t *, struct f2fs_summary *, int);
 void f2fs_wait_on_page_writeback(struct page *, enum page_type);
@@ -1760,7 +1984,10 @@ void destroy_segment_manager_caches(void);
  */
 struct page *grab_meta_page(struct f2fs_sb_info *, pgoff_t);
 struct page *get_meta_page(struct f2fs_sb_info *, pgoff_t);
+<<<<<<< HEAD
 bool is_valid_blkaddr(struct f2fs_sb_info *, block_t, int);
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 int ra_meta_pages(struct f2fs_sb_info *, block_t, int, int);
 void ra_meta_pages_cond(struct f2fs_sb_info *, pgoff_t);
 long sync_meta_pages(struct f2fs_sb_info *, enum page_type, long);
@@ -1772,7 +1999,11 @@ int acquire_orphan_inode(struct f2fs_sb_info *);
 void release_orphan_inode(struct f2fs_sb_info *);
 void add_orphan_inode(struct f2fs_sb_info *, nid_t);
 void remove_orphan_inode(struct f2fs_sb_info *, nid_t);
+<<<<<<< HEAD
 int recover_orphan_inodes(struct f2fs_sb_info *);
+=======
+void recover_orphan_inodes(struct f2fs_sb_info *);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 int get_valid_checkpoint(struct f2fs_sb_info *);
 void update_dirty_page(struct inode *, struct page *);
 void add_dirty_dir_inode(struct inode *);
@@ -1787,6 +2018,7 @@ void destroy_checkpoint_caches(void);
  * data.c
  */
 void f2fs_submit_merged_bio(struct f2fs_sb_info *, enum page_type, int);
+<<<<<<< HEAD
 int f2fs_submit_page_bio(struct f2fs_io_info *);
 void f2fs_submit_page_mbio(struct f2fs_io_info *);
 void set_data_blkaddr(struct dnode_of_data *);
@@ -1798,6 +2030,19 @@ struct page *find_data_page(struct inode *, pgoff_t);
 struct page *get_lock_data_page(struct inode *, pgoff_t);
 struct page *get_new_data_page(struct inode *, struct page *, pgoff_t, bool);
 int do_write_data_page(struct f2fs_io_info *);
+=======
+int f2fs_submit_page_bio(struct f2fs_sb_info *, struct page *,
+						struct f2fs_io_info *);
+void f2fs_submit_page_mbio(struct f2fs_sb_info *, struct page *,
+						struct f2fs_io_info *);
+int reserve_new_block(struct dnode_of_data *);
+int f2fs_reserve_block(struct dnode_of_data *, pgoff_t);
+void update_extent_cache(struct dnode_of_data *);
+struct page *find_data_page(struct inode *, pgoff_t, bool);
+struct page *get_lock_data_page(struct inode *, pgoff_t);
+struct page *get_new_data_page(struct inode *, struct page *, pgoff_t, bool);
+int do_write_data_page(struct page *, struct f2fs_io_info *);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 int f2fs_fiemap(struct inode *inode, struct fiemap_extent_info *, u64, u64);
 void f2fs_invalidate_page(struct page *, unsigned long);
 int f2fs_release_page(struct page *, gfp_t);
@@ -1826,6 +2071,7 @@ struct f2fs_stat_info {
 	struct f2fs_sb_info *sbi;
 	int all_area_segs, sit_area_segs, nat_area_segs, ssa_area_segs;
 	int main_area_segs, main_area_sections, main_area_zones;
+<<<<<<< HEAD
 	int hit_largest, hit_cached, hit_rbtree, hit_total, total_ext;
 	int ext_tree, ext_node;
 	int ndirty_node, ndirty_dent, ndirty_dirs, ndirty_meta;
@@ -1833,6 +2079,13 @@ struct f2fs_stat_info {
 	int total_count, utilization;
 	int bg_gc, inmem_pages, wb_pages;
 	int inline_xattr, inline_inode, inline_dir;
+=======
+	int hit_ext, total_ext;
+	int ndirty_node, ndirty_dent, ndirty_dirs, ndirty_meta;
+	int nats, dirty_nats, sits, dirty_sits, fnids;
+	int total_count, utilization;
+	int bg_gc, inline_inode, inline_dir, inmem_pages, wb_pages;
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	unsigned int valid_count, valid_node_count, valid_inode_count;
 	unsigned int bimodal, avg_vblocks;
 	int util_free, util_valid, util_invalid;
@@ -1840,9 +2093,13 @@ struct f2fs_stat_info {
 	int dirty_count, node_pages, meta_pages;
 	int prefree_count, call_count, cp_count;
 	int tot_segs, node_segs, data_segs, free_segs, free_secs;
+<<<<<<< HEAD
 	int bg_node_segs, bg_data_segs;
 	int tot_blks, data_blks, node_blks;
 	int bg_data_blks, bg_node_blks;
+=======
+	int tot_blks, data_blks, node_blks;
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	int curseg[NR_CURSEG_TYPE];
 	int cursec[NR_CURSEG_TYPE];
 	int curzone[NR_CURSEG_TYPE];
@@ -1863,6 +2120,7 @@ static inline struct f2fs_stat_info *F2FS_STAT(struct f2fs_sb_info *sbi)
 #define stat_inc_bggc_count(sbi)	((sbi)->bg_gc++)
 #define stat_inc_dirty_dir(sbi)		((sbi)->n_dirty_dirs++)
 #define stat_dec_dirty_dir(sbi)		((sbi)->n_dirty_dirs--)
+<<<<<<< HEAD
 #define stat_inc_total_hit(sbi)		(atomic_inc(&(sbi)->total_hit_ext))
 #define stat_inc_rbtree_node_hit(sbi)	(atomic_inc(&(sbi)->read_hit_rbtree))
 #define stat_inc_largest_node_hit(sbi)	(atomic_inc(&(sbi)->read_hit_largest))
@@ -1877,6 +2135,10 @@ static inline struct f2fs_stat_info *F2FS_STAT(struct f2fs_sb_info *sbi)
 		if (f2fs_has_inline_xattr(inode))			\
 			(atomic_dec(&F2FS_I_SB(inode)->inline_xattr));	\
 	} while (0)
+=======
+#define stat_inc_total_hit(sb)		((F2FS_SB(sb))->total_hit_ext++)
+#define stat_inc_read_hit(sb)		((F2FS_SB(sb))->read_hit_ext++)
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 #define stat_inc_inline_inode(inode)					\
 	do {								\
 		if (f2fs_has_inline_data(inode))			\
@@ -1903,6 +2165,7 @@ static inline struct f2fs_stat_info *F2FS_STAT(struct f2fs_sb_info *sbi)
 		((sbi)->block_count[(curseg)->alloc_type]++)
 #define stat_inc_inplace_blocks(sbi)					\
 		(atomic_inc(&(sbi)->inplace_count))
+<<<<<<< HEAD
 #define stat_inc_seg_count(sbi, type, gc_type)				\
 	do {								\
 		struct f2fs_stat_info *si = F2FS_STAT(sbi);		\
@@ -1914,25 +2177,48 @@ static inline struct f2fs_stat_info *F2FS_STAT(struct f2fs_sb_info *sbi)
 			si->node_segs++;				\
 			si->bg_node_segs += (gc_type == BG_GC) ? 1 : 0;	\
 		}							\
+=======
+#define stat_inc_seg_count(sbi, type)					\
+	do {								\
+		struct f2fs_stat_info *si = F2FS_STAT(sbi);		\
+		(si)->tot_segs++;					\
+		if (type == SUM_TYPE_DATA)				\
+			si->data_segs++;				\
+		else							\
+			si->node_segs++;				\
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	} while (0)
 
 #define stat_inc_tot_blk_count(si, blks)				\
 	(si->tot_blks += (blks))
 
+<<<<<<< HEAD
 #define stat_inc_data_blk_count(sbi, blks, gc_type)			\
+=======
+#define stat_inc_data_blk_count(sbi, blks)				\
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	do {								\
 		struct f2fs_stat_info *si = F2FS_STAT(sbi);		\
 		stat_inc_tot_blk_count(si, blks);			\
 		si->data_blks += (blks);				\
+<<<<<<< HEAD
 		si->bg_data_blks += (gc_type == BG_GC) ? (blks) : 0;	\
 	} while (0)
 
 #define stat_inc_node_blk_count(sbi, blks, gc_type)			\
+=======
+	} while (0)
+
+#define stat_inc_node_blk_count(sbi, blks)				\
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	do {								\
 		struct f2fs_stat_info *si = F2FS_STAT(sbi);		\
 		stat_inc_tot_blk_count(si, blks);			\
 		si->node_blks += (blks);				\
+<<<<<<< HEAD
 		si->bg_node_blks += (gc_type == BG_GC) ? (blks) : 0;	\
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	} while (0)
 
 int f2fs_build_stats(struct f2fs_sb_info *);
@@ -1946,11 +2232,15 @@ void f2fs_destroy_root_stats(void);
 #define stat_inc_dirty_dir(sbi)
 #define stat_dec_dirty_dir(sbi)
 #define stat_inc_total_hit(sb)
+<<<<<<< HEAD
 #define stat_inc_rbtree_node_hit(sb)
 #define stat_inc_largest_node_hit(sbi)
 #define stat_inc_cached_node_hit(sbi)
 #define stat_inc_inline_xattr(inode)
 #define stat_dec_inline_xattr(inode)
+=======
+#define stat_inc_read_hit(sb)
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 #define stat_inc_inline_inode(inode)
 #define stat_dec_inline_inode(inode)
 #define stat_inc_inline_dir(inode)
@@ -1958,10 +2248,17 @@ void f2fs_destroy_root_stats(void);
 #define stat_inc_seg_type(sbi, curseg)
 #define stat_inc_block_count(sbi, curseg)
 #define stat_inc_inplace_blocks(sbi)
+<<<<<<< HEAD
 #define stat_inc_seg_count(sbi, type, gc_type)
 #define stat_inc_tot_blk_count(si, blks)
 #define stat_inc_data_blk_count(sbi, blks, gc_type)
 #define stat_inc_node_blk_count(sbi, blks, gc_type)
+=======
+#define stat_inc_seg_count(si, type)
+#define stat_inc_tot_blk_count(si, blks)
+#define stat_inc_data_blk_count(si, blks)
+#define stat_inc_node_blk_count(sbi, blks)
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 static inline int f2fs_build_stats(struct f2fs_sb_info *sbi) { return 0; }
 static inline void f2fs_destroy_stats(struct f2fs_sb_info *sbi) { }
@@ -1977,22 +2274,31 @@ extern const struct address_space_operations f2fs_node_aops;
 extern const struct address_space_operations f2fs_meta_aops;
 extern const struct inode_operations f2fs_dir_inode_operations;
 extern const struct inode_operations f2fs_symlink_inode_operations;
+<<<<<<< HEAD
 extern const struct inode_operations f2fs_encrypted_symlink_inode_operations;
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 extern const struct inode_operations f2fs_special_inode_operations;
 extern struct kmem_cache *inode_entry_slab;
 
 /*
  * inline.c
  */
+<<<<<<< HEAD
 bool f2fs_may_inline_data(struct inode *);
 bool f2fs_may_inline_dentry(struct inode *);
 void read_inline_data(struct page *, struct page *);
 bool truncate_inline_inode(struct page *, u64);
+=======
+bool f2fs_may_inline(struct inode *);
+void read_inline_data(struct page *, struct page *);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 int f2fs_read_inline_data(struct inode *, struct page *);
 int f2fs_convert_inline_page(struct dnode_of_data *, struct page *);
 int f2fs_convert_inline_inode(struct inode *);
 int f2fs_write_inline_data(struct inode *, struct page *);
 bool recover_inline_data(struct inode *, struct page *);
+<<<<<<< HEAD
 struct f2fs_dir_entry *find_in_inline_dir(struct inode *,
 				struct f2fs_filename *, struct page **);
 struct f2fs_dir_entry *f2fs_parent_inline_dir(struct inode *, struct page **);
@@ -2158,4 +2464,15 @@ static inline int f2fs_fname_setup_filename(struct inode *dir,
 
 static inline void f2fs_fname_free_filename(struct f2fs_filename *fname) { }
 #endif
+=======
+struct f2fs_dir_entry *find_in_inline_dir(struct inode *, struct qstr *,
+							struct page **);
+struct f2fs_dir_entry *f2fs_parent_inline_dir(struct inode *, struct page **);
+int make_empty_inline_dir(struct inode *inode, struct inode *, struct page *);
+int f2fs_add_inline_entry(struct inode *, const struct qstr *, struct inode *);
+void f2fs_delete_inline_entry(struct f2fs_dir_entry *, struct page *,
+						struct inode *, struct inode *);
+bool f2fs_empty_inline_dir(struct inode *);
+int f2fs_read_inline_dir(struct file *, void *, filldir_t);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 #endif

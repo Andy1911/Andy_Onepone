@@ -41,9 +41,13 @@ bool available_free_memory(struct f2fs_sb_info *sbi, int type)
 	/* only uses low memory */
 	avail_ram = val.totalram - val.totalhigh;
 
+<<<<<<< HEAD
 	/*
 	 * give 25%, 25%, 50%, 50%, 50% memory for each components respectively
 	 */
+=======
+	/* give 25%, 25%, 50%, 50% memory for each components respectively */
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	if (type == FREE_NIDS) {
 		mem_size = (nm_i->fcnt * sizeof(struct free_nid)) >>
 							PAGE_CACHE_SHIFT;
@@ -64,11 +68,14 @@ bool available_free_memory(struct f2fs_sb_info *sbi, int type)
 			mem_size += (sbi->im[i].ino_num *
 				sizeof(struct ino_entry)) >> PAGE_CACHE_SHIFT;
 		res = mem_size < ((avail_ram * nm_i->ram_thresh / 100) >> 1);
+<<<<<<< HEAD
 	} else if (type == EXTENT_CACHE) {
 		mem_size = (sbi->total_ext_tree * sizeof(struct extent_tree) +
 				atomic_read(&sbi->total_ext_node) *
 				sizeof(struct extent_node)) >> PAGE_CACHE_SHIFT;
 		res = mem_size < ((avail_ram * nm_i->ram_thresh / 100) >> 1);
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	} else {
 		if (sbi->sb->s_bdi->dirty_exceeded)
 			return false;
@@ -159,7 +166,11 @@ static void __set_nat_cache_dirty(struct f2fs_nm_info *nm_i,
 
 	head = radix_tree_lookup(&nm_i->nat_set_root, set);
 	if (!head) {
+<<<<<<< HEAD
 		head = f2fs_kmem_cache_alloc(nat_entry_set_slab, GFP_NOFS);
+=======
+		head = f2fs_kmem_cache_alloc(nat_entry_set_slab, GFP_ATOMIC);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 		INIT_LIST_HEAD(&head->entry_list);
 		INIT_LIST_HEAD(&head->set_list);
@@ -195,6 +206,7 @@ static unsigned int __gang_lookup_nat_set(struct f2fs_nm_info *nm_i,
 							start, nr);
 }
 
+<<<<<<< HEAD
 int need_dentry_mark(struct f2fs_sb_info *sbi, nid_t nid)
 {
 	struct f2fs_nm_info *nm_i = NM_I(sbi);
@@ -224,6 +236,34 @@ bool is_checkpointed_node(struct f2fs_sb_info *sbi, nid_t nid)
 		is_cp = false;
 	up_read(&nm_i->nat_tree_lock);
 	return is_cp;
+=======
+bool is_checkpointed_node(struct f2fs_sb_info *sbi, nid_t nid)
+{
+	struct f2fs_nm_info *nm_i = NM_I(sbi);
+	struct nat_entry *e;
+	bool is_cp = true;
+
+	down_read(&nm_i->nat_tree_lock);
+	e = __lookup_nat_cache(nm_i, nid);
+	if (e && !get_nat_flag(e, IS_CHECKPOINTED))
+		is_cp = false;
+	up_read(&nm_i->nat_tree_lock);
+	return is_cp;
+}
+
+bool has_fsynced_inode(struct f2fs_sb_info *sbi, nid_t ino)
+{
+	struct f2fs_nm_info *nm_i = NM_I(sbi);
+	struct nat_entry *e;
+	bool fsynced = false;
+
+	down_read(&nm_i->nat_tree_lock);
+	e = __lookup_nat_cache(nm_i, ino);
+	if (e && get_nat_flag(e, HAS_FSYNCED_INODE))
+		fsynced = true;
+	up_read(&nm_i->nat_tree_lock);
+	return fsynced;
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 bool need_inode_block_update(struct f2fs_sb_info *sbi, nid_t ino)
@@ -246,7 +286,11 @@ static struct nat_entry *grab_nat_entry(struct f2fs_nm_info *nm_i, nid_t nid)
 {
 	struct nat_entry *new;
 
+<<<<<<< HEAD
 	new = f2fs_kmem_cache_alloc(nat_entry_slab, GFP_NOFS);
+=======
+	new = f2fs_kmem_cache_alloc(nat_entry_slab, GFP_ATOMIC);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	f2fs_radix_tree_insert(&nm_i->nat_root, nid, new);
 	memset(new, 0, sizeof(struct nat_entry));
 	nat_set_nid(new, nid);
@@ -306,10 +350,13 @@ static void set_node_addr(struct f2fs_sb_info *sbi, struct node_info *ni,
 	if (nat_get_blkaddr(e) != NEW_ADDR && new_blkaddr == NULL_ADDR) {
 		unsigned char version = nat_get_version(e);
 		nat_set_version(e, inc_node_version(version));
+<<<<<<< HEAD
 
 		/* in order to reuse the nid */
 		if (nm_i->next_scan_nid > ni->nid)
 			nm_i->next_scan_nid = ni->nid;
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	}
 
 	/* change address */
@@ -319,8 +366,12 @@ static void set_node_addr(struct f2fs_sb_info *sbi, struct node_info *ni,
 	__set_nat_cache_dirty(nm_i, e);
 
 	/* update fsync_mark if its inode nat entry is still alive */
+<<<<<<< HEAD
 	if (ni->nid != ni->ino)
 		e = __lookup_nat_cache(nm_i, ni->ino);
+=======
+	e = __lookup_nat_cache(nm_i, ni->ino);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	if (e) {
 		if (fsync_done && ni->nid == ni->ino)
 			set_nat_flag(e, HAS_FSYNCED_INODE, true);
@@ -332,11 +383,19 @@ static void set_node_addr(struct f2fs_sb_info *sbi, struct node_info *ni,
 int try_to_free_nats(struct f2fs_sb_info *sbi, int nr_shrink)
 {
 	struct f2fs_nm_info *nm_i = NM_I(sbi);
+<<<<<<< HEAD
 	int nr = nr_shrink;
 
 	if (!down_write_trylock(&nm_i->nat_tree_lock))
 		return 0;
 
+=======
+
+	if (available_free_memory(sbi, NAT_ENTRIES))
+		return 0;
+
+	down_write(&nm_i->nat_tree_lock);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	while (nr_shrink && !list_empty(&nm_i->nat_entries)) {
 		struct nat_entry *ne;
 		ne = list_first_entry(&nm_i->nat_entries,
@@ -345,7 +404,11 @@ int try_to_free_nats(struct f2fs_sb_info *sbi, int nr_shrink)
 		nr_shrink--;
 	}
 	up_write(&nm_i->nat_tree_lock);
+<<<<<<< HEAD
 	return nr - nr_shrink;
+=======
+	return nr_shrink;
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 /*
@@ -509,7 +572,11 @@ int get_dnode_of_data(struct dnode_of_data *dn, pgoff_t index, int mode)
 
 	/* if inline_data is set, should not report any block indices */
 	if (f2fs_has_inline_data(dn->inode) && index) {
+<<<<<<< HEAD
 		err = -ENOENT;
+=======
+		err = -EINVAL;
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		f2fs_put_page(npage[0], 1);
 		goto release_out;
 	}
@@ -902,6 +969,7 @@ int truncate_xattr_node(struct inode *inode, struct page *page)
  * Caller should grab and release a rwsem by calling f2fs_lock_op() and
  * f2fs_unlock_op().
  */
+<<<<<<< HEAD
 int remove_inode_page(struct inode *inode)
 {
 	struct dnode_of_data dn;
@@ -916,6 +984,19 @@ int remove_inode_page(struct inode *inode)
 	if (err) {
 		f2fs_put_dnode(&dn);
 		return err;
+=======
+void remove_inode_page(struct inode *inode)
+{
+	struct dnode_of_data dn;
+
+	set_new_dnode(&dn, inode, NULL, NULL, inode->i_ino);
+	if (get_dnode_of_data(&dn, 0, LOOKUP_NODE))
+		return;
+
+	if (truncate_xattr_node(inode, dn.inode_page)) {
+		f2fs_put_dnode(&dn);
+		return;
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	}
 
 	/* remove potential inline_data blocks */
@@ -929,7 +1010,10 @@ int remove_inode_page(struct inode *inode)
 
 	/* will put inode & node pages */
 	truncate_node(&dn);
+<<<<<<< HEAD
 	return 0;
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 struct page *new_inode_page(struct inode *inode)
@@ -999,24 +1083,38 @@ fail:
 /*
  * Caller should do after getting the following values.
  * 0: f2fs_put_page(page, 0)
+<<<<<<< HEAD
  * LOCKED_PAGE or error: f2fs_put_page(page, 1)
+=======
+ * LOCKED_PAGE: f2fs_put_page(page, 1)
+ * error: nothing
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
  */
 static int read_node_page(struct page *page, int rw)
 {
 	struct f2fs_sb_info *sbi = F2FS_P_SB(page);
 	struct node_info ni;
 	struct f2fs_io_info fio = {
+<<<<<<< HEAD
 		.sbi = sbi,
 		.type = NODE,
 		.rw = rw,
 		.page = page,
 		.encrypted_page = NULL,
+=======
+		.type = NODE,
+		.rw = rw,
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	};
 
 	get_node_info(sbi, page->index, &ni);
 
 	if (unlikely(ni.blk_addr == NULL_ADDR)) {
+<<<<<<< HEAD
 		ClearPageUptodate(page);
+=======
+		f2fs_put_page(page, 1);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		return -ENOENT;
 	}
 
@@ -1024,7 +1122,11 @@ static int read_node_page(struct page *page, int rw)
 		return LOCKED_PAGE;
 
 	fio.blk_addr = ni.blk_addr;
+<<<<<<< HEAD
 	return f2fs_submit_page_bio(&fio);
+=======
+	return f2fs_submit_page_bio(sbi, page, &fio);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 /*
@@ -1047,7 +1149,14 @@ void ra_node_page(struct f2fs_sb_info *sbi, nid_t nid)
 		return;
 
 	err = read_node_page(apage, READA);
+<<<<<<< HEAD
 	f2fs_put_page(apage, err ? 1 : 0);
+=======
+	if (err == 0)
+		f2fs_put_page(apage, 0);
+	else if (err == LOCKED_PAGE)
+		f2fs_put_page(apage, 1);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 struct page *get_node_page(struct f2fs_sb_info *sbi, pgoff_t nid)
@@ -1060,12 +1169,19 @@ repeat:
 		return ERR_PTR(-ENOMEM);
 
 	err = read_node_page(page, READ_SYNC);
+<<<<<<< HEAD
 	if (err < 0) {
 		f2fs_put_page(page, 1);
 		return ERR_PTR(err);
 	} else if (err != LOCKED_PAGE) {
 		lock_page(page);
 	}
+=======
+	if (err < 0)
+		return ERR_PTR(err);
+	else if (err != LOCKED_PAGE)
+		lock_page(page);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	if (unlikely(!PageUptodate(page) || nid != nid_of_node(page))) {
 		ClearPageUptodate(page);
@@ -1102,12 +1218,19 @@ repeat:
 		return ERR_PTR(-ENOMEM);
 
 	err = read_node_page(page, READ_SYNC);
+<<<<<<< HEAD
 	if (err < 0) {
 		f2fs_put_page(page, 1);
 		return ERR_PTR(err);
 	} else if (err == LOCKED_PAGE) {
 		goto page_hit;
 	}
+=======
+	if (err < 0)
+		return ERR_PTR(err);
+	else if (err == LOCKED_PAGE)
+		goto page_hit;
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	blk_start_plug(&plug);
 
@@ -1220,9 +1343,19 @@ continue_unlock:
 			/* called by fsync() */
 			if (ino && IS_DNODE(page)) {
 				set_fsync_mark(page, 1);
+<<<<<<< HEAD
 				if (IS_INODE(page))
 					set_dentry_mark(page,
 						need_dentry_mark(sbi, ino));
+=======
+				if (IS_INODE(page)) {
+					if (!is_checkpointed_node(sbi, ino) &&
+						!has_fsynced_inode(sbi, ino))
+						set_dentry_mark(page, 1);
+					else
+						set_dentry_mark(page, 0);
+				}
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 				nwritten++;
 			} else {
 				set_fsync_mark(page, 0);
@@ -1305,11 +1438,16 @@ static int f2fs_write_node_page(struct page *page,
 	nid_t nid;
 	struct node_info ni;
 	struct f2fs_io_info fio = {
+<<<<<<< HEAD
 		.sbi = sbi,
 		.type = NODE,
 		.rw = (wbc->sync_mode == WB_SYNC_ALL) ? WRITE_SYNC : WRITE,
 		.page = page,
 		.encrypted_page = NULL,
+=======
+		.type = NODE,
+		.rw = (wbc->sync_mode == WB_SYNC_ALL) ? WRITE_SYNC : WRITE,
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	};
 
 	trace_f2fs_writepage(page, NODE);
@@ -1329,7 +1467,10 @@ static int f2fs_write_node_page(struct page *page,
 
 	/* This page is already truncated */
 	if (unlikely(ni.blk_addr == NULL_ADDR)) {
+<<<<<<< HEAD
 		ClearPageUptodate(page);
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		dec_page_count(sbi, F2FS_DIRTY_NODES);
 		unlock_page(page);
 		return 0;
@@ -1344,7 +1485,11 @@ static int f2fs_write_node_page(struct page *page,
 
 	set_page_writeback(page);
 	fio.blk_addr = ni.blk_addr;
+<<<<<<< HEAD
 	write_node_page(nid, &fio);
+=======
+	write_node_page(sbi, page, nid, &fio);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	set_node_addr(sbi, &ni, fio.blk_addr, is_fsync_dnode(page));
 	dec_page_count(sbi, F2FS_DIRTY_NODES);
 	up_read(&sbi->node_write);
@@ -1542,7 +1687,11 @@ static void build_free_nids(struct f2fs_sb_info *sbi)
 		if (unlikely(nid >= nm_i->max_nid))
 			nid = 0;
 
+<<<<<<< HEAD
 		if (++i >= FREE_NID_PAGES)
+=======
+		if (i++ == FREE_NID_PAGES)
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 			break;
 	}
 
@@ -1579,8 +1728,11 @@ retry:
 
 	/* We should not use stale free nids created by build_free_nids */
 	if (nm_i->fcnt && !on_build_free_nids(nm_i)) {
+<<<<<<< HEAD
 		struct node_info ni;
 
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		f2fs_bug_on(sbi, list_empty(&nm_i->free_nid_list));
 		list_for_each_entry(i, &nm_i->free_nid_list, list)
 			if (i->state == NID_NEW)
@@ -1591,6 +1743,7 @@ retry:
 		i->state = NID_ALLOC;
 		nm_i->fcnt--;
 		spin_unlock(&nm_i->free_nid_list_lock);
+<<<<<<< HEAD
 
 		/* check nid is allocated already */
 		get_node_info(sbi, *nid, &ni);
@@ -1598,6 +1751,8 @@ retry:
 			alloc_nid_done(sbi, *nid);
 			goto retry;
 		}
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		return true;
 	}
 	spin_unlock(&nm_i->free_nid_list_lock);
@@ -1654,6 +1809,7 @@ void alloc_nid_failed(struct f2fs_sb_info *sbi, nid_t nid)
 		kmem_cache_free(free_nid_slab, i);
 }
 
+<<<<<<< HEAD
 int try_to_free_nids(struct f2fs_sb_info *sbi, int nr_shrink)
 {
 	struct f2fs_nm_info *nm_i = NM_I(sbi);
@@ -1680,6 +1836,8 @@ int try_to_free_nids(struct f2fs_sb_info *sbi, int nr_shrink)
 	return nr - nr_shrink;
 }
 
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 void recover_inline_xattr(struct inode *inode, struct page *page)
 {
 	void *src_addr, *dst_addr;
@@ -1880,7 +2038,10 @@ static void __flush_nat_entry_set(struct f2fs_sb_info *sbi,
 	struct f2fs_nat_block *nat_blk;
 	struct nat_entry *ne, *cur;
 	struct page *page = NULL;
+<<<<<<< HEAD
 	struct f2fs_nm_info *nm_i = NM_I(sbi);
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	/*
 	 * there are two steps to flush nat entries:
@@ -1934,9 +2095,13 @@ static void __flush_nat_entry_set(struct f2fs_sb_info *sbi,
 
 	f2fs_bug_on(sbi, set->entry_cnt);
 
+<<<<<<< HEAD
 	down_write(&nm_i->nat_tree_lock);
 	radix_tree_delete(&NM_I(sbi)->nat_set_root, set->set);
 	up_write(&nm_i->nat_tree_lock);
+=======
+	radix_tree_delete(&NM_I(sbi)->nat_set_root, set->set);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	kmem_cache_free(nat_entry_set_slab, set);
 }
 
@@ -1964,7 +2129,10 @@ void flush_nat_entries(struct f2fs_sb_info *sbi)
 	if (!__has_cursum_space(sum, nm_i->dirty_nat_cnt, NAT_JOURNAL))
 		remove_nats_in_journal(sbi);
 
+<<<<<<< HEAD
 	down_write(&nm_i->nat_tree_lock);
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	while ((found = __gang_lookup_nat_set(nm_i,
 					set_idx, SETVEC_SIZE, setvec))) {
 		unsigned idx;
@@ -1973,7 +2141,10 @@ void flush_nat_entries(struct f2fs_sb_info *sbi)
 			__adjust_nat_entry_set(setvec[idx], &sets,
 							MAX_NAT_JENTRIES(sum));
 	}
+<<<<<<< HEAD
 	up_write(&nm_i->nat_tree_lock);
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	/* flush dirty nats in nat entry set */
 	list_for_each_entry_safe(set, tmp, &sets, set_list)

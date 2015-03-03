@@ -59,8 +59,14 @@ static unsigned char f2fs_type_by_mode[S_IFMT >> S_SHIFT] = {
 	[S_IFLNK >> S_SHIFT]	= F2FS_FT_SYMLINK,
 };
 
+<<<<<<< HEAD
 void set_de_type(struct f2fs_dir_entry *de, umode_t mode)
 {
+=======
+void set_de_type(struct f2fs_dir_entry *de, struct inode *inode)
+{
+	umode_t mode = inode->i_mode;
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	de->file_type = f2fs_type_by_mode[(mode & S_IFMT) >> S_SHIFT];
 }
 
@@ -76,10 +82,27 @@ static unsigned long dir_block_index(unsigned int level,
 	return bidx;
 }
 
+<<<<<<< HEAD
 static struct f2fs_dir_entry *find_in_block(struct page *dentry_page,
 				struct f2fs_filename *fname,
 				f2fs_hash_t namehash,
 				int *max_slots,
+=======
+static bool early_match_name(size_t namelen, f2fs_hash_t namehash,
+				struct f2fs_dir_entry *de)
+{
+	if (le16_to_cpu(de->name_len) != namelen)
+		return false;
+
+	if (de->hash_code != namehash)
+		return false;
+
+	return true;
+}
+
+static struct f2fs_dir_entry *find_in_block(struct page *dentry_page,
+				struct qstr *name, int *max_slots,
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 				struct page **res_page)
 {
 	struct f2fs_dentry_block *dentry_blk;
@@ -88,8 +111,14 @@ static struct f2fs_dir_entry *find_in_block(struct page *dentry_page,
 
 	dentry_blk = (struct f2fs_dentry_block *)kmap(dentry_page);
 
+<<<<<<< HEAD
 	make_dentry_ptr(NULL, &d, (void *)dentry_blk, 1);
 	de = find_target_dentry(fname, namehash, max_slots, &d);
+=======
+	make_dentry_ptr(&d, (void *)dentry_blk, 1);
+	de = find_target_dentry(name, max_slots, &d);
+
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	if (de)
 		*res_page = dentry_page;
 	else
@@ -103,6 +132,7 @@ static struct f2fs_dir_entry *find_in_block(struct page *dentry_page,
 	return de;
 }
 
+<<<<<<< HEAD
 struct f2fs_dir_entry *find_target_dentry(struct f2fs_filename *fname,
 			f2fs_hash_t namehash, int *max_slots,
 			struct f2fs_dentry_ptr *d)
@@ -112,11 +142,21 @@ struct f2fs_dir_entry *find_target_dentry(struct f2fs_filename *fname,
 	int max_len = 0;
 	struct f2fs_str de_name = FSTR_INIT(NULL, 0);
 	struct f2fs_str *name = &fname->disk_name;
+=======
+struct f2fs_dir_entry *find_target_dentry(struct qstr *name, int *max_slots,
+						struct f2fs_dentry_ptr *d)
+{
+	struct f2fs_dir_entry *de;
+	unsigned long bit_pos = 0;
+	f2fs_hash_t namehash = f2fs_dentry_hash(name);
+	int max_len = 0;
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	if (max_slots)
 		*max_slots = 0;
 	while (bit_pos < d->max) {
 		if (!test_bit_le(bit_pos, d->bitmap)) {
+<<<<<<< HEAD
 			bit_pos++;
 			max_len++;
 			continue;
@@ -140,6 +180,24 @@ struct f2fs_dir_entry *find_target_dentry(struct f2fs_filename *fname,
 		if (max_slots && max_len > *max_slots)
 			*max_slots = max_len;
 		max_len = 0;
+=======
+			if (bit_pos == 0)
+				max_len = 1;
+			else if (!test_bit_le(bit_pos - 1, d->bitmap))
+				max_len++;
+			bit_pos++;
+			continue;
+		}
+		de = &d->dentry[bit_pos];
+		if (early_match_name(name->len, namehash, de) &&
+			!memcmp(d->filename[bit_pos], name->name, name->len))
+			goto found;
+
+		if (max_slots && *max_slots >= 0 && max_len > *max_slots) {
+			*max_slots = max_len;
+			max_len = 0;
+		}
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 		/* remain bug on condition */
 		if (unlikely(!de->name_len))
@@ -156,21 +214,31 @@ found:
 }
 
 static struct f2fs_dir_entry *find_in_level(struct inode *dir,
+<<<<<<< HEAD
 					unsigned int level,
 					struct f2fs_filename *fname,
 					struct page **res_page)
 {
 	struct qstr name = FSTR_TO_QSTR(&fname->disk_name);
 	int s = GET_DENTRY_SLOTS(name.len);
+=======
+			unsigned int level, struct qstr *name,
+			f2fs_hash_t namehash, struct page **res_page)
+{
+	int s = GET_DENTRY_SLOTS(name->len);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	unsigned int nbucket, nblock;
 	unsigned int bidx, end_block;
 	struct page *dentry_page;
 	struct f2fs_dir_entry *de = NULL;
 	bool room = false;
 	int max_slots;
+<<<<<<< HEAD
 	f2fs_hash_t namehash;
 
 	namehash = f2fs_dentry_hash(&name);
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	f2fs_bug_on(F2FS_I_SB(dir), level > MAX_DIR_HASH_DEPTH);
 
@@ -183,14 +251,22 @@ static struct f2fs_dir_entry *find_in_level(struct inode *dir,
 
 	for (; bidx < end_block; bidx++) {
 		/* no need to allocate new dentry pages to all the indices */
+<<<<<<< HEAD
 		dentry_page = find_data_page(dir, bidx);
+=======
+		dentry_page = find_data_page(dir, bidx, true);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		if (IS_ERR(dentry_page)) {
 			room = true;
 			continue;
 		}
 
+<<<<<<< HEAD
 		de = find_in_block(dentry_page, fname, namehash, &max_slots,
 								res_page);
+=======
+		de = find_in_block(dentry_page, name, &max_slots, res_page);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		if (de)
 			break;
 
@@ -218,6 +294,7 @@ struct f2fs_dir_entry *f2fs_find_entry(struct inode *dir,
 {
 	unsigned long npages = dir_blocks(dir);
 	struct f2fs_dir_entry *de = NULL;
+<<<<<<< HEAD
 	unsigned int max_depth;
 	unsigned int level;
 	struct f2fs_filename fname;
@@ -246,6 +323,32 @@ struct f2fs_dir_entry *f2fs_find_entry(struct inode *dir,
 	}
 out:
 	f2fs_fname_free_filename(&fname);
+=======
+	f2fs_hash_t name_hash;
+	unsigned int max_depth;
+	unsigned int level;
+
+	if (f2fs_has_inline_dentry(dir))
+		return find_in_inline_dir(dir, child, res_page);
+
+	if (npages == 0)
+		return NULL;
+
+	*res_page = NULL;
+
+	name_hash = f2fs_dentry_hash(child);
+	max_depth = F2FS_I(dir)->i_current_depth;
+
+	for (level = 0; level < max_depth; level++) {
+		de = find_in_level(dir, level, child, name_hash, res_page);
+		if (de)
+			break;
+	}
+	if (!de && F2FS_I(dir)->chash != name_hash) {
+		F2FS_I(dir)->chash = name_hash;
+		F2FS_I(dir)->clevel = level - 1;
+	}
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	return de;
 }
 
@@ -292,7 +395,11 @@ void f2fs_set_link(struct inode *dir, struct f2fs_dir_entry *de,
 	lock_page(page);
 	f2fs_wait_on_page_writeback(page, type);
 	de->ino = cpu_to_le32(inode->i_ino);
+<<<<<<< HEAD
 	set_de_type(de, inode->i_mode);
+=======
+	set_de_type(de, inode);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	f2fs_dentry_kunmap(dir, page);
 	set_page_dirty(page);
 	dir->i_mtime = dir->i_ctime = CURRENT_TIME;
@@ -314,6 +421,7 @@ static void init_dent_inode(const struct qstr *name, struct page *ipage)
 	set_page_dirty(ipage);
 }
 
+<<<<<<< HEAD
 int update_dent_inode(struct inode *inode, struct inode *to,
 					const struct qstr *name)
 {
@@ -322,6 +430,12 @@ int update_dent_inode(struct inode *inode, struct inode *to,
 	if (file_enc_name(to))
 		return 0;
 
+=======
+int update_dent_inode(struct inode *inode, const struct qstr *name)
+{
+	struct page *page;
+
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	page = get_node_page(F2FS_I_SB(inode), inode->i_ino);
 	if (IS_ERR(page))
 		return PTR_ERR(page);
@@ -342,14 +456,22 @@ void do_make_empty_dir(struct inode *inode, struct inode *parent,
 	de->hash_code = 0;
 	de->ino = cpu_to_le32(inode->i_ino);
 	memcpy(d->filename[0], ".", 1);
+<<<<<<< HEAD
 	set_de_type(de, inode->i_mode);
+=======
+	set_de_type(de, inode);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	de = &d->dentry[1];
 	de->hash_code = 0;
 	de->name_len = cpu_to_le16(2);
 	de->ino = cpu_to_le32(parent->i_ino);
 	memcpy(d->filename[1], "..", 2);
+<<<<<<< HEAD
 	set_de_type(de, parent->i_mode);
+=======
+	set_de_type(de, inode);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	test_and_set_bit_le(0, (void *)d->bitmap);
 	test_and_set_bit_le(1, (void *)d->bitmap);
@@ -371,7 +493,11 @@ static int make_empty_dir(struct inode *inode,
 
 	dentry_blk = kmap_atomic(dentry_page);
 
+<<<<<<< HEAD
 	make_dentry_ptr(NULL, &d, (void *)dentry_blk, 1);
+=======
+	make_dentry_ptr(&d, (void *)dentry_blk, 1);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	do_make_empty_dir(inode, parent, &d);
 
 	kunmap_atomic(dentry_blk);
@@ -405,12 +531,15 @@ struct page *init_inode_metadata(struct inode *inode, struct inode *dir,
 		err = f2fs_init_security(inode, dir, name, page);
 		if (err)
 			goto put_error;
+<<<<<<< HEAD
 
 		if (f2fs_encrypted_inode(dir) && f2fs_may_encrypt(inode)) {
 			err = f2fs_inherit_context(dir, inode, page);
 			if (err)
 				goto put_error;
 		}
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	} else {
 		page = get_node_page(F2FS_I_SB(dir), inode->i_ino);
 		if (IS_ERR(page))
@@ -452,7 +581,11 @@ error:
 void update_parent_metadata(struct inode *dir, struct inode *inode,
 						unsigned int current_depth)
 {
+<<<<<<< HEAD
 	if (inode && is_inode_flag_set(F2FS_I(inode), FI_NEW_INODE)) {
+=======
+	if (is_inode_flag_set(F2FS_I(inode), FI_NEW_INODE)) {
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		if (S_ISDIR(inode->i_mode)) {
 			inc_nlink(dir);
 			set_inode_flag(F2FS_I(dir), FI_UPDATE_DIR);
@@ -467,7 +600,11 @@ void update_parent_metadata(struct inode *dir, struct inode *inode,
 		set_inode_flag(F2FS_I(dir), FI_UPDATE_DIR);
 	}
 
+<<<<<<< HEAD
 	if (inode && is_inode_flag_set(F2FS_I(inode), FI_INC_LINK))
+=======
+	if (is_inode_flag_set(F2FS_I(inode), FI_INC_LINK))
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		clear_inode_flag(F2FS_I(inode), FI_INC_LINK);
 }
 
@@ -491,6 +628,7 @@ next:
 	goto next;
 }
 
+<<<<<<< HEAD
 void f2fs_update_dentry(nid_t ino, umode_t mode, struct f2fs_dentry_ptr *d,
 				const struct qstr *name, f2fs_hash_t name_hash,
 				unsigned int bit_pos)
@@ -509,18 +647,25 @@ void f2fs_update_dentry(nid_t ino, umode_t mode, struct f2fs_dentry_ptr *d,
 		test_and_set_bit_le(bit_pos + i, (void *)d->bitmap);
 }
 
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 /*
  * Caller should grab and release a rwsem by calling f2fs_lock_op() and
  * f2fs_unlock_op().
  */
 int __f2fs_add_link(struct inode *dir, const struct qstr *name,
+<<<<<<< HEAD
 				struct inode *inode, nid_t ino, umode_t mode)
+=======
+						struct inode *inode)
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 {
 	unsigned int bit_pos;
 	unsigned int level;
 	unsigned int current_depth;
 	unsigned long bidx, block;
 	f2fs_hash_t dentry_hash;
+<<<<<<< HEAD
 	unsigned int nbucket, nblock;
 	struct page *dentry_page = NULL;
 	struct f2fs_dentry_block *dentry_blk = NULL;
@@ -541,14 +686,35 @@ int __f2fs_add_link(struct inode *dir, const struct qstr *name,
 		err = f2fs_add_inline_entry(dir, &new_name, inode, ino, mode);
 		if (!err || err != -EAGAIN)
 			goto out;
+=======
+	struct f2fs_dir_entry *de;
+	unsigned int nbucket, nblock;
+	size_t namelen = name->len;
+	struct page *dentry_page = NULL;
+	struct f2fs_dentry_block *dentry_blk = NULL;
+	int slots = GET_DENTRY_SLOTS(namelen);
+	struct page *page;
+	int err = 0;
+	int i;
+
+	if (f2fs_has_inline_dentry(dir)) {
+		err = f2fs_add_inline_entry(dir, name, inode);
+		if (!err || err != -EAGAIN)
+			return err;
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		else
 			err = 0;
 	}
 
+<<<<<<< HEAD
 	level = 0;
 	slots = GET_DENTRY_SLOTS(new_name.len);
 	dentry_hash = f2fs_dentry_hash(&new_name);
 
+=======
+	dentry_hash = f2fs_dentry_hash(name);
+	level = 0;
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	current_depth = F2FS_I(dir)->i_current_depth;
 	if (F2FS_I(dir)->chash == dentry_hash) {
 		level = F2FS_I(dir)->clevel;
@@ -556,10 +722,15 @@ int __f2fs_add_link(struct inode *dir, const struct qstr *name,
 	}
 
 start:
+<<<<<<< HEAD
 	if (unlikely(current_depth == MAX_DIR_HASH_DEPTH)) {
 		err = -ENOSPC;
 		goto out;
 	}
+=======
+	if (unlikely(current_depth == MAX_DIR_HASH_DEPTH))
+		return -ENOSPC;
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	/* Increase the depth, if required */
 	if (level == current_depth)
@@ -573,10 +744,15 @@ start:
 
 	for (block = bidx; block <= (bidx + nblock - 1); block++) {
 		dentry_page = get_new_data_page(dir, NULL, block, true);
+<<<<<<< HEAD
 		if (IS_ERR(dentry_page)) {
 			err = PTR_ERR(dentry_page);
 			goto out;
 		}
+=======
+		if (IS_ERR(dentry_page))
+			return PTR_ERR(dentry_page);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 		dentry_blk = kmap(dentry_page);
 		bit_pos = room_for_filename(&dentry_blk->dentry_bitmap,
@@ -594,6 +770,7 @@ start:
 add_dentry:
 	f2fs_wait_on_page_writeback(dentry_page, DATA);
 
+<<<<<<< HEAD
 	if (inode) {
 		down_write(&F2FS_I(inode)->i_sem);
 		page = init_inode_metadata(inode, dir, &new_name, NULL);
@@ -621,6 +798,32 @@ add_dentry:
 fail:
 	if (inode)
 		up_write(&F2FS_I(inode)->i_sem);
+=======
+	down_write(&F2FS_I(inode)->i_sem);
+	page = init_inode_metadata(inode, dir, name, NULL);
+	if (IS_ERR(page)) {
+		err = PTR_ERR(page);
+		goto fail;
+	}
+	de = &dentry_blk->dentry[bit_pos];
+	de->hash_code = dentry_hash;
+	de->name_len = cpu_to_le16(namelen);
+	memcpy(dentry_blk->filename[bit_pos], name->name, name->len);
+	de->ino = cpu_to_le32(inode->i_ino);
+	set_de_type(de, inode);
+	for (i = 0; i < slots; i++)
+		test_and_set_bit_le(bit_pos + i, &dentry_blk->dentry_bitmap);
+	set_page_dirty(dentry_page);
+
+	/* we don't need to mark_inode_dirty now */
+	F2FS_I(inode)->i_pino = dir->i_ino;
+	update_inode(inode, page);
+	f2fs_put_page(page, 1);
+
+	update_parent_metadata(dir, inode, current_depth);
+fail:
+	up_write(&F2FS_I(inode)->i_sem);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	if (is_inode_flag_set(F2FS_I(dir), FI_UPDATE_DIR)) {
 		update_inode_page(dir);
@@ -628,8 +831,11 @@ fail:
 	}
 	kunmap(dentry_page);
 	f2fs_put_page(dentry_page, 1);
+<<<<<<< HEAD
 out:
 	f2fs_fname_free_filename(&fname);
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	return err;
 }
 
@@ -718,10 +924,16 @@ void f2fs_delete_entry(struct f2fs_dir_entry *dentry, struct page *page,
 	if (inode)
 		f2fs_drop_nlink(dir, inode, NULL);
 
+<<<<<<< HEAD
 	if (bit_pos == NR_DENTRY_IN_BLOCK &&
 			!truncate_hole(dir, page->index, page->index + 1)) {
 		clear_page_dirty_for_io(page);
 		ClearPagePrivate(page);
+=======
+	if (bit_pos == NR_DENTRY_IN_BLOCK) {
+		truncate_hole(dir, page->index, page->index + 1);
+		clear_page_dirty_for_io(page);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		ClearPageUptodate(page);
 		inode_dec_dirty_pages(dir);
 	}
@@ -767,13 +979,20 @@ bool f2fs_empty_dir(struct inode *dir)
 }
 
 bool f2fs_fill_dentries(struct file *file, void *dirent, filldir_t filldir,
+<<<<<<< HEAD
 		struct f2fs_dentry_ptr *d, unsigned int n, unsigned int bit_pos,
 		struct f2fs_str *fstr)
+=======
+		struct f2fs_dentry_ptr *d, unsigned int n, unsigned int bit_pos)
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 {
 	unsigned int start_bit_pos = bit_pos;
 	unsigned char d_type;
 	struct f2fs_dir_entry *de = NULL;
+<<<<<<< HEAD
 	struct f2fs_str de_name = FSTR_INIT(NULL, 0);
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	unsigned char *types = f2fs_filetype_table;
 	int over;
 
@@ -784,6 +1003,7 @@ bool f2fs_fill_dentries(struct file *file, void *dirent, filldir_t filldir,
 			break;
 
 		de = &d->dentry[bit_pos];
+<<<<<<< HEAD
 
 		if (types && de->file_type < F2FS_FT_MAX)
 			d_type = types[de->file_type];
@@ -805,6 +1025,13 @@ bool f2fs_fill_dentries(struct file *file, void *dirent, filldir_t filldir,
 		}
 
 		over = filldir(dirent, de_name.name, de_name.len,
+=======
+		if (types && de->file_type < F2FS_FT_MAX)
+			d_type = types[de->file_type];
+
+		over = filldir(dirent, d->filename[bit_pos],
+					le16_to_cpu(de->name_len),
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 					(n * d->max) + bit_pos,
 					le32_to_cpu(de->ino), d_type);
 		if (over) {
@@ -827,6 +1054,7 @@ static int f2fs_readdir(struct file *file, void *dirent, filldir_t filldir)
 	struct page *dentry_page = NULL;
 	struct file_ra_state *ra = &file->f_ra;
 	struct f2fs_dentry_ptr d;
+<<<<<<< HEAD
 	struct f2fs_str fstr = FSTR_INIT(NULL, 0);
 	unsigned int n = 0;
 	int err = 0;
@@ -846,6 +1074,12 @@ static int f2fs_readdir(struct file *file, void *dirent, filldir_t filldir)
 		err = f2fs_read_inline_dir(file, dirent, filldir, &fstr);
 		goto out;
 	}
+=======
+	unsigned int n = 0;
+
+	if (f2fs_has_inline_dentry(inode))
+		return f2fs_read_inline_dir(file, dirent, filldir);
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	bit_pos = (pos % NR_DENTRY_IN_BLOCK);
 	n = (pos / NR_DENTRY_IN_BLOCK);
@@ -862,9 +1096,15 @@ static int f2fs_readdir(struct file *file, void *dirent, filldir_t filldir)
 
 		dentry_blk = kmap(dentry_page);
 
+<<<<<<< HEAD
 		make_dentry_ptr(inode, &d, (void *)dentry_blk, 1);
 
 		if (f2fs_fill_dentries(file, dirent, filldir, &d, n, bit_pos, &fstr))
+=======
+		make_dentry_ptr(&d, (void *)dentry_blk, 1);
+
+		if (f2fs_fill_dentries(file, dirent, filldir, &d, n, bit_pos))
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 			goto stop;
 
 		bit_pos = 0;
@@ -878,9 +1118,14 @@ stop:
 		kunmap(dentry_page);
 		f2fs_put_page(dentry_page, 1);
 	}
+<<<<<<< HEAD
 out:
 	f2fs_fname_crypto_free_buffer(&fstr);
 	return err;
+=======
+
+	return 0;
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 const struct file_operations f2fs_dir_operations = {
@@ -889,7 +1134,10 @@ const struct file_operations f2fs_dir_operations = {
 	.readdir	= f2fs_readdir,
 	.fsync		= f2fs_sync_file,
 	.unlocked_ioctl	= f2fs_ioctl,
+<<<<<<< HEAD
 #ifdef CONFIG_COMPAT
 	.compat_ioctl   = f2fs_compat_ioctl,
 #endif
+=======
+>>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 };
