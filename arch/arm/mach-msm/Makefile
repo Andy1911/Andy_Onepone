@@ -424,17 +424,8 @@ obj-$(CONFIG_HAS_MACH_MEMUTILS) += memutils/
 obj-$(CONFIG_ARCH_RANDOM) += early_random.o
 obj-$(CONFIG_PERFMAP) += perfmap.o
 
-
-obj-$(CONFIG_FORCE_FAST_CHARGE) += fastchg.o
-obj-$(CONFIG_MMI_UNIT_INFO) += mmi-unit-info.o
-obj-$(CONFIG_MMI_SOC_INFO) += mmi_soc_info.o
-obj-$(CONFIG_MMI_MSM_PINMUX) += mmi-pinmux.o
-obj-$(CONFIG_MMI_MSM_CLOCK) += mmi-clock.o
-obj-$(CONFIG_MSM_HOTPLUG) += msm_hotplug.o
-
-obj-$(CONFIG_MSM_CPUFREQ_LIMITER) += cpufreq_limit.o
-obj-$(CONFIG_BRICKED_HOTPLUG) += bricked_hotplug.o
-
-obj-$(CONFIG_CHARGE_LEVEL) += charge_level.o
 obj-$(CONFIG_MSM_LIMITER) += msm_limiter.o
-obj-$(CONFIG_BRICKED_HOTPLUG) += bricked_hotplug.o
+obj-$(CONFIG_CHARGE_LEVEL) += charge_level.o
+obj-$(CONFIG_MSM_HOTPLUG) += msm_hotplug.o
+obj-$(CONFIG_MSM_LIMITER) += msm_limiter.o
+obj-$(CONFIG_MSM_CPUFREQ_LIMITER) += cpufreq_limit.o
