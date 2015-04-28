@@ -2994,7 +2994,6 @@ config MSM_BOOT_STATS
 	 This figures are reported in mpm sleep clock cycles and have a
 	 resolution of 31 bits as 1 bit is used as an overflow check.
 
-<<<<<<< HEAD
 config MSM_XPU_ERR_FATAL
 	bool "Configure XPU violations as fatal errors"
 	help
@@ -3040,15 +3039,14 @@ config HAS_MACH_MEMUTILS
 	bool "Motorola MSM memcpy enhancements"
 	help
 	Faster memcpy performance for Krait
-=======
+
 config PM_DEBUG_WAKEUP
 	depends on PM_DEBUG
     default n
     bool "Report wakeup source in a uevent"
->>>>>>> 253037f... msm_hotplug: Minor Changes
+
 endif
 
-<<<<<<< HEAD
 config KERNEL_TEXT_MPU_PROT
         bool "Enable xpu protection of kernel r/o sections"
         help
@@ -3056,7 +3054,7 @@ config KERNEL_TEXT_MPU_PROT
           sections early in boot. Read access is permitted to
           all masters; Write access is only permited to the
           secure world.
-=======
+
 config MSM_HOTPLUG
 	bool "MSM hotplug driver"
 	depends on HOTPLUG_CPU
@@ -3064,4 +3062,3 @@ config MSM_HOTPLUG
 	help
 	  The MSM hotplug driver controls on-/offlining of additional cores based
 	  on current cpu load.
->>>>>>> 08a85f0... MSM_Hotplug: Special version modded by neobuddy89
