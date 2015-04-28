@@ -2994,6 +2994,7 @@ config MSM_BOOT_STATS
 	 This figures are reported in mpm sleep clock cycles and have a
 	 resolution of 31 bits as 1 bit is used as an overflow check.
 
+<<<<<<< HEAD
 config MSM_XPU_ERR_FATAL
 	bool "Configure XPU violations as fatal errors"
 	help
@@ -3039,6 +3040,12 @@ config HAS_MACH_MEMUTILS
 	bool "Motorola MSM memcpy enhancements"
 	help
 	Faster memcpy performance for Krait
+=======
+config PM_DEBUG_WAKEUP
+	depends on PM_DEBUG
+    default n
+    bool "Report wakeup source in a uevent"
+>>>>>>> 253037f... msm_hotplug: Minor Changes
 endif
 
 <<<<<<< HEAD
