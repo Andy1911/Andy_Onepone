@@ -20,12 +20,17 @@
 #include <linux/device.h>
 #include <linux/slab.h>
 #include <linux/cpufreq.h>
+<<<<<<< HEAD
 #ifdef CONFIG_LCD_NOTIFY
 #include <linux/lcd_notify.h>
 #elif defined(CONFIG_POWERSUSPEND)
 #include <linux/powersuspend.h>
 #elif defined(CONFIG_HAS_EARLYSUSPEND)
 #include <linux/earlysuspend.h>
+=======
+#ifdef CONFIG_STATE_NOTIFIER
+#include <linux/state_notifier.h>
+>>>>>>> af21c88... msm: hotplug: Clean-up hotplug drivers
 #endif
 #include <linux/mutex.h>
 #include <linux/input.h>
@@ -45,8 +50,11 @@
 #define DEFAULT_MIN_CPUS_ONLINE		1
 #define DEFAULT_MAX_CPUS_ONLINE		NR_CPUS
 #define DEFAULT_FAST_LANE_LOAD		99
+<<<<<<< HEAD
 #if defined(CONFIG_LCD_NOTIFY) || defined(CONFIG_POWERSUSPEND) || defined(CONFIG_HAS_EARLYSUSPEND)
 #define DEFAULT_SUSPEND_DEFER_TIME	10
+=======
+>>>>>>> af21c88... msm: hotplug: Clean-up hotplug drivers
 #define DEFAULT_MAX_CPUS_ONLINE_SUSP	1
 #endif
 
@@ -63,7 +71,6 @@ static struct cpu_hotplug {
 	unsigned int msm_enabled;
 #if defined(CONFIG_LCD_NOTIFY) || defined(CONFIG_POWERSUSPEND) || defined(CONFIG_HAS_EARLYSUSPEND)
 	unsigned int suspended;
-	unsigned int suspend_defer_time;
 	unsigned int min_cpus_online_res;
 	unsigned int max_cpus_online_res;
 	unsigned int max_cpus_online_susp;
@@ -79,9 +86,12 @@ static struct cpu_hotplug {
 	unsigned int fast_lane_load;
 	struct work_struct up_work;
 	struct work_struct down_work;
+<<<<<<< HEAD
 #if defined(CONFIG_LCD_NOTIFY) || defined(CONFIG_POWERSUSPEND) || defined(CONFIG_HAS_EARLYSUSPEND)
 	struct delayed_work suspend_work;
 	struct work_struct resume_work;
+=======
+>>>>>>> af21c88... msm: hotplug: Clean-up hotplug drivers
 	struct mutex msm_hotplug_mutex;
 #ifdef CONFIG_LCD_NOTIFY
 	struct notifier_block notif;
@@ -93,7 +103,6 @@ static struct cpu_hotplug {
 	.max_cpus_online = DEFAULT_MAX_CPUS_ONLINE,
 #if defined(CONFIG_LCD_NOTIFY) || defined(CONFIG_POWERSUSPEND) || defined(CONFIG_HAS_EARLYSUSPEND)
 	.suspended = 0,
-	.suspend_defer_time = DEFAULT_SUSPEND_DEFER_TIME,
 	.min_cpus_online_res = DEFAULT_MIN_CPUS_ONLINE,
 	.max_cpus_online_res = DEFAULT_MAX_CPUS_ONLINE,
 	.max_cpus_online_susp = DEFAULT_MAX_CPUS_ONLINE_SUSP,
@@ -105,9 +114,12 @@ static struct cpu_hotplug {
 };
 
 static struct workqueue_struct *hotplug_wq;
+<<<<<<< HEAD
 #if defined(CONFIG_LCD_NOTIFY) || defined(CONFIG_POWERSUSPEND) || defined(CONFIG_HAS_EARLYSUSPEND)
 static struct workqueue_struct *susp_wq;
 #endif
+=======
+>>>>>>> af21c88... msm: hotplug: Clean-up hotplug drivers
 static struct delayed_work hotplug_work;
 
 static u64 last_boost_time;
@@ -490,8 +502,12 @@ reschedule:
 	reschedule_hotplug_work();
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_LCD_NOTIFY) || defined(CONFIG_POWERSUSPEND) || defined(CONFIG_HAS_EARLYSUSPEND)
 static void msm_hotplug_suspend(struct work_struct *work)
+=======
+static void msm_hotplug_suspend(void)
+>>>>>>> af21c88... msm: hotplug: Clean-up hotplug drivers
 {
 	int cpu;
 
@@ -522,7 +538,7 @@ static void msm_hotplug_suspend(struct work_struct *work)
 	}
 }
 
-static void __ref msm_hotplug_resume(struct work_struct *work)
+static void __ref msm_hotplug_resume(void)
 {
 	int cpu, required_reschedule = 0, required_wakeup = 0;
 
@@ -558,6 +574,7 @@ static void __ref msm_hotplug_resume(struct work_struct *work)
 		reschedule_hotplug_work();
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_LCD_NOTIFY
 static void __msm_hotplug_suspend(void)
 #elif defined(CONFIG_POWERSUSPEND)
@@ -586,9 +603,17 @@ static void __msm_hotplug_resume(struct early_suspend *handler)
 
 #ifdef CONFIG_LCD_NOTIFY
 static int lcd_notifier_callback(struct notifier_block *this,
+=======
+#ifdef CONFIG_STATE_NOTIFIER
+static int state_notifier_callback(struct notifier_block *this,
+>>>>>>> af21c88... msm: hotplug: Clean-up hotplug drivers
 				unsigned long event, void *data)
 {
+	if (!hotplug.msm_enabled)
+		return NOTIFY_OK;
+
 	switch (event) {
+<<<<<<< HEAD
 	case LCD_EVENT_ON_END:
 	case LCD_EVENT_OFF_START:
 		break;
@@ -600,10 +625,21 @@ static int lcd_notifier_callback(struct notifier_block *this,
 		break;
 	default:
 		break;
+=======
+		case STATE_NOTIFIER_ACTIVE:
+			msm_hotplug_resume();
+			break;
+		case STATE_NOTIFIER_SUSPEND:
+			msm_hotplug_suspend();
+			break;
+		default:
+			break;
+>>>>>>> af21c88... msm: hotplug: Clean-up hotplug drivers
 	}
 
 	return NOTIFY_OK;
 }
+<<<<<<< HEAD
 #elif defined(CONFIG_POWERSUSPEND) || defined(CONFIG_HAS_EARLYSUSPEND)
 #ifdef CONFIG_POWERSUSPEND
 static struct power_suspend msm_hotplug_power_suspend_driver = {
@@ -615,6 +651,8 @@ static struct early_suspend msm_hotplug_early_suspend_driver = {
 	.resume = __msm_hotplug_resume,
 };
 #endif
+=======
+>>>>>>> af21c88... msm: hotplug: Clean-up hotplug drivers
 #endif
 
 static void hotplug_input_event(struct input_handle *handle, unsigned int type,
@@ -724,6 +762,7 @@ static int __ref msm_hotplug_start(void)
 		goto err_out;
 	}
 
+<<<<<<< HEAD
 #if defined(CONFIG_LCD_NOTIFY) || defined(CONFIG_POWERSUSPEND) || defined(CONFIG_HAS_EARLYSUSPEND)
 	susp_wq =
 	    alloc_workqueue("susp_wq", WQ_FREEZABLE, 0);
@@ -746,6 +785,15 @@ static int __ref msm_hotplug_start(void)
 	register_power_suspend(&msm_hotplug_power_suspend_driver);
 #elif defined(CONFIG_HAS_EARLYSUSPEND)
 	register_early_suspend(&msm_hotplug_early_suspend_driver);
+=======
+#ifdef CONFIG_STATE_NOTIFIER
+	hotplug.notif.notifier_call = state_notifier_callback;
+	if (state_register_client(&hotplug.notif)) {
+		pr_err("%s: Failed to register State notifier callback\n",
+			MSM_HOTPLUG);
+		goto err_dev;
+	}
+>>>>>>> af21c88... msm: hotplug: Clean-up hotplug drivers
 #endif
 	ret = input_register_handler(&hotplug_input_handler);
 	if (ret) {
@@ -773,10 +821,13 @@ static int __ref msm_hotplug_start(void)
 		dl = &per_cpu(lock_info, cpu);
 		INIT_DELAYED_WORK(&dl->lock_rem, remove_down_lock);
 	}
+<<<<<<< HEAD
 #if defined(CONFIG_LCD_NOTIFY) || defined(CONFIG_POWERSUSPEND) || defined(CONFIG_HAS_EARLYSUSPEND)
 	INIT_DELAYED_WORK(&hotplug.suspend_work, msm_hotplug_suspend);
 	INIT_WORK(&hotplug.resume_work, msm_hotplug_resume);
 #endif
+=======
+>>>>>>> af21c88... msm: hotplug: Clean-up hotplug drivers
 
 	/* Fire up all CPUs */
 	for_each_cpu_not(cpu, cpu_online_mask) {
@@ -802,11 +853,14 @@ static void msm_hotplug_stop(void)
 	int cpu;
 	struct down_lock *dl;
 
+<<<<<<< HEAD
 #if defined(CONFIG_LCD_NOTIFY) || defined(CONFIG_POWERSUSPEND) || defined(CONFIG_HAS_EARLYSUSPEND)
 	flush_workqueue(susp_wq);
 	cancel_work_sync(&hotplug.resume_work);
 	cancel_delayed_work_sync(&hotplug.suspend_work);
 #endif
+=======
+>>>>>>> af21c88... msm: hotplug: Clean-up hotplug drivers
 	flush_workqueue(hotplug_wq);
 	for_each_possible_cpu(cpu) {
 		dl = &per_cpu(lock_info, cpu);
@@ -822,8 +876,14 @@ static void msm_hotplug_stop(void)
 	mutex_destroy(&stats.stats_mutex);
 	kfree(stats.load_hist);
 
+<<<<<<< HEAD
 #ifdef CONFIG_LCD_NOTIFY
 	lcd_unregister_client(&hotplug.notif);
+=======
+#ifdef CONFIG_STATE_NOTIFIER
+	state_unregister_client(&hotplug.notif);
+#endif
+>>>>>>> af21c88... msm: hotplug: Clean-up hotplug drivers
 	hotplug.notif.notifier_call = NULL;
 #elif defined(CONFIG_POWERSUSPEND)
 	unregister_power_suspend(&msm_hotplug_power_suspend_driver);
@@ -832,9 +892,12 @@ static void msm_hotplug_stop(void)
 #endif
 	input_unregister_handler(&hotplug_input_handler);
 
+<<<<<<< HEAD
 #if defined(CONFIG_LCD_NOTIFY) || defined(CONFIG_POWERSUSPEND) || defined(CONFIG_HAS_EARLYSUSPEND)
 	destroy_workqueue(susp_wq);
 #endif
+=======
+>>>>>>> af21c88... msm: hotplug: Clean-up hotplug drivers
 	destroy_workqueue(hotplug_wq);
 
 	/* Put all sibling cores to sleep */
@@ -1130,6 +1193,7 @@ static ssize_t store_max_cpus_online(struct device *dev,
 	return count;
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_LCD_NOTIFY) || defined(CONFIG_POWERSUSPEND) || defined(CONFIG_HAS_EARLYSUSPEND)
 static ssize_t store_suspend_defer_time(struct device *dev,
 				    struct device_attribute *msm_hotplug_attrs,
@@ -1154,6 +1218,8 @@ static ssize_t show_suspend_defer_time(struct device *dev,
 	return sprintf(buf, "%u\n", hotplug.suspend_defer_time);
 }
 
+=======
+>>>>>>> af21c88... msm: hotplug: Clean-up hotplug drivers
 static ssize_t show_max_cpus_online_susp(struct device *dev,
 				    struct device_attribute *msm_hotplug_attrs,
 				    char *buf)
@@ -1290,9 +1356,12 @@ static DEVICE_ATTR(min_cpus_online, 644, show_min_cpus_online,
 		   store_min_cpus_online);
 static DEVICE_ATTR(max_cpus_online, 644, show_max_cpus_online,
 		   store_max_cpus_online);
+<<<<<<< HEAD
 #if defined(CONFIG_LCD_NOTIFY) || defined(CONFIG_POWERSUSPEND) || defined(CONFIG_HAS_EARLYSUSPEND)
 static DEVICE_ATTR(suspend_defer_time, 644, show_suspend_defer_time,
 		   store_suspend_defer_time);
+=======
+>>>>>>> af21c88... msm: hotplug: Clean-up hotplug drivers
 static DEVICE_ATTR(max_cpus_online_susp, 644, show_max_cpus_online_susp,
 		   store_max_cpus_online_susp);
 #endif
@@ -1312,8 +1381,11 @@ static struct attribute *msm_hotplug_attrs[] = {
 	&dev_attr_history_size.attr,
 	&dev_attr_min_cpus_online.attr,
 	&dev_attr_max_cpus_online.attr,
+<<<<<<< HEAD
 #if defined(CONFIG_LCD_NOTIFY) || defined(CONFIG_POWERSUSPEND) || defined(CONFIG_HAS_EARLYSUSPEND)
 	&dev_attr_suspend_defer_time.attr,
+=======
+>>>>>>> af21c88... msm: hotplug: Clean-up hotplug drivers
 	&dev_attr_max_cpus_online_susp.attr,
 #endif
 	&dev_attr_cpus_boosted.attr,
