@@ -1466,6 +1466,7 @@
 		compatible = "qcom,msm-cpufreq";
 		qcom,cpufreq-table =
 <<<<<<< HEAD
+<<<<<<< HEAD
 			<  300000 >,
 			<  422400 >,
 			<  652800 >,
@@ -1482,6 +1483,8 @@
 			< 2265600 >,
 			< 2457600 >;
 =======
+=======
+>>>>>>> 168a19c... msm8974pro: Add the ability to Underclock and Overclock
 			<  268800  268800  381 >,
 			<  300000  268800  572 >,
 			<  422400  422400  762 >,
@@ -1503,6 +1506,9 @@
 			< 2572800 1728000 7674 >,
 			< 2726400 1728000 7674 >,
 			< 2880000 1728000 7674 >;
+<<<<<<< HEAD
+>>>>>>> 168a19c... msm8974pro: Add the ability to Underclock and Overclock
+=======
 >>>>>>> 168a19c... msm8974pro: Add the ability to Underclock and Overclock
 	};
 
