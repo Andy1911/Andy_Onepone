@@ -814,4 +814,3 @@ module_exit(msm_mpdec_exit);
 MODULE_AUTHOR("Pranav Vashi <neobuddy89@gmail.com>");
 MODULE_DESCRIPTION("Bricked Hotplug Driver");
 MODULE_LICENSE("GPLv2");
-

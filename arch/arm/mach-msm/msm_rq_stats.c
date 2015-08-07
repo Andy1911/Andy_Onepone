@@ -201,15 +201,7 @@ static ssize_t hotplug_disable_show(struct kobject *kobj,
 
 static struct kobj_attribute hotplug_disabled_attr = __ATTR_RO(hotplug_disable);
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-static struct kobj_attribute hotplug_enabled_attr =
-	__ATTR(hotplug_enable, S_IWUSR | S_IRUSR, show_hotplug_enable,
-	       store_hotplug_enable);
 
-=======
->>>>>>> a5adc90... add bricked hotplug by @neobuddy89
 #ifdef CONFIG_BRICKED_HOTPLUG
 unsigned int get_rq_info(void)
 {
@@ -228,10 +220,6 @@ unsigned int get_rq_info(void)
 EXPORT_SYMBOL(get_rq_info);
 #endif
 
-<<<<<<< HEAD
->>>>>>> 14921cb... msm: bricked: add Bricked Hotplug driver
-=======
->>>>>>> a5adc90... add bricked hotplug by @neobuddy89
 static void def_work_fn(struct work_struct *work)
 {
 	int64_t diff;
@@ -416,9 +404,10 @@ static int __init msm_rq_stats_early_init(void)
 	/* Bail out if this is not an SMP Target */
 	rq_info.init = 0;
 	return -ENOSYS;
-#endif
+
 
 	pm_notifier(system_suspend_handler, 0);
 	return 0;
 }
 core_initcall(msm_rq_stats_early_init);
+#endif
