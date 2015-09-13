@@ -447,10 +447,7 @@ void msm_gpio_show_resume_irq(void)
 			irq = msm_gpio_to_irq(&msm_gpio.gpio_chip, i);
 			log_base_wakeup_reason(irq);
 		}
-<<<<<<< HEAD
 
-=======
->>>>>>> parent of 2569164... power: Remove wakeup reason API and clients
 	}
 	spin_unlock_irqrestore(&tlmm_lock, irq_flags);
 }
