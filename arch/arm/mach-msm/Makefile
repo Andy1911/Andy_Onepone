@@ -430,5 +430,10 @@ obj-$(CONFIG_MMI_SOC_INFO) += mmi_soc_info.o
 obj-$(CONFIG_MMI_MSM_PINMUX) += mmi-pinmux.o
 obj-$(CONFIG_MMI_MSM_CLOCK) += mmi-clock.o
 obj-$(CONFIG_MSM_HOTPLUG) += msm_hotplug.o
+<<<<<<< HEAD
 
 obj-$(CONFIG_CHARGE_LEVEL) += charge_level.o
+=======
+obj-$(CONFIG_MSM_CPUFREQ_LIMITER) += cpufreq_limit.o
+obj-$(CONFIG_BRICKED_HOTPLUG) += bricked_hotplug.o
+>>>>>>> a5adc90... add bricked hotplug by @neobuddy89
