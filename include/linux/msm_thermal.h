@@ -19,15 +19,14 @@ struct msm_thermal_data {
 	uint32_t poll_ms;
 	int32_t limit_temp_degC;
 	int32_t temp_hysteresis_degC;
-<<<<<<< HEAD
+
 	uint32_t bootup_freq_step;
 	uint32_t bootup_freq_control_mask;
-=======
 	uint32_t freq_step;
 #ifdef CONFIG_INTELLI_THERMAL
 	uint32_t freq_control_mask;
 #endif
->>>>>>> 6b24606... intelli/msm_thermal: initial coding for Qualcomm S4 Pro devices
+
 	int32_t core_limit_temp_degC;
 	int32_t core_temp_hysteresis_degC;
 	int32_t hotplug_temp_degC;
