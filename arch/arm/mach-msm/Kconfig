@@ -3049,15 +3049,7 @@ config KERNEL_TEXT_MPU_PROT
           all masters; Write access is only permited to the
           secure world.
 
-<<<<<<< HEAD
-config MSM_LIMITER
-	bool "MSM Frequency Limiter Driver"
-	default y
-	help
-	  The MSM Frequency Limiter Driver controls max frequency limit for each CPU
-	  to desired value on suspend/resume
 
-<<<<<<< HEAD
 config MSM_HOTPLUG
 	bool "MSM hotplug driver"
 	depends on HOTPLUG_CPU
@@ -3065,8 +3057,3 @@ config MSM_HOTPLUG
 	help
 	  The MSM hotplug driver controls on-/offlining of additional cores based
 	  on current cpu load.
-=======
-=======
->>>>>>> parent of a908576... cpufreq: limiter: add frequency limiter driver
-endif
->>>>>>> a908576... cpufreq: limiter: add frequency limiter driver

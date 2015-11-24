@@ -1580,15 +1580,11 @@ int __cpufreq_driver_target(struct cpufreq_policy *policy,
 	if (target_freq == policy->cur)
 		return 0;
 
-<<<<<<< HEAD
 	if (cpu_online(policy->cpu) && cpufreq_driver->target)
-<<<<<<< HEAD
 
-=======
->>>>>>> a908576... cpufreq: limiter: add frequency limiter driver
-=======
+
 	if (cpufreq_driver->target)
->>>>>>> parent of a908576... cpufreq: limiter: add frequency limiter driver
+
 		retval = cpufreq_driver->target(policy, target_freq, relation);
 
 	return retval;
