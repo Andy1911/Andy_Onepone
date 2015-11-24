@@ -1569,11 +1569,10 @@ int __cpufreq_driver_target(struct cpufreq_policy *policy,
 	if (cpufreq_disabled())
 		return -ENODEV;
 
-<<<<<<< HEAD
 	pr_debug("target for CPU %u: %u kHz, relation %u\n", policy->cpu,
 		target_freq, relation);
 	if (cpufreq_driver->target)
-=======
+
 	/* Make sure that target_freq is within supported range */
 	if (target_freq > policy->max)
 		target_freq = policy->max;
@@ -1587,7 +1586,7 @@ int __cpufreq_driver_target(struct cpufreq_policy *policy,
 		return 0;
 
 	if (cpu_online(policy->cpu) && cpufreq_driver->target)
->>>>>>> a908576... cpufreq: limiter: add frequency limiter driver
+
 		retval = cpufreq_driver->target(policy, target_freq, relation);
 
 	return retval;
