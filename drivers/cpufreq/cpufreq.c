@@ -839,11 +839,11 @@ static int cpufreq_add_dev_interface(unsigned int cpu,
 		if (ret)
 			goto err_out_kobj_put;
 	}
-
-	ret = sysfs_create_file(&policy->kobj, &scaling_cur_freq.attr);
-	if (ret)
-		goto err_out_kobj_put;
-
+	if (cpufreq_driver->target) {
+		ret = sysfs_create_file(&policy->kobj, &scaling_cur_freq.attr);
+		if (ret)
+			goto err_out_kobj_put;
+	}
 	if (cpufreq_driver->bios_limit) {
 		ret = sysfs_create_file(&policy->kobj, &bios_limit.attr);
 		if (ret)
@@ -1567,24 +1567,6 @@ int __cpufreq_driver_target(struct cpufreq_policy *policy,
 	pr_debug("target for CPU %u: %u kHz, relation %u\n", policy->cpu,
 		target_freq, relation);
 	if (cpufreq_driver->target)
-
-	/* Make sure that target_freq is within supported range */
-	if (target_freq > policy->max)
-		target_freq = policy->max;
-	if (target_freq < policy->min)
-		target_freq = policy->min;
-
-	pr_debug("target for CPU %u: %u kHz, relation %u, requested %u kHz\n",
-			policy->cpu, target_freq, relation, old_target_freq);
-
-	if (target_freq == policy->cur)
-		return 0;
-
-	if (cpu_online(policy->cpu) && cpufreq_driver->target)
-
-
-	if (cpufreq_driver->target)
-
 		retval = cpufreq_driver->target(policy, target_freq, relation);
 
 	return retval;
