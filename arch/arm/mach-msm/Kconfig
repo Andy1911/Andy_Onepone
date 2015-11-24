@@ -3048,7 +3048,6 @@ config KERNEL_TEXT_MPU_PROT
           sections early in boot. Read access is permitted to
           all masters; Write access is only permited to the
           secure world.
-         Allow SPEED level to be shown into specific kernel apps
 
 config MSM_LIMITER
 	bool "MSM Frequency Limiter Driver"
@@ -3064,5 +3063,3 @@ config MSM_HOTPLUG
 	help
 	  The MSM hotplug driver controls on-/offlining of additional cores based
 	  on current cpu load.
-
-endif
