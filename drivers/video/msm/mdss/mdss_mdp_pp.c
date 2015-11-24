@@ -439,11 +439,8 @@ static void pp_ad_bypass_config(struct mdss_ad_info *ad,
 				struct mdss_mdp_ctl *ctl, u32 num, u32 *opmode);
 static int mdss_mdp_ad_setup(struct msm_fb_data_type *mfd);
 static void pp_ad_cfg_lut(char __iomem *addr, u32 *data);
-<<<<<<< HEAD
 static u32 pp_ad_attenuate_bl(u32 bl, struct mdss_ad_info *ad);
-=======
 static struct msm_fb_data_type *mdss_get_mfd_from_index(int index);
->>>>>>> 05fe6eb... msm: mdss: Add KCAL support for post processing control [v2]
 static int pp_num_to_side(struct mdss_mdp_ctl *ctl, u32 num);
 static inline bool pp_sts_is_enabled(u32 sts, int side);
 static inline void pp_sts_set_split_bits(u32 *sts, u32 bits);
