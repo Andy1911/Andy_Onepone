@@ -423,6 +423,7 @@ obj-$(CONFIG_WALL_CLK_SYSFS) += wallclk_sysfs.o
 obj-$(CONFIG_HAS_MACH_MEMUTILS) += memutils/
 obj-$(CONFIG_ARCH_RANDOM) += early_random.o
 obj-$(CONFIG_PERFMAP) += perfmap.o
+<<<<<<< HEAD
 
 obj-$(CONFIG_MSM_LIMITER) += msm_limiter.o
 <<<<<<< HEAD
@@ -432,3 +433,5 @@ obj-$(CONFIG_MSM_HOTPLUG) += msm_hotplug.o
 obj-$(CONFIG_MSM_LIMITER) += msm_limiter.o
 =======
 >>>>>>> a908576... cpufreq: limiter: add frequency limiter driver
+=======
+>>>>>>> parent of a908576... cpufreq: limiter: add frequency limiter driver
