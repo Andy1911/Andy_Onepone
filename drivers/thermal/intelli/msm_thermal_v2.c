@@ -1251,7 +1251,23 @@ static struct notifier_block __refdata msm_thermal_cpu_notifier = {
 };
 
 static void thermal_rtc_setup(void)
+{
+	ktime_t wakeup_time;
+	ktime_t curr_time;
 
+	curr_time = alarm_get_elapsed_realtime();
+	wakeup_time = ktime_add_us(curr_time,
+			(wakeup_ms * USEC_PER_MSEC));
+	alarm_start_range(&thermal_rtc, wakeup_time,
+			wakeup_time);
+	pr_debug("%s: Current Time: %ld %ld, Alarm set to: %ld %ld\n",
+			KBUILD_MODNAME,
+			ktime_to_timeval(curr_time).tv_sec,
+			ktime_to_timeval(curr_time).tv_usec,
+			ktime_to_timeval(wakeup_time).tv_sec,
+			ktime_to_timeval(wakeup_time).tv_usec);
+
+}
 
 static void timer_work_fn(struct work_struct *work)
 {
@@ -1259,6 +1275,13 @@ static void timer_work_fn(struct work_struct *work)
 }
 
 static void thermal_rtc_callback(struct alarm *al)
+{
+	struct timeval ts;
+	ts = ktime_to_timeval(alarm_get_elapsed_realtime());
+	schedule_work(&timer_work);
+	pr_debug("%s: Time on alarm expiry: %ld %ld\n", KBUILD_MODNAME,
+			ts.tv_sec, ts.tv_usec);
+}
 
 static int hotplug_notify(enum thermal_trip_type type, int temp, void *data)
 {
