@@ -430,9 +430,5 @@ obj-$(CONFIG_MMI_SOC_INFO) += mmi_soc_info.o
 obj-$(CONFIG_MMI_MSM_PINMUX) += mmi-pinmux.o
 obj-$(CONFIG_MMI_MSM_CLOCK) += mmi-clock.o
 obj-$(CONFIG_MSM_HOTPLUG) += msm_hotplug.o
-=======
 
-obj-$(CONFIG_MSM_LIMITER) += msm_limiter.o
-obj-$(CONFIG_BRICKED_HOTPLUG) += bricked_hotplug.o
 obj-$(CONFIG_CHARGE_LEVEL) += charge_level.o
->>>>>>> 22a37f3... fastcharge: qpnp-charger: Charge level interface
