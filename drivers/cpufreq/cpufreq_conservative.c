@@ -50,12 +50,9 @@ static unsigned int min_sampling_rate;
 #define MIN_LATENCY_MULTIPLIER			(100)
 #define DEF_SAMPLING_DOWN_FACTOR		(1)
 #define MAX_SAMPLING_DOWN_FACTOR		(10)
-<<<<<<< HEAD
-=======
 #define MICRO_FREQUENCY_UP_THRESHOLD		(90)
 #define MICRO_FREQUENCY_DOWN_THRESHOLD		(30)
 #define MICRO_FREQUENCY_MIN_SAMPLE_RATE		(10000)
->>>>>>> 04daacf... cpufreq: conservative: set min_sampling_rate to 10000 like into others governors
 #define TRANSITION_LATENCY_LIMIT		(10 * 1000 * 1000)
 
 static void do_dbs_timer(struct work_struct *work);
