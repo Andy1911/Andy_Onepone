@@ -102,8 +102,7 @@
 	};
 };
 
-<<<<<<< HEAD
-=======
+
 &pm8941_lsid1 {
 	qcom,leds@d800 {
 		status = "disabled";
@@ -169,7 +168,6 @@
 	};
 };
 
->>>>>>> 9fcd9e5... ARM: dts: msm: Remove device tree bindings that use msm_sdcc driver
 &sdhc_1 {
 	vdd-supply = <&pm8941_l20>;
 	vdd-io-supply = <&pm8941_s3>;
