@@ -79,12 +79,7 @@ f2fs_hash_t f2fs_dentry_hash(const struct qstr *name_info)
 	const unsigned char *name = name_info->name;
 	size_t len = name_info->len;
 
-<<<<<<< HEAD
 	if (is_dot_dotdot(name_info))
-=======
-	if ((len <= 2) && (name[0] == '.') &&
-		(name[1] == '.' || name[1] == '\0'))
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		return 0;
 
 	/* Initialize the default seed for the hash checksum functions */

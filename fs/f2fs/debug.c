@@ -33,7 +33,6 @@ static void update_general_status(struct f2fs_sb_info *sbi)
 	int i;
 
 	/* validation check of the segment numbers */
-<<<<<<< HEAD
 	si->hit_largest = atomic_read(&sbi->read_hit_largest);
 	si->hit_cached = atomic_read(&sbi->read_hit_cached);
 	si->hit_rbtree = atomic_read(&sbi->read_hit_rbtree);
@@ -41,10 +40,6 @@ static void update_general_status(struct f2fs_sb_info *sbi)
 	si->total_ext = atomic_read(&sbi->total_hit_ext);
 	si->ext_tree = sbi->total_ext_tree;
 	si->ext_node = atomic_read(&sbi->total_ext_node);
-=======
-	si->hit_ext = sbi->read_hit_ext;
-	si->total_ext = sbi->total_hit_ext;
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	si->ndirty_node = get_pages(sbi, F2FS_DIRTY_NODES);
 	si->ndirty_dent = get_pages(sbi, F2FS_DIRTY_DENTS);
 	si->ndirty_dirs = sbi->n_dirty_dirs;
@@ -57,10 +52,7 @@ static void update_general_status(struct f2fs_sb_info *sbi)
 	si->valid_count = valid_user_blocks(sbi);
 	si->valid_node_count = valid_node_count(sbi);
 	si->valid_inode_count = valid_inode_count(sbi);
-<<<<<<< HEAD
 	si->inline_xattr = atomic_read(&sbi->inline_xattr);
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	si->inline_inode = atomic_read(&sbi->inline_inode);
 	si->inline_dir = atomic_read(&sbi->inline_dir);
 	si->utilization = utilization(sbi);
@@ -106,12 +98,8 @@ static void update_general_status(struct f2fs_sb_info *sbi)
 static void update_sit_info(struct f2fs_sb_info *sbi)
 {
 	struct f2fs_stat_info *si = F2FS_STAT(sbi);
-<<<<<<< HEAD
 	unsigned long long blks_per_sec, hblks_per_sec, total_vblocks;
 	unsigned long long bimodal, dist;
-=======
-	unsigned int blks_per_sec, hblks_per_sec, total_vblocks, bimodal, dist;
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	unsigned int segno, vblocks;
 	int ndirty = 0;
 
@@ -129,17 +117,10 @@ static void update_sit_info(struct f2fs_sb_info *sbi)
 			ndirty++;
 		}
 	}
-<<<<<<< HEAD
 	dist = div_u64(MAIN_SECS(sbi) * hblks_per_sec * hblks_per_sec, 100);
 	si->bimodal = div_u64(bimodal, dist);
 	if (si->dirty_count)
 		si->avg_vblocks = div_u64(total_vblocks, ndirty);
-=======
-	dist = MAIN_SECS(sbi) * hblks_per_sec * hblks_per_sec / 100;
-	si->bimodal = bimodal / dist;
-	if (si->dirty_count)
-		si->avg_vblocks = total_vblocks / ndirty;
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	else
 		si->avg_vblocks = 0;
 }
@@ -167,11 +148,7 @@ static void update_mem_info(struct f2fs_sb_info *sbi)
 	si->base_mem += sizeof(struct sit_info);
 	si->base_mem += MAIN_SEGS(sbi) * sizeof(struct seg_entry);
 	si->base_mem += f2fs_bitmap_size(MAIN_SEGS(sbi));
-<<<<<<< HEAD
 	si->base_mem += 3 * SIT_VBLOCK_MAP_SIZE * MAIN_SEGS(sbi);
-=======
-	si->base_mem += 2 * SIT_VBLOCK_MAP_SIZE * MAIN_SEGS(sbi);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	si->base_mem += SIT_VBLOCK_MAP_SIZE;
 	if (sbi->segs_per_sec > 1)
 		si->base_mem += MAIN_SECS(sbi) * sizeof(struct sec_entry);
@@ -215,12 +192,9 @@ get_cache:
 	si->cache_mem += sbi->n_dirty_dirs * sizeof(struct inode_entry);
 	for (i = 0; i <= UPDATE_INO; i++)
 		si->cache_mem += sbi->im[i].ino_num * sizeof(struct ino_entry);
-<<<<<<< HEAD
 	si->cache_mem += sbi->total_ext_tree * sizeof(struct extent_tree);
 	si->cache_mem += atomic_read(&sbi->total_ext_node) *
 						sizeof(struct extent_node);
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	si->page_mem = 0;
 	npages = NODE_MAPPING(sbi)->nrpages;
@@ -256,11 +230,8 @@ static int stat_show(struct seq_file *s, void *v)
 		seq_printf(s, "Other: %u)\n  - Data: %u\n",
 			   si->valid_node_count - si->valid_inode_count,
 			   si->valid_count - si->valid_node_count);
-<<<<<<< HEAD
 		seq_printf(s, "  - Inline_xattr Inode: %u\n",
 			   si->inline_xattr);
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		seq_printf(s, "  - Inline_data Inode: %u\n",
 			   si->inline_inode);
 		seq_printf(s, "  - Inline_dentry Inode: %u\n",
@@ -301,7 +272,6 @@ static int stat_show(struct seq_file *s, void *v)
 		seq_printf(s, "CP calls: %d\n", si->cp_count);
 		seq_printf(s, "GC calls: %d (BG: %d)\n",
 			   si->call_count, si->bg_gc);
-<<<<<<< HEAD
 		seq_printf(s, "  - data segments : %d (%d)\n",
 				si->data_segs, si->bg_data_segs);
 		seq_printf(s, "  - node segments : %d (%d)\n",
@@ -322,15 +292,6 @@ static int stat_show(struct seq_file *s, void *v)
 				si->hit_total, si->total_ext);
 		seq_printf(s, "  - Inner Struct Count: tree: %d, node: %d\n",
 				si->ext_tree, si->ext_node);
-=======
-		seq_printf(s, "  - data segments : %d\n", si->data_segs);
-		seq_printf(s, "  - node segments : %d\n", si->node_segs);
-		seq_printf(s, "Try to move %d blocks\n", si->tot_blks);
-		seq_printf(s, "  - data blocks : %d\n", si->data_blks);
-		seq_printf(s, "  - node blocks : %d\n", si->node_blks);
-		seq_printf(s, "\nExtent Hit Ratio: %d / %d\n",
-			   si->hit_ext, si->total_ext);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		seq_puts(s, "\nBalancing F2FS Async:\n");
 		seq_printf(s, "  - inmem: %4d, wb: %4d\n",
 			   si->inmem_pages, si->wb_pages);
@@ -417,15 +378,12 @@ int f2fs_build_stats(struct f2fs_sb_info *sbi)
 	si->sbi = sbi;
 	sbi->stat_info = si;
 
-<<<<<<< HEAD
 	atomic_set(&sbi->total_hit_ext, 0);
 	atomic_set(&sbi->read_hit_rbtree, 0);
 	atomic_set(&sbi->read_hit_largest, 0);
 	atomic_set(&sbi->read_hit_cached, 0);
 
 	atomic_set(&sbi->inline_xattr, 0);
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	atomic_set(&sbi->inline_inode, 0);
 	atomic_set(&sbi->inline_dir, 0);
 	atomic_set(&sbi->inplace_count, 0);

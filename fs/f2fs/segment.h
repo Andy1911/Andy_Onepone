@@ -163,10 +163,7 @@ struct seg_entry {
 	 */
 	unsigned short ckpt_valid_blocks;
 	unsigned char *ckpt_valid_map;
-<<<<<<< HEAD
 	unsigned char *discard_map;
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	unsigned char type;		/* segment type like CURSEG_XXX_TYPE */
 	unsigned long long mtime;	/* modification time of the segment */
 };
@@ -179,7 +176,6 @@ struct segment_allocation {
 	void (*allocate_segment)(struct f2fs_sb_info *, int, bool);
 };
 
-<<<<<<< HEAD
 /*
  * this value is set in page as a private data which indicate that
  * the page is atomically written, and it is in inmem_pages list.
@@ -189,8 +185,6 @@ struct segment_allocation {
 #define IS_ATOMIC_WRITTEN_PAGE(page)			\
 		(page_private(page) == (unsigned long)ATOMIC_WRITTEN_PAGE)
 
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 struct inmem_pages {
 	struct list_head list;
 	struct page *page;
@@ -352,12 +346,8 @@ static inline void __set_free(struct f2fs_sb_info *sbi, unsigned int segno)
 	clear_bit(segno, free_i->free_segmap);
 	free_i->free_segments++;
 
-<<<<<<< HEAD
 	next = find_next_bit(free_i->free_segmap,
 			start_segno + sbi->segs_per_sec, start_segno);
-=======
-	next = find_next_bit(free_i->free_segmap, MAIN_SEGS(sbi), start_segno);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	if (next >= start_segno + sbi->segs_per_sec) {
 		clear_bit(secno, free_i->free_secmap);
 		free_i->free_sections++;
@@ -573,27 +563,15 @@ static inline unsigned short curseg_blkoff(struct f2fs_sb_info *sbi, int type)
 	return curseg->next_blkoff;
 }
 
-<<<<<<< HEAD
 static inline void check_seg_range(struct f2fs_sb_info *sbi, unsigned int segno)
 {
 	f2fs_bug_on(sbi, segno > TOTAL_SEGS(sbi) - 1);
-=======
-#ifdef CONFIG_F2FS_CHECK_FS
-static inline void check_seg_range(struct f2fs_sb_info *sbi, unsigned int segno)
-{
-	BUG_ON(segno > TOTAL_SEGS(sbi) - 1);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 static inline void verify_block_addr(struct f2fs_sb_info *sbi, block_t blk_addr)
 {
-<<<<<<< HEAD
 	f2fs_bug_on(sbi, blk_addr < SEG0_BLKADDR(sbi)
 					|| blk_addr >= MAX_BLKADDR(sbi));
-=======
-	BUG_ON(blk_addr < SEG0_BLKADDR(sbi));
-	BUG_ON(blk_addr >= MAX_BLKADDR(sbi));
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 /*
@@ -602,23 +580,11 @@ static inline void verify_block_addr(struct f2fs_sb_info *sbi, block_t blk_addr)
 static inline void check_block_count(struct f2fs_sb_info *sbi,
 		int segno, struct f2fs_sit_entry *raw_sit)
 {
-<<<<<<< HEAD
 #ifdef CONFIG_F2FS_CHECK_FS
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	bool is_valid  = test_bit_le(0, raw_sit->valid_map) ? true : false;
 	int valid_blocks = 0;
 	int cur_pos = 0, next_pos;
 
-<<<<<<< HEAD
-=======
-	/* check segment usage */
-	BUG_ON(GET_SIT_VBLOCKS(raw_sit) > sbi->blocks_per_seg);
-
-	/* check boundary of a given segment number */
-	BUG_ON(segno > TOTAL_SEGS(sbi) - 1);
-
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	/* check bitmap with valid block count */
 	do {
 		if (is_valid) {
@@ -634,43 +600,11 @@ static inline void check_block_count(struct f2fs_sb_info *sbi,
 		is_valid = !is_valid;
 	} while (cur_pos < sbi->blocks_per_seg);
 	BUG_ON(GET_SIT_VBLOCKS(raw_sit) != valid_blocks);
-<<<<<<< HEAD
 #endif
 	/* check segment usage, and check boundary of a given segment number */
 	f2fs_bug_on(sbi, GET_SIT_VBLOCKS(raw_sit) > sbi->blocks_per_seg
 					|| segno > TOTAL_SEGS(sbi) - 1);
 }
-=======
-}
-#else
-static inline void check_seg_range(struct f2fs_sb_info *sbi, unsigned int segno)
-{
-	if (segno > TOTAL_SEGS(sbi) - 1)
-		set_sbi_flag(sbi, SBI_NEED_FSCK);
-}
-
-static inline void verify_block_addr(struct f2fs_sb_info *sbi, block_t blk_addr)
-{
-	if (blk_addr < SEG0_BLKADDR(sbi) || blk_addr >= MAX_BLKADDR(sbi))
-		set_sbi_flag(sbi, SBI_NEED_FSCK);
-}
-
-/*
- * Summary block is always treated as an invalid block
- */
-static inline void check_block_count(struct f2fs_sb_info *sbi,
-		int segno, struct f2fs_sit_entry *raw_sit)
-{
-	/* check segment usage */
-	if (GET_SIT_VBLOCKS(raw_sit) > sbi->blocks_per_seg)
-		set_sbi_flag(sbi, SBI_NEED_FSCK);
-
-	/* check boundary of a given segment number */
-	if (segno > TOTAL_SEGS(sbi) - 1)
-		set_sbi_flag(sbi, SBI_NEED_FSCK);
-}
-#endif
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 static inline pgoff_t current_sit_addr(struct f2fs_sb_info *sbi,
 						unsigned int start)

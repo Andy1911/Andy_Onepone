@@ -391,43 +391,27 @@ static int check_valid_map(struct f2fs_sb_info *sbi,
  * On validity, copy that node with cold status, otherwise (invalid node)
  * ignore that.
  */
-<<<<<<< HEAD
 static int gc_node_segment(struct f2fs_sb_info *sbi,
-=======
-static void gc_node_segment(struct f2fs_sb_info *sbi,
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		struct f2fs_summary *sum, unsigned int segno, int gc_type)
 {
 	bool initial = true;
 	struct f2fs_summary *entry;
-<<<<<<< HEAD
 	block_t start_addr;
 	int off;
 
 	start_addr = START_BLOCK(sbi, segno);
 
-=======
-	int off;
-
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 next_step:
 	entry = sum;
 
 	for (off = 0; off < sbi->blocks_per_seg; off++, entry++) {
 		nid_t nid = le32_to_cpu(entry->nid);
 		struct page *node_page;
-<<<<<<< HEAD
 		struct node_info ni;
 
 		/* stop BG_GC if there is not enough free sections. */
 		if (gc_type == BG_GC && has_not_enough_free_secs(sbi, 0))
 			return 0;
-=======
-
-		/* stop BG_GC if there is not enough free sections. */
-		if (gc_type == BG_GC && has_not_enough_free_secs(sbi, 0))
-			return;
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 		if (check_valid_map(sbi, segno, off) == 0)
 			continue;
@@ -446,15 +430,12 @@ next_step:
 			continue;
 		}
 
-<<<<<<< HEAD
 		get_node_info(sbi, nid, &ni);
 		if (ni.blk_addr != start_addr + off) {
 			f2fs_put_page(node_page, 1);
 			continue;
 		}
 
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		/* set page dirty and write it */
 		if (gc_type == FG_GC) {
 			f2fs_wait_on_page_writeback(node_page, NODE);
@@ -464,11 +445,7 @@ next_step:
 				set_page_dirty(node_page);
 		}
 		f2fs_put_page(node_page, 1);
-<<<<<<< HEAD
 		stat_inc_node_blk_count(sbi, 1, gc_type);
-=======
-		stat_inc_node_blk_count(sbi, 1);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	}
 
 	if (initial) {
@@ -484,21 +461,11 @@ next_step:
 		};
 		sync_node_pages(sbi, 0, &wbc);
 
-<<<<<<< HEAD
 		/* return 1 only if FG_GC succefully reclaimed one */
 		if (get_valid_blocks(sbi, segno, 1) == 0)
 			return 1;
 	}
 	return 0;
-=======
-		/*
-		 * In the case of FG_GC, it'd be better to reclaim this victim
-		 * completely.
-		 */
-		if (get_valid_blocks(sbi, segno, 1) != 0)
-			goto next_step;
-	}
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 /*
@@ -528,11 +495,7 @@ block_t start_bidx_of_node(unsigned int node_ofs, struct f2fs_inode_info *fi)
 	return bidx * ADDRS_PER_BLOCK + ADDRS_PER_INODE(fi);
 }
 
-<<<<<<< HEAD
 static bool is_alive(struct f2fs_sb_info *sbi, struct f2fs_summary *sum,
-=======
-static int check_dnode(struct f2fs_sb_info *sbi, struct f2fs_summary *sum,
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		struct node_info *dni, block_t blkaddr, unsigned int *nofs)
 {
 	struct page *node_page;
@@ -545,21 +508,13 @@ static int check_dnode(struct f2fs_sb_info *sbi, struct f2fs_summary *sum,
 
 	node_page = get_node_page(sbi, nid);
 	if (IS_ERR(node_page))
-<<<<<<< HEAD
 		return false;
-=======
-		return 0;
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	get_node_info(sbi, nid, dni);
 
 	if (sum->version != dni->version) {
 		f2fs_put_page(node_page, 1);
-<<<<<<< HEAD
 		return false;
-=======
-		return 0;
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	}
 
 	*nofs = ofs_of_node(node_page);
@@ -567,7 +522,6 @@ static int check_dnode(struct f2fs_sb_info *sbi, struct f2fs_summary *sum,
 	f2fs_put_page(node_page, 1);
 
 	if (source_blkaddr != blkaddr)
-<<<<<<< HEAD
 		return false;
 	return true;
 }
@@ -657,18 +611,6 @@ static void move_data_page(struct inode *inode, block_t bidx, int gc_type)
 	page = get_lock_data_page(inode, bidx);
 	if (IS_ERR(page))
 		return;
-=======
-		return 0;
-	return 1;
-}
-
-static void move_data_page(struct inode *inode, struct page *page, int gc_type)
-{
-	struct f2fs_io_info fio = {
-		.type = DATA,
-		.rw = WRITE_SYNC,
-	};
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	if (gc_type == BG_GC) {
 		if (PageWriteback(page))
@@ -676,7 +618,6 @@ static void move_data_page(struct inode *inode, struct page *page, int gc_type)
 		set_page_dirty(page);
 		set_cold_data(page);
 	} else {
-<<<<<<< HEAD
 		struct f2fs_io_info fio = {
 			.sbi = F2FS_I_SB(inode),
 			.type = DATA,
@@ -690,14 +631,6 @@ static void move_data_page(struct inode *inode, struct page *page, int gc_type)
 			inode_dec_dirty_pages(inode);
 		set_cold_data(page);
 		do_write_data_page(&fio);
-=======
-		f2fs_wait_on_page_writeback(page, DATA);
-
-		if (clear_page_dirty_for_io(page))
-			inode_dec_dirty_pages(inode);
-		set_cold_data(page);
-		do_write_data_page(page, &fio);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		clear_cold_data(page);
 	}
 out:
@@ -711,11 +644,7 @@ out:
  * If the parent node is not valid or the data block address is different,
  * the victim data block is ignored.
  */
-<<<<<<< HEAD
 static int gc_data_segment(struct f2fs_sb_info *sbi, struct f2fs_summary *sum,
-=======
-static void gc_data_segment(struct f2fs_sb_info *sbi, struct f2fs_summary *sum,
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		struct gc_inode_list *gc_list, unsigned int segno, int gc_type)
 {
 	struct super_block *sb = sbi->sb;
@@ -738,11 +667,7 @@ next_step:
 
 		/* stop BG_GC if there is not enough free sections. */
 		if (gc_type == BG_GC && has_not_enough_free_secs(sbi, 0))
-<<<<<<< HEAD
 			return 0;
-=======
-			return;
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 		if (check_valid_map(sbi, segno, off) == 0)
 			continue;
@@ -753,11 +678,7 @@ next_step:
 		}
 
 		/* Get an inode by ino with checking validity */
-<<<<<<< HEAD
 		if (!is_alive(sbi, entry, &dni, start_addr + off, &nofs))
-=======
-		if (check_dnode(sbi, entry, &dni, start_addr + off, &nofs) == 0)
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 			continue;
 
 		if (phase == 1) {
@@ -772,7 +693,6 @@ next_step:
 			if (IS_ERR(inode) || is_bad_inode(inode))
 				continue;
 
-<<<<<<< HEAD
 			/* if encrypted inode, let's go phase 3 */
 			if (f2fs_encrypted_inode(inode) &&
 						S_ISREG(inode->i_mode)) {
@@ -783,12 +703,6 @@ next_step:
 			start_bidx = start_bidx_of_node(nofs, F2FS_I(inode));
 			data_page = get_read_data_page(inode,
 					start_bidx + ofs_in_node, READA);
-=======
-			start_bidx = start_bidx_of_node(nofs, F2FS_I(inode));
-
-			data_page = find_data_page(inode,
-					start_bidx + ofs_in_node, false);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 			if (IS_ERR(data_page)) {
 				iput(inode);
 				continue;
@@ -802,7 +716,6 @@ next_step:
 		/* phase 3 */
 		inode = find_gc_inode(gc_list, dni.ino);
 		if (inode) {
-<<<<<<< HEAD
 			start_bidx = start_bidx_of_node(nofs, F2FS_I(inode))
 								+ ofs_in_node;
 			if (f2fs_encrypted_inode(inode) && S_ISREG(inode->i_mode))
@@ -810,15 +723,6 @@ next_step:
 			else
 				move_data_page(inode, start_bidx, gc_type);
 			stat_inc_data_blk_count(sbi, 1, gc_type);
-=======
-			start_bidx = start_bidx_of_node(nofs, F2FS_I(inode));
-			data_page = get_lock_data_page(inode,
-						start_bidx + ofs_in_node);
-			if (IS_ERR(data_page))
-				continue;
-			move_data_page(inode, data_page, gc_type);
-			stat_inc_data_blk_count(sbi, 1);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		}
 	}
 
@@ -828,23 +732,11 @@ next_step:
 	if (gc_type == FG_GC) {
 		f2fs_submit_merged_bio(sbi, DATA, WRITE);
 
-<<<<<<< HEAD
 		/* return 1 only if FG_GC succefully reclaimed one */
 		if (get_valid_blocks(sbi, segno, 1) == 0)
 			return 1;
 	}
 	return 0;
-=======
-		/*
-		 * In the case of FG_GC, it'd be better to reclaim this victim
-		 * completely.
-		 */
-		if (get_valid_blocks(sbi, segno, 1) != 0) {
-			phase = 2;
-			goto next_step;
-		}
-	}
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 static int __get_victim(struct f2fs_sb_info *sbi, unsigned int *victim,
@@ -860,20 +752,13 @@ static int __get_victim(struct f2fs_sb_info *sbi, unsigned int *victim,
 	return ret;
 }
 
-<<<<<<< HEAD
 static int do_garbage_collect(struct f2fs_sb_info *sbi, unsigned int segno,
-=======
-static void do_garbage_collect(struct f2fs_sb_info *sbi, unsigned int segno,
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 				struct gc_inode_list *gc_list, int gc_type)
 {
 	struct page *sum_page;
 	struct f2fs_summary_block *sum;
 	struct blk_plug plug;
-<<<<<<< HEAD
 	int nfree = 0;
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	/* read segment summary of victim */
 	sum_page = get_sum_page(sbi, segno);
@@ -882,7 +767,6 @@ static void do_garbage_collect(struct f2fs_sb_info *sbi, unsigned int segno,
 
 	sum = page_address(sum_page);
 
-<<<<<<< HEAD
 	/*
 	 * this is to avoid deadlock:
 	 * - lock_page(sum_page)         - f2fs_replace_block
@@ -899,40 +783,21 @@ static void do_garbage_collect(struct f2fs_sb_info *sbi, unsigned int segno,
 	case SUM_TYPE_DATA:
 		nfree = gc_data_segment(sbi, sum->entries, gc_list,
 							segno, gc_type);
-=======
-	switch (GET_SUM_TYPE((&sum->footer))) {
-	case SUM_TYPE_NODE:
-		gc_node_segment(sbi, sum->entries, segno, gc_type);
-		break;
-	case SUM_TYPE_DATA:
-		gc_data_segment(sbi, sum->entries, gc_list, segno, gc_type);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		break;
 	}
 	blk_finish_plug(&plug);
 
-<<<<<<< HEAD
 	stat_inc_seg_count(sbi, GET_SUM_TYPE((&sum->footer)), gc_type);
 	stat_inc_call_count(sbi->stat_info);
 
 	f2fs_put_page(sum_page, 0);
 	return nfree;
-=======
-	stat_inc_seg_count(sbi, GET_SUM_TYPE((&sum->footer)));
-	stat_inc_call_count(sbi->stat_info);
-
-	f2fs_put_page(sum_page, 1);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 int f2fs_gc(struct f2fs_sb_info *sbi)
 {
-<<<<<<< HEAD
 	unsigned int segno = NULL_SEGNO;
 	unsigned int i;
-=======
-	unsigned int segno, i;
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	int gc_type = BG_GC;
 	int nfree = 0;
 	int ret = -1;
@@ -951,18 +816,11 @@ gc_more:
 
 	if (gc_type == BG_GC && has_not_enough_free_secs(sbi, nfree)) {
 		gc_type = FG_GC;
-<<<<<<< HEAD
 		if (__get_victim(sbi, &segno, gc_type) || prefree_segments(sbi))
 			write_checkpoint(sbi, &cpc);
 	}
 
 	if (segno == NULL_SEGNO && !__get_victim(sbi, &segno, gc_type))
-=======
-		write_checkpoint(sbi, &cpc);
-	}
-
-	if (!__get_victim(sbi, &segno, gc_type))
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		goto stop;
 	ret = 0;
 
@@ -972,20 +830,10 @@ gc_more:
 								META_SSA);
 
 	for (i = 0; i < sbi->segs_per_sec; i++)
-<<<<<<< HEAD
 		nfree += do_garbage_collect(sbi, segno + i, &gc_list, gc_type);
 
 	if (gc_type == FG_GC)
 		sbi->cur_victim_sec = NULL_SEGNO;
-=======
-		do_garbage_collect(sbi, segno + i, &gc_list, gc_type);
-
-	if (gc_type == FG_GC) {
-		sbi->cur_victim_sec = NULL_SEGNO;
-		nfree++;
-		WARN_ON(get_valid_blocks(sbi, segno, sbi->segs_per_sec));
-	}
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	if (has_not_enough_free_secs(sbi, nfree))
 		goto gc_more;

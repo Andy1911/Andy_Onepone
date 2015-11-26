@@ -14,15 +14,11 @@
 		{ NODE,		"NODE" },				\
 		{ DATA,		"DATA" },				\
 		{ META,		"META" },				\
-<<<<<<< HEAD
 		{ META_FLUSH,	"META_FLUSH" },				\
 		{ INMEM,	"INMEM" },				\
 		{ INMEM_DROP,	"INMEM_DROP" },				\
 		{ IPU,		"IN-PLACE" },				\
 		{ OPU,		"OUT-OF-PLACE" })
-=======
-		{ META_FLUSH,	"META_FLUSH" })
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 #define F2FS_BIO_MASK(t)	(t & (READA | WRITE_FLUSH_FUA))
 #define F2FS_BIO_EXTRA_MASK(t)	(t & (REQ_META | REQ_PRIO))
@@ -82,17 +78,11 @@
 		{ CP_UMOUNT,	"Umount" },				\
 		{ CP_FASTBOOT,	"Fastboot" },				\
 		{ CP_SYNC,	"Sync" },				\
-<<<<<<< HEAD
 		{ CP_RECOVERY,	"Recovery" },				\
 		{ CP_DISCARD,	"Discard" })
 
 struct victim_sel_policy;
 struct f2fs_map_blocks;
-=======
-		{ CP_DISCARD,	"Discard" })
-
-struct victim_sel_policy;
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 DECLARE_EVENT_CLASS(f2fs__inode,
 
@@ -457,63 +447,35 @@ TRACE_EVENT(f2fs_truncate_partial_nodes,
 		__entry->err)
 );
 
-<<<<<<< HEAD
 TRACE_EVENT(f2fs_map_blocks,
 	TP_PROTO(struct inode *inode, struct f2fs_map_blocks *map, int ret),
 
 	TP_ARGS(inode, map, ret),
-=======
-TRACE_EVENT(f2fs_get_data_block,
-	TP_PROTO(struct inode *inode, sector_t iblock,
-				struct buffer_head *bh, int ret),
-
-	TP_ARGS(inode, iblock, bh, ret),
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	TP_STRUCT__entry(
 		__field(dev_t,	dev)
 		__field(ino_t,	ino)
-<<<<<<< HEAD
 		__field(block_t,	m_lblk)
 		__field(block_t,	m_pblk)
 		__field(unsigned int,	m_len)
-=======
-		__field(sector_t,	iblock)
-		__field(sector_t,	bh_start)
-		__field(size_t,	bh_size)
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		__field(int,	ret)
 	),
 
 	TP_fast_assign(
 		__entry->dev		= inode->i_sb->s_dev;
 		__entry->ino		= inode->i_ino;
-<<<<<<< HEAD
 		__entry->m_lblk		= map->m_lblk;
 		__entry->m_pblk		= map->m_pblk;
 		__entry->m_len		= map->m_len;
-=======
-		__entry->iblock		= iblock;
-		__entry->bh_start	= bh->b_blocknr;
-		__entry->bh_size	= bh->b_size;
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		__entry->ret		= ret;
 	),
 
 	TP_printk("dev = (%d,%d), ino = %lu, file offset = %llu, "
-<<<<<<< HEAD
 		"start blkaddr = 0x%llx, len = 0x%llx, err = %d",
 		show_dev_ino(__entry),
 		(unsigned long long)__entry->m_lblk,
 		(unsigned long long)__entry->m_pblk,
 		(unsigned long long)__entry->m_len,
-=======
-		"start blkaddr = 0x%llx, len = 0x%llx bytes, err = %d",
-		show_dev_ino(__entry),
-		(unsigned long long)__entry->iblock,
-		(unsigned long long)__entry->bh_start,
-		(unsigned long long)__entry->bh_size,
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		__entry->ret)
 );
 
@@ -897,7 +859,6 @@ DEFINE_EVENT(f2fs__page, f2fs_writepage,
 	TP_ARGS(page, type)
 );
 
-<<<<<<< HEAD
 DEFINE_EVENT(f2fs__page, f2fs_do_write_data_page,
 
 	TP_PROTO(struct page *page, int type),
@@ -905,8 +866,6 @@ DEFINE_EVENT(f2fs__page, f2fs_do_write_data_page,
 	TP_ARGS(page, type)
 );
 
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 DEFINE_EVENT(f2fs__page, f2fs_readpage,
 
 	TP_PROTO(struct page *page, int type),
@@ -928,7 +887,6 @@ DEFINE_EVENT(f2fs__page, f2fs_vm_page_mkwrite,
 	TP_ARGS(page, type)
 );
 
-<<<<<<< HEAD
 DEFINE_EVENT(f2fs__page, f2fs_register_inmem_page,
 
 	TP_PROTO(struct page *page, int type),
@@ -943,8 +901,6 @@ DEFINE_EVENT(f2fs__page, f2fs_commit_inmem_page,
 	TP_ARGS(page, type)
 );
 
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 TRACE_EVENT(f2fs_writepages,
 
 	TP_PROTO(struct inode *inode, struct writeback_control *wbc, int type),
@@ -1078,7 +1034,6 @@ TRACE_EVENT(f2fs_issue_flush,
 		__entry->nobarrier ? "skip (nobarrier)" : "issue",
 		__entry->flush_merge ? " with flush_merge" : "")
 );
-<<<<<<< HEAD
 
 TRACE_EVENT(f2fs_lookup_extent_tree_start,
 
@@ -1213,8 +1168,6 @@ TRACE_EVENT(f2fs_destroy_extent_tree,
 		__entry->node_cnt)
 );
 
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 #endif /* _TRACE_F2FS_H */
 
  /* This part must be outside protection */

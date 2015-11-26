@@ -83,14 +83,11 @@ static int recover_dentry(struct inode *inode, struct page *ipage)
 		goto out;
 	}
 
-<<<<<<< HEAD
 	if (file_enc_name(inode)) {
 		iput(dir);
 		return 0;
 	}
 
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	name.len = le32_to_cpu(raw_inode->i_namelen);
 	name.name = raw_inode->i_name;
 
@@ -101,16 +98,9 @@ static int recover_dentry(struct inode *inode, struct page *ipage)
 	}
 retry:
 	de = f2fs_find_entry(dir, &name, &page);
-<<<<<<< HEAD
 	if (de && inode->i_ino == le32_to_cpu(de->ino))
 		goto out_unmap_put;
 
-=======
-	if (de && inode->i_ino == le32_to_cpu(de->ino)) {
-		clear_inode_flag(F2FS_I(inode), FI_INC_LINK);
-		goto out_unmap_put;
-	}
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	if (de) {
 		einode = f2fs_iget(inode->i_sb, le32_to_cpu(de->ino));
 		if (IS_ERR(einode)) {
@@ -129,11 +119,7 @@ retry:
 		iput(einode);
 		goto retry;
 	}
-<<<<<<< HEAD
 	err = __f2fs_add_link(dir, &name, inode, inode->i_ino, inode->i_mode);
-=======
-	err = __f2fs_add_link(dir, &name, inode);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	if (err)
 		goto out_err;
 
@@ -162,10 +148,7 @@ out:
 static void recover_inode(struct inode *inode, struct page *page)
 {
 	struct f2fs_inode *raw = F2FS_INODE(page);
-<<<<<<< HEAD
 	char *name;
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	inode->i_mode = le16_to_cpu(raw->i_mode);
 	i_size_write(inode, le64_to_cpu(raw->i_size));
@@ -176,7 +159,6 @@ static void recover_inode(struct inode *inode, struct page *page)
 	inode->i_ctime.tv_nsec = le32_to_cpu(raw->i_ctime_nsec);
 	inode->i_mtime.tv_nsec = le32_to_cpu(raw->i_mtime_nsec);
 
-<<<<<<< HEAD
 	if (file_enc_name(inode))
 		name = "<encrypted>";
 	else
@@ -184,10 +166,6 @@ static void recover_inode(struct inode *inode, struct page *page)
 
 	f2fs_msg(inode->i_sb, KERN_NOTICE, "recover_inode: ino = %x, name = %s",
 			ino_of_node(page), name);
-=======
-	f2fs_msg(inode->i_sb, KERN_NOTICE, "recover_inode: ino = %x, name = %s",
-			ino_of_node(page), F2FS_INODE(page)->i_name);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 static int find_fsync_dnodes(struct f2fs_sb_info *sbi, struct list_head *head)
@@ -207,11 +185,7 @@ static int find_fsync_dnodes(struct f2fs_sb_info *sbi, struct list_head *head)
 	while (1) {
 		struct fsync_inode_entry *entry;
 
-<<<<<<< HEAD
 		if (!is_valid_blkaddr(sbi, blkaddr, META_POR))
-=======
-		if (blkaddr < MAIN_BLKADDR(sbi) || blkaddr >= MAX_BLKADDR(sbi))
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 			return 0;
 
 		page = get_meta_page(sbi, blkaddr);
@@ -223,15 +197,7 @@ static int find_fsync_dnodes(struct f2fs_sb_info *sbi, struct list_head *head)
 			goto next;
 
 		entry = get_fsync_inode(head, ino_of_node(page));
-<<<<<<< HEAD
 		if (!entry) {
-=======
-		if (entry) {
-			if (IS_INODE(page) && is_dent_dnode(page))
-				set_inode_flag(F2FS_I(entry->inode),
-							FI_INC_LINK);
-		} else {
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 			if (IS_INODE(page) && is_dent_dnode(page)) {
 				err = recover_inode_page(sbi, page);
 				if (err)
@@ -252,15 +218,10 @@ static int find_fsync_dnodes(struct f2fs_sb_info *sbi, struct list_head *head)
 			if (IS_ERR(entry->inode)) {
 				err = PTR_ERR(entry->inode);
 				kmem_cache_free(fsync_entry_slab, entry);
-<<<<<<< HEAD
 				if (err == -ENOENT) {
 					err = 0;
 					goto next;
 				}
-=======
-				if (err == -ENOENT)
-					goto next;
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 				break;
 			}
 			list_add_tail(&entry->list, head);
@@ -303,10 +264,7 @@ static int check_index_in_prev_nodes(struct f2fs_sb_info *sbi,
 	struct f2fs_summary_block *sum_node;
 	struct f2fs_summary sum;
 	struct page *sum_page, *node_page;
-<<<<<<< HEAD
 	struct dnode_of_data tdn = *dn;
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	nid_t ino, nid;
 	struct inode *inode;
 	unsigned int offset;
@@ -334,7 +292,6 @@ got_it:
 	/* Use the locked dnode page and inode */
 	nid = le32_to_cpu(sum.nid);
 	if (dn->inode->i_ino == nid) {
-<<<<<<< HEAD
 		tdn.nid = nid;
 		if (!dn->inode_page_locked)
 			lock_page(dn->inode_page);
@@ -344,19 +301,6 @@ got_it:
 	} else if (dn->nid == nid) {
 		tdn.ofs_in_node = le16_to_cpu(sum.ofs_in_node);
 		goto truncate_out;
-=======
-		struct dnode_of_data tdn = *dn;
-		tdn.nid = nid;
-		tdn.node_page = dn->inode_page;
-		tdn.ofs_in_node = le16_to_cpu(sum.ofs_in_node);
-		truncate_data_blocks_range(&tdn, 1);
-		return 0;
-	} else if (dn->nid == nid) {
-		struct dnode_of_data tdn = *dn;
-		tdn.ofs_in_node = le16_to_cpu(sum.ofs_in_node);
-		truncate_data_blocks_range(&tdn, 1);
-		return 0;
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	}
 
 	/* Get the node page */
@@ -380,7 +324,6 @@ got_it:
 	bidx = start_bidx_of_node(offset, F2FS_I(inode)) +
 			le16_to_cpu(sum.ofs_in_node);
 
-<<<<<<< HEAD
 	/*
 	 * if inode page is locked, unlock temporarily, but its reference
 	 * count keeps alive.
@@ -408,20 +351,6 @@ truncate_out:
 		truncate_data_blocks_range(&tdn, 1);
 	if (dn->inode->i_ino == nid && !dn->inode_page_locked)
 		unlock_page(dn->inode_page);
-=======
-	if (ino != dn->inode->i_ino) {
-		truncate_hole(inode, bidx, bidx + 1);
-		iput(inode);
-	} else {
-		struct dnode_of_data tdn;
-		set_new_dnode(&tdn, inode, dn->inode_page, NULL, 0);
-		if (get_dnode_of_data(&tdn, bidx, LOOKUP_NODE))
-			return 0;
-		if (tdn.data_blkaddr != NULL_ADDR)
-			truncate_data_blocks_range(&tdn, 1);
-		f2fs_put_page(tdn.node_page, 1);
-	}
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	return 0;
 }
 
@@ -431,10 +360,6 @@ static int do_recover_data(struct f2fs_sb_info *sbi, struct inode *inode,
 	struct f2fs_inode_info *fi = F2FS_I(inode);
 	unsigned int start, end;
 	struct dnode_of_data dn;
-<<<<<<< HEAD
-=======
-	struct f2fs_summary sum;
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	struct node_info ni;
 	int err = 0, recovered = 0;
 
@@ -474,17 +399,12 @@ static int do_recover_data(struct f2fs_sb_info *sbi, struct inode *inode,
 	f2fs_bug_on(sbi, ni.ino != ino_of_node(page));
 	f2fs_bug_on(sbi, ofs_of_node(dn.node_page) != ofs_of_node(page));
 
-<<<<<<< HEAD
 	for (; start < end; start++, dn.ofs_in_node++) {
-=======
-	for (; start < end; start++) {
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		block_t src, dest;
 
 		src = datablock_addr(dn.node_page, dn.ofs_in_node);
 		dest = datablock_addr(page, dn.ofs_in_node);
 
-<<<<<<< HEAD
 		/* skip recovering if dest is the same as src */
 		if (src == dest)
 			continue;
@@ -509,9 +429,6 @@ static int do_recover_data(struct f2fs_sb_info *sbi, struct inode *inode,
 		/* dest is valid block, try to recover from src to dest */
 		if (is_valid_blkaddr(sbi, dest, META_POR)) {
 
-=======
-		if (src != dest && dest != NEW_ADDR && dest != NULL_ADDR) {
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 			if (src == NULL_ADDR) {
 				err = reserve_new_block(&dn);
 				/* We should not get -ENOSPC */
@@ -523,7 +440,6 @@ static int do_recover_data(struct f2fs_sb_info *sbi, struct inode *inode,
 			if (err)
 				goto err;
 
-<<<<<<< HEAD
 			/* write dummy data page */
 			f2fs_replace_block(sbi, &dn, src, dest,
 							ni.version, false);
@@ -531,21 +447,6 @@ static int do_recover_data(struct f2fs_sb_info *sbi, struct inode *inode,
 		}
 	}
 
-=======
-			set_summary(&sum, dn.nid, dn.ofs_in_node, ni.version);
-
-			/* write dummy data page */
-			recover_data_page(sbi, NULL, &sum, src, dest);
-			dn.data_blkaddr = dest;
-			update_extent_cache(&dn);
-			recovered++;
-		}
-		dn.ofs_in_node++;
-	}
-
-	/* write node page in place */
-	set_summary(&sum, dn.nid, 0, 0);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	if (IS_INODE(dn.node_page))
 		sync_inode_page(&dn);
 
@@ -579,11 +480,7 @@ static int recover_data(struct f2fs_sb_info *sbi,
 	while (1) {
 		struct fsync_inode_entry *entry;
 
-<<<<<<< HEAD
 		if (!is_valid_blkaddr(sbi, blkaddr, META_POR))
-=======
-		if (blkaddr < MAIN_BLKADDR(sbi) || blkaddr >= MAX_BLKADDR(sbi))
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 			break;
 
 		ra_meta_pages_cond(sbi, blkaddr);
@@ -648,21 +545,12 @@ int recover_fsync_data(struct f2fs_sb_info *sbi)
 
 	INIT_LIST_HEAD(&inode_list);
 
-<<<<<<< HEAD
-=======
-	/* step #1: find fsynced inode numbers */
-	set_sbi_flag(sbi, SBI_POR_DOING);
-
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	/* prevent checkpoint */
 	mutex_lock(&sbi->cp_mutex);
 
 	blkaddr = NEXT_FREE_BLKADDR(sbi, curseg);
 
-<<<<<<< HEAD
 	/* step #1: find fsynced inode numbers */
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	err = find_fsync_dnodes(sbi, &inode_list);
 	if (err)
 		goto out;
@@ -691,36 +579,25 @@ out:
 
 	clear_sbi_flag(sbi, SBI_POR_DOING);
 	if (err) {
-<<<<<<< HEAD
 		bool invalidate = false;
 
 		if (discard_next_dnode(sbi, blkaddr))
 			invalidate = true;
-=======
-		discard_next_dnode(sbi, blkaddr);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 		/* Flush all the NAT/SIT pages */
 		while (get_pages(sbi, F2FS_DIRTY_META))
 			sync_meta_pages(sbi, META, LONG_MAX);
-<<<<<<< HEAD
 
 		/* invalidate temporary meta page */
 		if (invalidate)
 			invalidate_mapping_pages(META_MAPPING(sbi),
 							blkaddr, blkaddr);
 
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		set_ckpt_flags(sbi->ckpt, CP_ERROR_FLAG);
 		mutex_unlock(&sbi->cp_mutex);
 	} else if (need_writecp) {
 		struct cp_control cpc = {
-<<<<<<< HEAD
 			.reason = CP_RECOVERY,
-=======
-			.reason = CP_SYNC,
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		};
 		mutex_unlock(&sbi->cp_mutex);
 		write_checkpoint(sbi, &cpc);

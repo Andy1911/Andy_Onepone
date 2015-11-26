@@ -33,20 +33,12 @@ struct last_io_info {
 };
 
 extern void f2fs_trace_pid(struct page *);
-<<<<<<< HEAD
 extern void f2fs_trace_ios(struct f2fs_io_info *, int);
-=======
-extern void f2fs_trace_ios(struct page *, struct f2fs_io_info *, int);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 extern void f2fs_build_trace_ios(void);
 extern void f2fs_destroy_trace_ios(void);
 #else
 #define f2fs_trace_pid(p)
-<<<<<<< HEAD
 #define f2fs_trace_ios(i, n)
-=======
-#define f2fs_trace_ios(p, i, n)
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 #define f2fs_build_trace_ios()
 #define f2fs_destroy_trace_ios()
 

@@ -80,11 +80,7 @@ out:
 	radix_tree_preload_end();
 }
 
-<<<<<<< HEAD
 void f2fs_trace_ios(struct f2fs_io_info *fio, int flush)
-=======
-void f2fs_trace_ios(struct page *page, struct f2fs_io_info *fio, int flush)
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 {
 	struct inode *inode;
 	pid_t pid;
@@ -95,13 +91,8 @@ void f2fs_trace_ios(struct page *page, struct f2fs_io_info *fio, int flush)
 		return;
 	}
 
-<<<<<<< HEAD
 	inode = fio->page->mapping->host;
 	pid = page_private(fio->page);
-=======
-	inode = page->mapping->host;
-	pid = page_private(page);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	major = MAJOR(inode->i_sb->s_dev);
 	minor = MINOR(inode->i_sb->s_dev);

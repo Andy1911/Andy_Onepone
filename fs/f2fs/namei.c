@@ -14,10 +14,7 @@
 #include <linux/sched.h>
 #include <linux/ctype.h>
 #include <linux/dcache.h>
-<<<<<<< HEAD
 #include <linux/namei.h>
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 #include "f2fs.h"
 #include "node.h"
@@ -56,7 +53,6 @@ static struct inode *f2fs_new_inode(struct inode *dir, umode_t mode)
 	if (err) {
 		err = -EINVAL;
 		nid_free = true;
-<<<<<<< HEAD
 		goto fail;
 	}
 
@@ -75,38 +71,16 @@ static struct inode *f2fs_new_inode(struct inode *dir, umode_t mode)
 	stat_inc_inline_inode(inode);
 	stat_inc_inline_dir(inode);
 
-=======
-		goto out;
-	}
-
-	if (f2fs_may_inline(inode))
-		set_inode_flag(F2FS_I(inode), FI_INLINE_DATA);
-	if (test_opt(sbi, INLINE_DENTRY) && S_ISDIR(inode->i_mode))
-		set_inode_flag(F2FS_I(inode), FI_INLINE_DENTRY);
-
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	trace_f2fs_new_inode(inode, 0);
 	mark_inode_dirty(inode);
 	return inode;
 
-<<<<<<< HEAD
 fail:
 	trace_f2fs_new_inode(inode, err);
 	make_bad_inode(inode);
 	if (nid_free)
 		set_inode_flag(F2FS_I(inode), FI_FREE_NID);
 	iput(inode);
-=======
-out:
-	clear_nlink(inode);
-	unlock_new_inode(inode);
-fail:
-	trace_f2fs_new_inode(inode, err);
-	make_bad_inode(inode);
-	iput(inode);
-	if (nid_free)
-		alloc_nid_failed(sbi, ino);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	return ERR_PTR(err);
 }
 
@@ -115,7 +89,6 @@ static int is_multimedia_file(const unsigned char *s, const char *sub)
 	size_t slen = strlen(s);
 	size_t sublen = strlen(sub);
 
-<<<<<<< HEAD
 	/*
 	 * filename format of multimedia file should be defined as:
 	 * "filename + '.' + extension".
@@ -124,9 +97,6 @@ static int is_multimedia_file(const unsigned char *s, const char *sub)
 		return 0;
 
 	if (s[slen - sublen - 1] != '.')
-=======
-	if (sublen > slen)
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		return 0;
 
 	return !strncasecmp(s + slen - sublen, sub, sublen);
@@ -180,10 +150,6 @@ static int f2fs_create(struct inode *dir, struct dentry *dentry, umode_t mode,
 
 	alloc_nid_done(sbi, ino);
 
-<<<<<<< HEAD
-=======
-	stat_inc_inline_inode(inode);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	d_instantiate(dentry, inode);
 	unlock_new_inode(inode);
 
@@ -202,13 +168,10 @@ static int f2fs_link(struct dentry *old_dentry, struct inode *dir,
 	struct f2fs_sb_info *sbi = F2FS_I_SB(dir);
 	int err;
 
-<<<<<<< HEAD
 	if (f2fs_encrypted_inode(dir) &&
 		!f2fs_is_child_context_consistent_with_parent(dir, inode))
 		return -EPERM;
 
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	f2fs_balance_fs(sbi);
 
 	inode->i_ctime = CURRENT_TIME;
@@ -242,7 +205,6 @@ struct dentry *f2fs_get_parent(struct dentry *child)
 	return d_obtain_alias(f2fs_iget(child->d_inode->i_sb, ino));
 }
 
-<<<<<<< HEAD
 static int __recover_dot_dentries(struct inode *dir, nid_t pino)
 {
 	struct f2fs_sb_info *sbi = F2FS_I_SB(dir);
@@ -281,25 +243,19 @@ out:
 	return err;
 }
 
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 static struct dentry *f2fs_lookup(struct inode *dir, struct dentry *dentry,
 					struct nameidata *nd)
 {
 	struct inode *inode = NULL;
 	struct f2fs_dir_entry *de;
 	struct page *page;
-<<<<<<< HEAD
 	nid_t ino;
 	int err = 0;
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	if (dentry->d_name.len > F2FS_NAME_LEN)
 		return ERR_PTR(-ENAMETOOLONG);
 
 	de = f2fs_find_entry(dir, &dentry->d_name, &page);
-<<<<<<< HEAD
 	if (!de)
 		return d_splice_alias(inode, dentry);
 
@@ -321,19 +277,6 @@ static struct dentry *f2fs_lookup(struct inode *dir, struct dentry *dentry,
 err_out:
 	iget_failed(inode);
 	return ERR_PTR(err);
-=======
-	if (de) {
-		nid_t ino = le32_to_cpu(de->ino);
-		f2fs_dentry_kunmap(dir, page);
-		f2fs_put_page(page, 0);
-
-		inode = f2fs_iget(dir->i_sb, ino);
-		if (IS_ERR(inode))
-			return ERR_CAST(inode);
-	}
-
-	return d_splice_alias(inode, dentry);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 static int f2fs_unlink(struct inode *dir, struct dentry *dentry)
@@ -372,7 +315,6 @@ fail:
 	return err;
 }
 
-<<<<<<< HEAD
 static void *f2fs_follow_link(struct dentry *dentry, struct nameidata *nd)
 {
 	struct page *page;
@@ -390,14 +332,11 @@ static void *f2fs_follow_link(struct dentry *dentry, struct nameidata *nd)
 	return page;
 }
 
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 static int f2fs_symlink(struct inode *dir, struct dentry *dentry,
 					const char *symname)
 {
 	struct f2fs_sb_info *sbi = F2FS_I_SB(dir);
 	struct inode *inode;
-<<<<<<< HEAD
 	size_t len = strlen(symname);
 	size_t p_len;
 	char *p_str;
@@ -408,25 +347,16 @@ static int f2fs_symlink(struct inode *dir, struct dentry *dentry,
 	if (len > dir->i_sb->s_blocksize)
 		return -ENAMETOOLONG;
 
-=======
-	size_t symlen = strlen(symname) + 1;
-	int err;
-
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	f2fs_balance_fs(sbi);
 
 	inode = f2fs_new_inode(dir, S_IFLNK | S_IRWXUGO);
 	if (IS_ERR(inode))
 		return PTR_ERR(inode);
 
-<<<<<<< HEAD
 	if (f2fs_encrypted_inode(inode))
 		inode->i_op = &f2fs_encrypted_symlink_inode_operations;
 	else
 		inode->i_op = &f2fs_symlink_inode_operations;
-=======
-	inode->i_op = &f2fs_symlink_inode_operations;
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	inode->i_mapping->a_ops = &f2fs_dblock_aops;
 
 	f2fs_lock_op(sbi);
@@ -434,7 +364,6 @@ static int f2fs_symlink(struct inode *dir, struct dentry *dentry,
 	if (err)
 		goto out;
 	f2fs_unlock_op(sbi);
-<<<<<<< HEAD
 	alloc_nid_done(sbi, inode->i_ino);
 
 	if (f2fs_encrypted_inode(dir)) {
@@ -495,17 +424,6 @@ err_out:
 
 	kfree(sd);
 	f2fs_fname_crypto_free_buffer(&disk_link);
-=======
-
-	err = page_symlink(inode, symname, symlen);
-	alloc_nid_done(sbi, inode->i_ino);
-
-	d_instantiate(dentry, inode);
-	unlock_new_inode(inode);
-
-	if (IS_DIRSYNC(dir))
-		f2fs_sync_fs(sbi->sb, 1);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	return err;
 out:
 	handle_failed_inode(inode);
@@ -536,10 +454,6 @@ static int f2fs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 		goto out_fail;
 	f2fs_unlock_op(sbi);
 
-<<<<<<< HEAD
-=======
-	stat_inc_inline_dir(inode);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	alloc_nid_done(sbi, inode->i_ino);
 
 	d_instantiate(dentry, inode);
@@ -614,7 +528,6 @@ static int f2fs_rename(struct inode *old_dir, struct dentry *old_dentry,
 	struct f2fs_dir_entry *new_entry;
 	int err = -ENOENT;
 
-<<<<<<< HEAD
 	if ((old_dir != new_dir) && f2fs_encrypted_inode(new_dir) &&
 		!f2fs_is_child_context_consistent_with_parent(new_dir,
 							old_inode)) {
@@ -622,8 +535,6 @@ static int f2fs_rename(struct inode *old_dir, struct dentry *old_dentry,
 		goto out;
 	}
 
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	f2fs_balance_fs(sbi);
 
 	old_entry = f2fs_find_entry(old_dir, &old_dentry->d_name, &old_page);
@@ -655,12 +566,8 @@ static int f2fs_rename(struct inode *old_dir, struct dentry *old_dentry,
 		if (err)
 			goto put_out_dir;
 
-<<<<<<< HEAD
 		if (update_dent_inode(old_inode, new_inode,
 						&new_dentry->d_name)) {
-=======
-		if (update_dent_inode(old_inode, &new_dentry->d_name)) {
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 			release_orphan_inode(sbi);
 			goto put_out_dir;
 		}
@@ -700,11 +607,8 @@ static int f2fs_rename(struct inode *old_dir, struct dentry *old_dentry,
 
 	down_write(&F2FS_I(old_inode)->i_sem);
 	file_lost_pino(old_inode);
-<<<<<<< HEAD
 	if (new_inode && file_enc_name(new_inode))
 		file_set_enc_name(old_inode);
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	up_write(&F2FS_I(old_inode)->i_sem);
 
 	old_inode->i_ctime = CURRENT_TIME;
@@ -748,7 +652,6 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
 #ifdef CONFIG_F2FS_FS_ENCRYPTION
 static void *f2fs_encrypted_follow_link(struct dentry *dentry,
 						struct nameidata *nd)
@@ -835,8 +738,6 @@ const struct inode_operations f2fs_encrypted_symlink_inode_operations = {
 };
 #endif
 
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 const struct inode_operations f2fs_dir_inode_operations = {
 	.create		= f2fs_create,
 	.lookup		= f2fs_lookup,
@@ -860,11 +761,7 @@ const struct inode_operations f2fs_dir_inode_operations = {
 
 const struct inode_operations f2fs_symlink_inode_operations = {
 	.readlink       = generic_readlink,
-<<<<<<< HEAD
 	.follow_link    = f2fs_follow_link,
-=======
-	.follow_link    = page_follow_link_light,
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	.put_link       = page_put_link,
 	.getattr	= f2fs_getattr,
 	.setattr	= f2fs_setattr,

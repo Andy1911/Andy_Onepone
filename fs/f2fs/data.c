@@ -15,18 +15,12 @@
 #include <linux/aio.h>
 #include <linux/writeback.h>
 #include <linux/backing-dev.h>
-<<<<<<< HEAD
 #include <linux/pagevec.h>
 #include <linux/blkdev.h>
 #include <linux/bio.h>
 #include <linux/prefetch.h>
 #include <linux/uio.h>
 #include <linux/cleancache.h>
-=======
-#include <linux/blkdev.h>
-#include <linux/bio.h>
-#include <linux/prefetch.h>
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 #include "f2fs.h"
 #include "node.h"
@@ -39,7 +33,6 @@ static void f2fs_read_end_io(struct bio *bio, int err)
 	struct bio_vec *bvec;
 	int i;
 
-<<<<<<< HEAD
 	if (f2fs_bio_encrypted(bio)) {
 		if (err) {
 			f2fs_release_crypto_ctx(bio->bi_private);
@@ -49,8 +42,6 @@ static void f2fs_read_end_io(struct bio *bio, int err)
 		}
 	}
 
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	__bio_for_each_segment(bvec, bio, i, 0) {
 		struct page *page = bvec->bv_page;
 
@@ -74,11 +65,8 @@ static void f2fs_write_end_io(struct bio *bio, int err)
 	__bio_for_each_segment(bvec, bio, i, 0) {
 		struct page *page = bvec->bv_page;
 
-<<<<<<< HEAD
 		f2fs_restore_and_release_control_page(&page);
 
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		if (unlikely(err)) {
 			set_page_dirty(page);
 			set_bit(AS_EIO, &page->mapping->flags);
@@ -103,21 +91,12 @@ static struct bio *__bio_alloc(struct f2fs_sb_info *sbi, block_t blk_addr,
 {
 	struct bio *bio;
 
-<<<<<<< HEAD
 	bio = f2fs_bio_alloc(npages);
-=======
-	/* No failure on bio allocation */
-	bio = bio_alloc(GFP_NOIO, npages);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	bio->bi_bdev = sbi->sb->s_bdev;
 	bio->bi_sector = SECTOR_FROM_BLOCK(blk_addr);
 	bio->bi_end_io = is_read ? f2fs_read_end_io : f2fs_write_end_io;
-<<<<<<< HEAD
 	bio->bi_private = is_read ? NULL : sbi;
-=======
-	bio->bi_private = sbi;
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	return bio;
 }
@@ -164,7 +143,6 @@ void f2fs_submit_merged_bio(struct f2fs_sb_info *sbi,
  * Fill the locked page with data located in the block address.
  * Return unlocked page.
  */
-<<<<<<< HEAD
 int f2fs_submit_page_bio(struct f2fs_io_info *fio)
 {
 	struct bio *bio;
@@ -178,22 +156,6 @@ int f2fs_submit_page_bio(struct f2fs_io_info *fio)
 
 	if (bio_add_page(bio, page, PAGE_CACHE_SIZE, 0) < PAGE_CACHE_SIZE) {
 		bio_put(bio);
-=======
-int f2fs_submit_page_bio(struct f2fs_sb_info *sbi, struct page *page,
-					struct f2fs_io_info *fio)
-{
-	struct bio *bio;
-
-	trace_f2fs_submit_page_bio(page, fio);
-	f2fs_trace_ios(page, fio, 0);
-
-	/* Allocate a new bio */
-	bio = __bio_alloc(sbi, fio->blk_addr, 1, is_read_io(fio->rw));
-
-	if (bio_add_page(bio, page, PAGE_CACHE_SIZE, 0) < PAGE_CACHE_SIZE) {
-		bio_put(bio);
-		f2fs_put_page(page, 1);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		return -EFAULT;
 	}
 
@@ -201,7 +163,6 @@ int f2fs_submit_page_bio(struct f2fs_sb_info *sbi, struct page *page,
 	return 0;
 }
 
-<<<<<<< HEAD
 void f2fs_submit_page_mbio(struct f2fs_io_info *fio)
 {
 	struct f2fs_sb_info *sbi = fio->sbi;
@@ -209,14 +170,6 @@ void f2fs_submit_page_mbio(struct f2fs_io_info *fio)
 	struct f2fs_bio_info *io;
 	bool is_read = is_read_io(fio->rw);
 	struct page *bio_page;
-=======
-void f2fs_submit_page_mbio(struct f2fs_sb_info *sbi, struct page *page,
-					struct f2fs_io_info *fio)
-{
-	enum page_type btype = PAGE_TYPE_OF_BIO(fio->type);
-	struct f2fs_bio_info *io;
-	bool is_read = is_read_io(fio->rw);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	io = is_read ? &sbi->read_io : &sbi->write_io[btype];
 
@@ -238,30 +191,19 @@ alloc_new:
 		io->fio = *fio;
 	}
 
-<<<<<<< HEAD
 	bio_page = fio->encrypted_page ? fio->encrypted_page : fio->page;
 
 	if (bio_add_page(io->bio, bio_page, PAGE_CACHE_SIZE, 0) <
-=======
-	if (bio_add_page(io->bio, page, PAGE_CACHE_SIZE, 0) <
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 							PAGE_CACHE_SIZE) {
 		__submit_merged_bio(io);
 		goto alloc_new;
 	}
 
 	io->last_block_in_bio = fio->blk_addr;
-<<<<<<< HEAD
 	f2fs_trace_ios(fio, 0);
 
 	up_write(&io->io_rwsem);
 	trace_f2fs_submit_page_mbio(fio->page, fio);
-=======
-	f2fs_trace_ios(page, fio, 0);
-
-	up_write(&io->io_rwsem);
-	trace_f2fs_submit_page_mbio(page, fio);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 /*
@@ -270,11 +212,7 @@ alloc_new:
  *  ->node_page
  *    update block addresses in the node page
  */
-<<<<<<< HEAD
 void set_data_blkaddr(struct dnode_of_data *dn)
-=======
-static void __set_data_blkaddr(struct dnode_of_data *dn)
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 {
 	struct f2fs_node *rn;
 	__le32 *addr_array;
@@ -303,11 +241,7 @@ int reserve_new_block(struct dnode_of_data *dn)
 	trace_f2fs_reserve_new_block(dn->inode, dn->nid, dn->ofs_in_node);
 
 	dn->data_blkaddr = NEW_ADDR;
-<<<<<<< HEAD
 	set_data_blkaddr(dn);
-=======
-	__set_data_blkaddr(dn);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	mark_inode_dirty(dn->inode);
 	sync_inode_page(dn);
 	return 0;
@@ -329,7 +263,6 @@ int f2fs_reserve_block(struct dnode_of_data *dn, pgoff_t index)
 	return err;
 }
 
-<<<<<<< HEAD
 int f2fs_get_block(struct dnode_of_data *dn, pgoff_t index)
 {
 	struct extent_info ei;
@@ -414,149 +347,12 @@ struct page *find_data_page(struct inode *inode, pgoff_t index)
 {
 	struct address_space *mapping = inode->i_mapping;
 	struct page *page;
-=======
-static int check_extent_cache(struct inode *inode, pgoff_t pgofs,
-					struct buffer_head *bh_result)
-{
-	struct f2fs_inode_info *fi = F2FS_I(inode);
-	pgoff_t start_fofs, end_fofs;
-	block_t start_blkaddr;
-
-	if (is_inode_flag_set(fi, FI_NO_EXTENT))
-		return 0;
-
-	read_lock(&fi->ext.ext_lock);
-	if (fi->ext.len == 0) {
-		read_unlock(&fi->ext.ext_lock);
-		return 0;
-	}
-
-	stat_inc_total_hit(inode->i_sb);
-
-	start_fofs = fi->ext.fofs;
-	end_fofs = fi->ext.fofs + fi->ext.len - 1;
-	start_blkaddr = fi->ext.blk_addr;
-
-	if (pgofs >= start_fofs && pgofs <= end_fofs) {
-		unsigned int blkbits = inode->i_sb->s_blocksize_bits;
-		size_t count;
-
-		set_buffer_new(bh_result);
-		map_bh(bh_result, inode->i_sb,
-				start_blkaddr + pgofs - start_fofs);
-		count = end_fofs - pgofs + 1;
-		if (count < (UINT_MAX >> blkbits))
-			bh_result->b_size = (count << blkbits);
-		else
-			bh_result->b_size = UINT_MAX;
-
-		stat_inc_read_hit(inode->i_sb);
-		read_unlock(&fi->ext.ext_lock);
-		return 1;
-	}
-	read_unlock(&fi->ext.ext_lock);
-	return 0;
-}
-
-void update_extent_cache(struct dnode_of_data *dn)
-{
-	struct f2fs_inode_info *fi = F2FS_I(dn->inode);
-	pgoff_t fofs, start_fofs, end_fofs;
-	block_t start_blkaddr, end_blkaddr;
-	int need_update = true;
-
-	f2fs_bug_on(F2FS_I_SB(dn->inode), dn->data_blkaddr == NEW_ADDR);
-
-	/* Update the page address in the parent node */
-	__set_data_blkaddr(dn);
-
-	if (is_inode_flag_set(fi, FI_NO_EXTENT))
-		return;
-
-	fofs = start_bidx_of_node(ofs_of_node(dn->node_page), fi) +
-							dn->ofs_in_node;
-
-	write_lock(&fi->ext.ext_lock);
-
-	start_fofs = fi->ext.fofs;
-	end_fofs = fi->ext.fofs + fi->ext.len - 1;
-	start_blkaddr = fi->ext.blk_addr;
-	end_blkaddr = fi->ext.blk_addr + fi->ext.len - 1;
-
-	/* Drop and initialize the matched extent */
-	if (fi->ext.len == 1 && fofs == start_fofs)
-		fi->ext.len = 0;
-
-	/* Initial extent */
-	if (fi->ext.len == 0) {
-		if (dn->data_blkaddr != NULL_ADDR) {
-			fi->ext.fofs = fofs;
-			fi->ext.blk_addr = dn->data_blkaddr;
-			fi->ext.len = 1;
-		}
-		goto end_update;
-	}
-
-	/* Front merge */
-	if (fofs == start_fofs - 1 && dn->data_blkaddr == start_blkaddr - 1) {
-		fi->ext.fofs--;
-		fi->ext.blk_addr--;
-		fi->ext.len++;
-		goto end_update;
-	}
-
-	/* Back merge */
-	if (fofs == end_fofs + 1 && dn->data_blkaddr == end_blkaddr + 1) {
-		fi->ext.len++;
-		goto end_update;
-	}
-
-	/* Split the existing extent */
-	if (fi->ext.len > 1 &&
-		fofs >= start_fofs && fofs <= end_fofs) {
-		if ((end_fofs - fofs) < (fi->ext.len >> 1)) {
-			fi->ext.len = fofs - start_fofs;
-		} else {
-			fi->ext.fofs = fofs + 1;
-			fi->ext.blk_addr = start_blkaddr +
-					fofs - start_fofs + 1;
-			fi->ext.len -= fofs - start_fofs + 1;
-		}
-	} else {
-		need_update = false;
-	}
-
-	/* Finally, if the extent is very fragmented, let's drop the cache. */
-	if (fi->ext.len < F2FS_MIN_EXTENT_LEN) {
-		fi->ext.len = 0;
-		set_inode_flag(fi, FI_NO_EXTENT);
-		need_update = true;
-	}
-end_update:
-	write_unlock(&fi->ext.ext_lock);
-	if (need_update)
-		sync_inode_page(dn);
-	return;
-}
-
-struct page *find_data_page(struct inode *inode, pgoff_t index, bool sync)
-{
-	struct address_space *mapping = inode->i_mapping;
-	struct dnode_of_data dn;
-	struct page *page;
-	int err;
-	struct f2fs_io_info fio = {
-		.type = DATA,
-		.rw = sync ? READ_SYNC : READA,
-	};
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	page = find_get_page(mapping, index);
 	if (page && PageUptodate(page))
 		return page;
 	f2fs_put_page(page, 0);
 
-<<<<<<< HEAD
 	page = get_read_data_page(inode, index, READ_SYNC);
 	if (IS_ERR(page))
 		return page;
@@ -568,41 +364,6 @@ struct page *find_data_page(struct inode *inode, pgoff_t index, bool sync)
 	if (unlikely(!PageUptodate(page))) {
 		f2fs_put_page(page, 0);
 		return ERR_PTR(-EIO);
-=======
-	set_new_dnode(&dn, inode, NULL, NULL, 0);
-	err = get_dnode_of_data(&dn, index, LOOKUP_NODE);
-	if (err)
-		return ERR_PTR(err);
-	f2fs_put_dnode(&dn);
-
-	if (dn.data_blkaddr == NULL_ADDR)
-		return ERR_PTR(-ENOENT);
-
-	/* By fallocate(), there is no cached page, but with NEW_ADDR */
-	if (unlikely(dn.data_blkaddr == NEW_ADDR))
-		return ERR_PTR(-EINVAL);
-
-	page = grab_cache_page(mapping, index);
-	if (!page)
-		return ERR_PTR(-ENOMEM);
-
-	if (PageUptodate(page)) {
-		unlock_page(page);
-		return page;
-	}
-
-	fio.blk_addr = dn.data_blkaddr;
-	err = f2fs_submit_page_bio(F2FS_I_SB(inode), page, &fio);
-	if (err)
-		return ERR_PTR(err);
-
-	if (sync) {
-		wait_on_page_locked(page);
-		if (unlikely(!PageUptodate(page))) {
-			f2fs_put_page(page, 0);
-			return ERR_PTR(-EIO);
-		}
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	}
 	return page;
 }
@@ -615,7 +376,6 @@ struct page *find_data_page(struct inode *inode, pgoff_t index, bool sync)
 struct page *get_lock_data_page(struct inode *inode, pgoff_t index)
 {
 	struct address_space *mapping = inode->i_mapping;
-<<<<<<< HEAD
 	struct page *page;
 repeat:
 	page = get_read_data_page(inode, index, READ_SYNC);
@@ -623,53 +383,6 @@ repeat:
 		return page;
 
 	/* wait for read completion */
-=======
-	struct dnode_of_data dn;
-	struct page *page;
-	int err;
-	struct f2fs_io_info fio = {
-		.type = DATA,
-		.rw = READ_SYNC,
-	};
-repeat:
-	page = grab_cache_page(mapping, index);
-	if (!page)
-		return ERR_PTR(-ENOMEM);
-
-	set_new_dnode(&dn, inode, NULL, NULL, 0);
-	err = get_dnode_of_data(&dn, index, LOOKUP_NODE);
-	if (err) {
-		f2fs_put_page(page, 1);
-		return ERR_PTR(err);
-	}
-	f2fs_put_dnode(&dn);
-
-	if (unlikely(dn.data_blkaddr == NULL_ADDR)) {
-		f2fs_put_page(page, 1);
-		return ERR_PTR(-ENOENT);
-	}
-
-	if (PageUptodate(page))
-		return page;
-
-	/*
-	 * A new dentry page is allocated but not able to be written, since its
-	 * new inode page couldn't be allocated due to -ENOSPC.
-	 * In such the case, its blkaddr can be remained as NEW_ADDR.
-	 * see, f2fs_add_link -> get_new_data_page -> init_inode_metadata.
-	 */
-	if (dn.data_blkaddr == NEW_ADDR) {
-		zero_user_segment(page, 0, PAGE_CACHE_SIZE);
-		SetPageUptodate(page);
-		return page;
-	}
-
-	fio.blk_addr = dn.data_blkaddr;
-	err = f2fs_submit_page_bio(F2FS_I_SB(inode), page, &fio);
-	if (err)
-		return ERR_PTR(err);
-
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	lock_page(page);
 	if (unlikely(!PageUptodate(page))) {
 		f2fs_put_page(page, 1);
@@ -688,12 +401,8 @@ repeat:
  *
  * Also, caller should grab and release a rwsem by calling f2fs_lock_op() and
  * f2fs_unlock_op().
-<<<<<<< HEAD
  * Note that, ipage is set only by make_empty_dir, and if any error occur,
  * ipage should be released by this function.
-=======
- * Note that, ipage is set only by make_empty_dir.
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
  */
 struct page *get_new_data_page(struct inode *inode,
 		struct page *ipage, pgoff_t index, bool new_i_size)
@@ -702,7 +411,6 @@ struct page *get_new_data_page(struct inode *inode,
 	struct page *page;
 	struct dnode_of_data dn;
 	int err;
-<<<<<<< HEAD
 repeat:
 	page = grab_cache_page(mapping, index);
 	if (!page) {
@@ -725,28 +433,11 @@ repeat:
 
 	if (PageUptodate(page))
 		goto got_it;
-=======
-
-	set_new_dnode(&dn, inode, ipage, NULL, 0);
-	err = f2fs_reserve_block(&dn, index);
-	if (err)
-		return ERR_PTR(err);
-repeat:
-	page = grab_cache_page(mapping, index);
-	if (!page) {
-		err = -ENOMEM;
-		goto put_err;
-	}
-
-	if (PageUptodate(page))
-		return page;
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	if (dn.data_blkaddr == NEW_ADDR) {
 		zero_user_segment(page, 0, PAGE_CACHE_SIZE);
 		SetPageUptodate(page);
 	} else {
-<<<<<<< HEAD
 		f2fs_put_page(page, 1);
 
 		page = get_read_data_page(inode, index, READ_SYNC);
@@ -757,29 +448,6 @@ repeat:
 		lock_page(page);
 	}
 got_it:
-=======
-		struct f2fs_io_info fio = {
-			.type = DATA,
-			.rw = READ_SYNC,
-			.blk_addr = dn.data_blkaddr,
-		};
-		err = f2fs_submit_page_bio(F2FS_I_SB(inode), page, &fio);
-		if (err)
-			goto put_err;
-
-		lock_page(page);
-		if (unlikely(!PageUptodate(page))) {
-			f2fs_put_page(page, 1);
-			err = -EIO;
-			goto put_err;
-		}
-		if (unlikely(page->mapping != mapping)) {
-			f2fs_put_page(page, 1);
-			goto repeat;
-		}
-	}
-
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	if (new_i_size &&
 		i_size_read(inode) < ((index + 1) << PAGE_CACHE_SHIFT)) {
 		i_size_write(inode, ((index + 1) << PAGE_CACHE_SHIFT));
@@ -787,13 +455,6 @@ got_it:
 		set_inode_flag(F2FS_I(inode), FI_UPDATE_DIR);
 	}
 	return page;
-<<<<<<< HEAD
-=======
-
-put_err:
-	f2fs_put_dnode(&dn);
-	return ERR_PTR(err);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 static int __allocate_data_block(struct dnode_of_data *dn)
@@ -807,7 +468,6 @@ static int __allocate_data_block(struct dnode_of_data *dn)
 
 	if (unlikely(is_inode_flag_set(F2FS_I(dn->inode), FI_NO_ALLOC)))
 		return -EPERM;
-<<<<<<< HEAD
 
 	dn->data_blkaddr = datablock_addr(dn->node_page, dn->ofs_in_node);
 	if (dn->data_blkaddr == NEW_ADDR)
@@ -817,27 +477,15 @@ static int __allocate_data_block(struct dnode_of_data *dn)
 		return -ENOSPC;
 
 alloc:
-=======
-	if (unlikely(!inc_valid_block_count(sbi, dn->inode, 1)))
-		return -ENOSPC;
-
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	get_node_info(sbi, dn->nid, &ni);
 	set_summary(&sum, dn->nid, dn->ofs_in_node, ni.version);
 
 	if (dn->ofs_in_node == 0 && dn->inode_page == dn->node_page)
 		seg = CURSEG_DIRECT_IO;
 
-<<<<<<< HEAD
 	allocate_data_block(sbi, NULL, dn->data_blkaddr, &dn->data_blkaddr,
 								&sum, seg);
 	set_data_blkaddr(dn);
-=======
-	allocate_data_block(sbi, NULL, NULL_ADDR, &dn->data_blkaddr, &sum, seg);
-
-	/* direct IO doesn't use extent cache to maximize the performance */
-	__set_data_blkaddr(dn);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	/* update i_size */
 	fofs = start_bidx_of_node(ofs_of_node(dn->node_page), fi) +
@@ -845,12 +493,9 @@ alloc:
 	if (i_size_read(dn->inode) < ((fofs + 1) << PAGE_CACHE_SHIFT))
 		i_size_write(dn->inode, ((fofs + 1) << PAGE_CACHE_SHIFT));
 
-<<<<<<< HEAD
 	/* direct IO doesn't use extent cache to maximize the performance */
 	f2fs_drop_largest_extent(dn->inode, fofs);
 
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	return 0;
 }
 
@@ -877,14 +522,10 @@ static void __allocate_data_blocks(struct inode *inode, loff_t offset,
 		end_offset = ADDRS_PER_PAGE(dn.node_page, F2FS_I(inode));
 
 		while (dn.ofs_in_node < end_offset && len) {
-<<<<<<< HEAD
 			block_t blkaddr;
 
 			blkaddr = datablock_addr(dn.node_page, dn.ofs_in_node);
 			if (blkaddr == NULL_ADDR || blkaddr == NEW_ADDR) {
-=======
-			if (dn.data_blkaddr == NULL_ADDR) {
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 				if (__allocate_data_block(&dn))
 					goto sync_out;
 				allocated = true;
@@ -912,35 +553,22 @@ out:
 }
 
 /*
-<<<<<<< HEAD
  * f2fs_map_blocks() now supported readahead/bmap/rw direct_IO with
  * f2fs_map_blocks structure.
-=======
- * get_data_block() now supported readahead/bmap/rw direct_IO with mapped bh.
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
  * If original data blocks are allocated, then give them to blockdev.
  * Otherwise,
  *     a. preallocate requested block addresses
  *     b. do not use extent cache for better performance
  *     c. give the block addresses to blockdev
  */
-<<<<<<< HEAD
 static int f2fs_map_blocks(struct inode *inode, struct f2fs_map_blocks *map,
 						int create, int flag)
 {
 	unsigned int maxblocks = map->m_len;
-=======
-static int __get_data_block(struct inode *inode, sector_t iblock,
-			struct buffer_head *bh_result, int create, bool fiemap)
-{
-	unsigned int blkbits = inode->i_sb->s_blocksize_bits;
-	unsigned maxblocks = bh_result->b_size >> blkbits;
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	struct dnode_of_data dn;
 	int mode = create ? ALLOC_NODE : LOOKUP_NODE_RA;
 	pgoff_t pgofs, end_offset;
 	int err = 0, ofs = 1;
-<<<<<<< HEAD
 	struct extent_info ei;
 	bool allocated = false;
 
@@ -956,15 +584,6 @@ static int __get_data_block(struct inode *inode, sector_t iblock,
 		map->m_flags = F2FS_MAP_MAPPED;
 		goto out;
 	}
-=======
-	bool allocated = false;
-
-	/* Get the page offset from the block offset(iblock) */
-	pgofs =	(pgoff_t)(iblock >> (PAGE_CACHE_SHIFT - blkbits));
-
-	if (check_extent_cache(inode, pgofs, bh_result))
-		goto out;
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	if (create)
 		f2fs_lock_op(F2FS_I_SB(inode));
@@ -977,7 +596,6 @@ static int __get_data_block(struct inode *inode, sector_t iblock,
 			err = 0;
 		goto unlock_out;
 	}
-<<<<<<< HEAD
 	if (dn.data_blkaddr == NEW_ADDR) {
 		if (flag == F2FS_GET_BLOCK_BMAP) {
 			err = -ENOENT;
@@ -997,39 +615,21 @@ static int __get_data_block(struct inode *inode, sector_t iblock,
 		map->m_pblk = dn.data_blkaddr;
 		if (dn.data_blkaddr == NEW_ADDR)
 			map->m_flags |= F2FS_MAP_UNWRITTEN;
-=======
-	if (dn.data_blkaddr == NEW_ADDR && !fiemap)
-		goto put_out;
-
-	if (dn.data_blkaddr != NULL_ADDR) {
-		set_buffer_new(bh_result);
-		map_bh(bh_result, inode->i_sb, dn.data_blkaddr);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	} else if (create) {
 		err = __allocate_data_block(&dn);
 		if (err)
 			goto put_out;
 		allocated = true;
-<<<<<<< HEAD
 		map->m_flags = F2FS_MAP_NEW | F2FS_MAP_MAPPED;
 		map->m_pblk = dn.data_blkaddr;
 	} else {
 		if (flag == F2FS_GET_BLOCK_BMAP)
 			err = -ENOENT;
-=======
-		set_buffer_new(bh_result);
-		map_bh(bh_result, inode->i_sb, dn.data_blkaddr);
-	} else {
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		goto put_out;
 	}
 
 	end_offset = ADDRS_PER_PAGE(dn.node_page, F2FS_I(inode));
-<<<<<<< HEAD
 	map->m_len = 1;
-=======
-	bh_result->b_size = (((size_t)1) << blkbits);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	dn.ofs_in_node++;
 	pgofs++;
 
@@ -1047,30 +647,21 @@ get_next:
 				err = 0;
 			goto unlock_out;
 		}
-<<<<<<< HEAD
 
 		if (dn.data_blkaddr == NEW_ADDR &&
 				flag != F2FS_GET_BLOCK_FIEMAP)
-=======
-		if (dn.data_blkaddr == NEW_ADDR && !fiemap)
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 			goto put_out;
 
 		end_offset = ADDRS_PER_PAGE(dn.node_page, F2FS_I(inode));
 	}
 
-<<<<<<< HEAD
 	if (maxblocks > map->m_len) {
-=======
-	if (maxblocks > (bh_result->b_size >> blkbits)) {
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		block_t blkaddr = datablock_addr(dn.node_page, dn.ofs_in_node);
 		if (blkaddr == NULL_ADDR && create) {
 			err = __allocate_data_block(&dn);
 			if (err)
 				goto sync_out;
 			allocated = true;
-<<<<<<< HEAD
 			map->m_flags |= F2FS_MAP_NEW;
 			blkaddr = dn.data_blkaddr;
 		}
@@ -1083,16 +674,6 @@ get_next:
 			dn.ofs_in_node++;
 			pgofs++;
 			map->m_len++;
-=======
-			blkaddr = dn.data_blkaddr;
-		}
-		/* Give more consecutive addresses for the readahead */
-		if (blkaddr == (bh_result->b_blocknr + ofs)) {
-			ofs++;
-			dn.ofs_in_node++;
-			pgofs++;
-			bh_result->b_size += (((size_t)1) << blkbits);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 			goto get_next;
 		}
 	}
@@ -1105,7 +686,6 @@ unlock_out:
 	if (create)
 		f2fs_unlock_op(F2FS_I_SB(inode));
 out:
-<<<<<<< HEAD
 	trace_f2fs_map_blocks(inode, map, err);
 	return err;
 }
@@ -1156,28 +736,11 @@ static inline sector_t logical_to_blk(struct inode *inode, loff_t offset)
 static inline loff_t blk_to_logical(struct inode *inode, sector_t blk)
 {
 	return (blk << inode->i_blkbits);
-=======
-	trace_f2fs_get_data_block(inode, iblock, bh_result, err);
-	return err;
-}
-
-static int get_data_block(struct inode *inode, sector_t iblock,
-			struct buffer_head *bh_result, int create)
-{
-	return __get_data_block(inode, iblock, bh_result, create, false);
-}
-
-static int get_data_block_fiemap(struct inode *inode, sector_t iblock,
-			struct buffer_head *bh_result, int create)
-{
-	return __get_data_block(inode, iblock, bh_result, create, true);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 int f2fs_fiemap(struct inode *inode, struct fiemap_extent_info *fieinfo,
 		u64 start, u64 len)
 {
-<<<<<<< HEAD
 	struct buffer_head map_bh;
 	sector_t start_blk, last_blk;
 	loff_t isize = i_size_read(inode);
@@ -1428,10 +991,6 @@ next_page:
 	if (bio)
 		submit_bio(READ, bio);
 	return 0;
-=======
-	return generic_block_fiemap(inode, fieinfo,
-				start, len, get_data_block_fiemap);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 static int f2fs_read_data_page(struct file *file, struct page *page)
@@ -1445,12 +1004,7 @@ static int f2fs_read_data_page(struct file *file, struct page *page)
 	if (f2fs_has_inline_data(inode))
 		ret = f2fs_read_inline_data(inode, page);
 	if (ret == -EAGAIN)
-<<<<<<< HEAD
 		ret = f2fs_mpage_readpages(page->mapping, NULL, page, 1);
-=======
-		ret = mpage_readpage(page, get_data_block);
-
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	return ret;
 }
 
@@ -1464,20 +1018,12 @@ static int f2fs_read_data_pages(struct file *file,
 	if (f2fs_has_inline_data(inode))
 		return 0;
 
-<<<<<<< HEAD
 	return f2fs_mpage_readpages(mapping, pages, NULL, nr_pages);
 }
 
 int do_write_data_page(struct f2fs_io_info *fio)
 {
 	struct page *page = fio->page;
-=======
-	return mpage_readpages(mapping, pages, nr_pages, get_data_block);
-}
-
-int do_write_data_page(struct page *page, struct f2fs_io_info *fio)
-{
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	struct inode *inode = page->mapping->host;
 	struct dnode_of_data dn;
 	int err = 0;
@@ -1490,7 +1036,6 @@ int do_write_data_page(struct page *page, struct f2fs_io_info *fio)
 	fio->blk_addr = dn.data_blkaddr;
 
 	/* This page is already truncated */
-<<<<<<< HEAD
 	if (fio->blk_addr == NULL_ADDR) {
 		ClearPageUptodate(page);
 		goto out_writepage;
@@ -1503,10 +1048,6 @@ int do_write_data_page(struct page *page, struct f2fs_io_info *fio)
 			goto out_writepage;
 		}
 	}
-=======
-	if (fio->blk_addr == NULL_ADDR)
-		goto out_writepage;
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	set_page_writeback(page);
 
@@ -1517,7 +1058,6 @@ int do_write_data_page(struct page *page, struct f2fs_io_info *fio)
 	if (unlikely(fio->blk_addr != NEW_ADDR &&
 			!is_cold_data(page) &&
 			need_inplace_update(inode))) {
-<<<<<<< HEAD
 		rewrite_data_page(fio);
 		set_inode_flag(F2FS_I(inode), FI_UPDATE_WRITE);
 		trace_f2fs_do_write_data_page(page, IPU);
@@ -1529,14 +1069,6 @@ int do_write_data_page(struct page *page, struct f2fs_io_info *fio)
 		set_inode_flag(F2FS_I(inode), FI_APPEND_WRITE);
 		if (page->index == 0)
 			set_inode_flag(F2FS_I(inode), FI_FIRST_BLOCK_WRITTEN);
-=======
-		rewrite_data_page(page, fio);
-		set_inode_flag(F2FS_I(inode), FI_UPDATE_WRITE);
-	} else {
-		write_data_page(page, &dn, fio);
-		update_extent_cache(&dn);
-		set_inode_flag(F2FS_I(inode), FI_APPEND_WRITE);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	}
 out_writepage:
 	f2fs_put_dnode(&dn);
@@ -1555,16 +1087,11 @@ static int f2fs_write_data_page(struct page *page,
 	bool need_balance_fs = false;
 	int err = 0;
 	struct f2fs_io_info fio = {
-<<<<<<< HEAD
 		.sbi = sbi,
 		.type = DATA,
 		.rw = (wbc->sync_mode == WB_SYNC_ALL) ? WRITE_SYNC : WRITE,
 		.page = page,
 		.encrypted_page = NULL,
-=======
-		.type = DATA,
-		.rw = (wbc->sync_mode == WB_SYNC_ALL) ? WRITE_SYNC : WRITE,
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	};
 
 	trace_f2fs_writepage(page, DATA);
@@ -1594,11 +1121,7 @@ write:
 	if (S_ISDIR(inode->i_mode)) {
 		if (unlikely(f2fs_cp_error(sbi)))
 			goto redirty_out;
-<<<<<<< HEAD
 		err = do_write_data_page(&fio);
-=======
-		err = do_write_data_page(page, &fio);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		goto done;
 	}
 
@@ -1618,11 +1141,7 @@ write:
 	if (f2fs_has_inline_data(inode))
 		err = f2fs_write_inline_data(inode, page);
 	if (err == -EAGAIN)
-<<<<<<< HEAD
 		err = do_write_data_page(&fio);
-=======
-		err = do_write_data_page(page, &fio);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	f2fs_unlock_op(sbi);
 done:
 	if (err && err != -ENOENT)
@@ -1631,11 +1150,8 @@ done:
 	clear_cold_data(page);
 out:
 	inode_dec_dirty_pages(inode);
-<<<<<<< HEAD
 	if (err)
 		ClearPageUptodate(page);
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	unlock_page(page);
 	if (need_balance_fs)
 		f2fs_balance_fs(sbi);
@@ -1657,7 +1173,6 @@ static int __f2fs_writepage(struct page *page, struct writeback_control *wbc,
 	return ret;
 }
 
-<<<<<<< HEAD
 /*
  * This function was copied from write_cche_pages from mm/page-writeback.c.
  * The major change is making write step of cold data page separately from
@@ -1789,8 +1304,6 @@ continue_unlock:
 	return ret;
 }
 
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 static int f2fs_write_data_pages(struct address_space *mapping,
 			    struct writeback_control *wbc)
 {
@@ -1806,45 +1319,30 @@ static int f2fs_write_data_pages(struct address_space *mapping,
 	if (!mapping->a_ops->writepage)
 		return 0;
 
-<<<<<<< HEAD
 	/* skip writing if there is no dirty page in this inode */
 	if (!get_dirty_pages(inode) && wbc->sync_mode == WB_SYNC_NONE)
 		return 0;
 
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	if (S_ISDIR(inode->i_mode) && wbc->sync_mode == WB_SYNC_NONE &&
 			get_dirty_pages(inode) < nr_pages_to_skip(sbi, DATA) &&
 			available_free_memory(sbi, DIRTY_DENTS))
 		goto skip_write;
 
-<<<<<<< HEAD
 	/* during POR, we don't need to trigger writepage at all. */
 	if (unlikely(is_sbi_flag_set(sbi, SBI_POR_DOING)))
 		goto skip_write;
 
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	diff = nr_pages_to_write(sbi, DATA, wbc);
 
 	if (!S_ISDIR(inode->i_mode)) {
 		mutex_lock(&sbi->writepages);
 		locked = true;
 	}
-<<<<<<< HEAD
 	ret = f2fs_write_cache_pages(mapping, wbc, __f2fs_writepage, mapping);
 	f2fs_submit_merged_bio(sbi, DATA, WRITE);
 	if (locked)
 		mutex_unlock(&sbi->writepages);
 
-=======
-	ret = write_cache_pages(mapping, wbc, __f2fs_writepage, mapping);
-	if (locked)
-		mutex_unlock(&sbi->writepages);
-
-	f2fs_submit_merged_bio(sbi, DATA, WRITE);
-
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	remove_dirty_dir_inode(inode);
 
 	wbc->nr_to_write = max((long)0, wbc->nr_to_write - diff);
@@ -1871,12 +1369,8 @@ static int f2fs_write_begin(struct file *file, struct address_space *mapping,
 {
 	struct inode *inode = mapping->host;
 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
-<<<<<<< HEAD
 	struct page *page = NULL;
 	struct page *ipage;
-=======
-	struct page *page, *ipage;
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	pgoff_t index = ((unsigned long long) pos) >> PAGE_CACHE_SHIFT;
 	struct dnode_of_data dn;
 	int err = 0;
@@ -1926,31 +1420,20 @@ repeat:
 		if (err)
 			goto put_fail;
 	}
-<<<<<<< HEAD
 
 	err = f2fs_get_block(&dn, index);
-=======
-	err = f2fs_reserve_block(&dn, index);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	if (err)
 		goto put_fail;
 put_next:
 	f2fs_put_dnode(&dn);
 	f2fs_unlock_op(sbi);
 
-<<<<<<< HEAD
 	f2fs_wait_on_page_writeback(page, DATA);
 
 	if (len == PAGE_CACHE_SIZE)
 		goto out_update;
 	if (PageUptodate(page))
 		goto out_clear;
-=======
-	if ((len == PAGE_CACHE_SIZE) || PageUptodate(page))
-		return 0;
-
-	f2fs_wait_on_page_writeback(page, DATA);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	if ((pos & PAGE_CACHE_MASK) >= i_size_read(inode)) {
 		unsigned start = pos & (PAGE_CACHE_SIZE - 1);
@@ -1958,18 +1441,13 @@ put_next:
 
 		/* Reading beyond i_size is simple: memset to zero */
 		zero_user_segments(page, 0, start, end, PAGE_CACHE_SIZE);
-<<<<<<< HEAD
 		goto out_update;
-=======
-		goto out;
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	}
 
 	if (dn.data_blkaddr == NEW_ADDR) {
 		zero_user_segment(page, 0, PAGE_CACHE_SIZE);
 	} else {
 		struct f2fs_io_info fio = {
-<<<<<<< HEAD
 			.sbi = sbi,
 			.type = DATA,
 			.rw = READ_SYNC,
@@ -1978,22 +1456,11 @@ put_next:
 			.encrypted_page = NULL,
 		};
 		err = f2fs_submit_page_bio(&fio);
-=======
-			.type = DATA,
-			.rw = READ_SYNC,
-			.blk_addr = dn.data_blkaddr,
-		};
-		err = f2fs_submit_page_bio(sbi, page, &fio);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 		if (err)
 			goto fail;
 
 		lock_page(page);
 		if (unlikely(!PageUptodate(page))) {
-<<<<<<< HEAD
-=======
-			f2fs_put_page(page, 1);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 			err = -EIO;
 			goto fail;
 		}
@@ -2001,7 +1468,6 @@ put_next:
 			f2fs_put_page(page, 1);
 			goto repeat;
 		}
-<<<<<<< HEAD
 
 		/* avoid symlink page */
 		if (f2fs_encrypted_inode(inode) && S_ISREG(inode->i_mode)) {
@@ -2013,11 +1479,6 @@ put_next:
 out_update:
 	SetPageUptodate(page);
 out_clear:
-=======
-	}
-out:
-	SetPageUptodate(page);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	clear_cold_data(page);
 	return 0;
 
@@ -2025,13 +1486,8 @@ put_fail:
 	f2fs_put_dnode(&dn);
 unlock_fail:
 	f2fs_unlock_op(sbi);
-<<<<<<< HEAD
 fail:
 	f2fs_put_page(page, 1);
-=======
-	f2fs_put_page(page, 1);
-fail:
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	f2fs_write_failed(mapping, pos + len);
 	return err;
 }
@@ -2057,7 +1513,6 @@ static int f2fs_write_end(struct file *file,
 	return copied;
 }
 
-<<<<<<< HEAD
 static ssize_t check_direct_IO(struct inode *inode, int rw,
 		const struct iovec *iov, loff_t offset, unsigned long nr_segs)
 {
@@ -2067,21 +1522,10 @@ static ssize_t check_direct_IO(struct inode *inode, int rw,
 	unsigned long addr;
 	ssize_t retval = -EINVAL;
 	loff_t end = offset;
-=======
-static int check_direct_IO(struct inode *inode, int rw,
-		const struct iovec *iov, loff_t offset, unsigned long nr_segs)
-{
-	unsigned blocksize_mask = inode->i_sb->s_blocksize - 1;
-	int i;
-
-	if (rw == READ)
-		return 0;
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 
 	if (offset & blocksize_mask)
 		return -EINVAL;
 
-<<<<<<< HEAD
 	/* Check the memory alignment.  Blocks cannot straddle pages */
 	for (seg = 0; seg < nr_segs; seg++) {
 		addr = (unsigned long)iov[seg].iov_base;
@@ -2107,13 +1551,6 @@ static int check_direct_IO(struct inode *inode, int rw,
 	retval = 0;
 out:
 	return retval;
-=======
-	for (i = 0; i < nr_segs; i++)
-		if (iov[i].iov_len & blocksize_mask)
-			return -EINVAL;
-
-	return 0;
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 static ssize_t f2fs_direct_IO(int rw, struct kiocb *iocb,
@@ -2133,7 +1570,6 @@ static ssize_t f2fs_direct_IO(int rw, struct kiocb *iocb,
 			return err;
 	}
 
-<<<<<<< HEAD
 	if (f2fs_encrypted_inode(inode) && S_ISREG(inode->i_mode))
 		return 0;
 
@@ -2141,22 +1577,13 @@ static ssize_t f2fs_direct_IO(int rw, struct kiocb *iocb,
 	if (err)
 		return err;
 
-=======
-	if (check_direct_IO(inode, rw, iov, offset, nr_segs))
-		return 0;
-
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	trace_f2fs_direct_IO_enter(inode, offset, count, rw);
 
 	if (rw & WRITE)
 		__allocate_data_blocks(inode, offset, count);
 
 	err = blockdev_direct_IO(rw, iocb, inode, iov, offset, nr_segs,
-<<<<<<< HEAD
 							get_data_block_dio);
-=======
-							get_data_block);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	if (err < 0 && (rw & WRITE))
 		f2fs_write_failed(mapping, offset + count);
 
@@ -2181,14 +1608,11 @@ void f2fs_invalidate_page(struct page *page, unsigned long offset)
 		else
 			inode_dec_dirty_pages(inode);
 	}
-<<<<<<< HEAD
 
 	/* This is atomic written page, keep Private */
 	if (IS_ATOMIC_WRITTEN_PAGE(page))
 		return;
 
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	ClearPagePrivate(page);
 }
 
@@ -2198,13 +1622,10 @@ int f2fs_release_page(struct page *page, gfp_t wait)
 	if (PageDirty(page))
 		return 0;
 
-<<<<<<< HEAD
 	/* This is atomic written page, keep Private */
 	if (IS_ATOMIC_WRITTEN_PAGE(page))
 		return 0;
 
-=======
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	ClearPagePrivate(page);
 	return 1;
 }
@@ -2219,7 +1640,6 @@ static int f2fs_set_data_page_dirty(struct page *page)
 	SetPageUptodate(page);
 
 	if (f2fs_is_atomic_file(inode)) {
-<<<<<<< HEAD
 		if (!IS_ATOMIC_WRITTEN_PAGE(page)) {
 			register_inmem_page(inode, page);
 			return 1;
@@ -2231,14 +1651,6 @@ static int f2fs_set_data_page_dirty(struct page *page)
 		return 0;
 	}
 
-=======
-		register_inmem_page(inode, page);
-		return 1;
-	}
-
-	mark_inode_dirty(inode);
-
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 	if (!PageDirty(page)) {
 		__set_page_dirty_nobuffers(page);
 		update_dirty_page(inode, page);
@@ -2257,11 +1669,7 @@ static sector_t f2fs_bmap(struct address_space *mapping, sector_t block)
 		if (err)
 			return err;
 	}
-<<<<<<< HEAD
 	return generic_block_bmap(mapping, block, get_data_block_bmap);
-=======
-	return generic_block_bmap(mapping, block, get_data_block);
->>>>>>> acaf2ee... fs: f2fs: bring up to date with Jaegeuk's branch
 }
 
 const struct address_space_operations f2fs_dblock_aops = {
