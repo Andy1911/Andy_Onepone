@@ -1080,11 +1080,7 @@ static int cpufreq_add_dev(struct device *dev, struct subsys_interface *sif)
 	}
 	pr_debug("Restoring CPU%d min %d and max %d\n",
 		cpu, policy->min, policy->max);
-<<<<<<< HEAD
 
-
-=======
->>>>>>> 86e3d25... cpufreq: Restore policy min-max properly
 #endif
 
 	ret = cpufreq_add_dev_interface(cpu, policy, dev);
