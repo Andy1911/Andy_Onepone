@@ -1920,6 +1920,7 @@ static int do_new_mount(struct path *path, const char *fstype, int flags,
 	err = do_add_mount(real_mount(mnt), path, mnt_flags);
 	if (err)
 		mntput(mnt);
+<<<<<<< HEAD
 #ifdef CONFIG_ASYNC_FSYNC
 	if (!err && ((type, "ext4") &&
 	    !strcmp(path->dentry->d_name.name, "data")) ||
@@ -1927,6 +1928,8 @@ static int do_new_mount(struct path *path, const char *fstype, int flags,
 	    !strcmp(path->dentry->d_name.name, "emulated"))))
                 mnt->mnt_sb->fsync_flags |= FLAG_ASYNC_FSYNC;
 #endif
+=======
+>>>>>>> parent of 8a67fc7... Asynchronous Fsync: initial extraction of Async Fsync from HTC
 	return err;
 }
 
