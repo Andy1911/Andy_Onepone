@@ -1653,8 +1653,7 @@
 			< 2880000000 1050000  937 >;
 	};
 
-<<<<<<< HEAD
-=======
+
         qcom,msm-cpufreq@0 {
 		reg = <0 4>;
                 compatible = "qcom,msm-cpufreq";
@@ -1682,7 +1681,6 @@
 			< 2880000 /* 931 MHz */ >;
 		};
 
->>>>>>> 74437ba... msm8974pro: dts: cpu overclocking to 2880Ghz
 	i2c@f9928000 { /* BLSP-1 QUP-6 */
 		cell-index = <3>;
 		compatible = "qcom,i2c-qup";
