@@ -3082,8 +3082,6 @@ config SPEED_LEVEL_INTERFACE
         help
          Allow SPEED level to be shown into specific kernel apps
 
-endif
-
 config KERNEL_TEXT_MPU_PROT
         bool "Enable xpu protection of kernel r/o sections"
         help
@@ -3099,8 +3097,6 @@ config MSM_HOTPLUG
 	help
 	  The MSM hotplug driver controls on-/offlining of additional cores based
 	  on current cpu load.
-<<<<<<< HEAD
-=======
 
 config INTELLI_HOTPLUG
 	bool "Intelli hotplug driver"
@@ -3111,4 +3107,3 @@ config INTELLI_HOTPLUG
 	  Low Latency Frequency Transition capable processors.
 
 endif
->>>>>>> 272f620... msm: intelli_hotplug: Add Intelli Hotplug driver
