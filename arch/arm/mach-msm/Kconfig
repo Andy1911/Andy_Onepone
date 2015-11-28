@@ -3097,6 +3097,7 @@ config MSM_HOTPLUG
 	help
 	  The MSM hotplug driver controls on-/offlining of additional cores based
 	  on current cpu load.
+<<<<<<< HEAD
 
 config INTELLI_HOTPLUG
 	bool "Intelli hotplug driver"
@@ -3107,3 +3108,5 @@ config INTELLI_HOTPLUG
 	  Low Latency Frequency Transition capable processors.
 
 endif
+=======
+>>>>>>> parent of 2b5ddc9... msm: intelli_hotplug: Add Intelli Hotplug driver
