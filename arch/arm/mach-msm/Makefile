@@ -363,7 +363,6 @@ obj-$(CONFIG_ARCH_APQ8084) += gpiomux-v2.o gpiomux.o
 obj-$(CONFIG_ARCH_FSM9900) += gpiomux-v2.o gpiomux.o
 
 obj-$(CONFIG_MSM_SLEEP_STATS_DEVICE) += idle_stats_device.o
-obj-$(CONFIG_MSM_DCVS) += msm_dcvs_scm.o msm_dcvs.o msm_mpdecision.o
 
 obj-$(CONFIG_MSM_SHOW_RESUME_IRQ) += msm_show_resume_irq.o
 obj-$(CONFIG_BT_MSM_PINTEST)  += btpintest.o
@@ -424,22 +423,17 @@ obj-$(CONFIG_HAS_MACH_MEMUTILS) += memutils/
 obj-$(CONFIG_ARCH_RANDOM) += early_random.o
 obj-$(CONFIG_PERFMAP) += perfmap.o
 
-<<<<<<< HEAD
+
 obj-$(CONFIG_FORCE_FAST_CHARGE) += fastchg.o
 obj-$(CONFIG_MMI_UNIT_INFO) += mmi-unit-info.o
 obj-$(CONFIG_MMI_SOC_INFO) += mmi_soc_info.o
 obj-$(CONFIG_MMI_MSM_PINMUX) += mmi-pinmux.o
 obj-$(CONFIG_MMI_MSM_CLOCK) += mmi-clock.o
 obj-$(CONFIG_MSM_HOTPLUG) += msm_hotplug.o
-<<<<<<< HEAD
+
 obj-$(CONFIG_MSM_CPUFREQ_LIMITER) += cpufreq_limit.o
 obj-$(CONFIG_BRICKED_HOTPLUG) += bricked_hotplug.o
->>>>>>> a5adc90... add bricked hotplug by @neobuddy89
-=======
 
 obj-$(CONFIG_CHARGE_LEVEL) += charge_level.o
->>>>>>> parent of f73113b... add bricked hotplug by @neobuddy89
-=======
 obj-$(CONFIG_MSM_LIMITER) += msm_limiter.o
 obj-$(CONFIG_BRICKED_HOTPLUG) += bricked_hotplug.o
->>>>>>> 14921cb... msm: bricked: add Bricked Hotplug driver

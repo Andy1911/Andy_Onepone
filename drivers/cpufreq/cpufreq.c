@@ -1950,9 +1950,6 @@ no_policy:
 }
 EXPORT_SYMBOL(cpufreq_update_policy);
 
-<<<<<<< HEAD
-static int cpufreq_cpu_callback(struct notifier_block *nfb,
-=======
 #ifdef CONFIG_MSM_LIMITER
 /*
  *	cpufreq_set_freq - set max/min freq for a cpu
@@ -2102,7 +2099,6 @@ EXPORT_SYMBOL(cpufreq_get_gov);
 #endif
 
 static int __cpuinit cpufreq_cpu_callback(struct notifier_block *nfb,
->>>>>>> 7cca2ee... msm: Improve MSM limiter interfaces
 					unsigned long action, void *hcpu)
 {
 	unsigned int cpu = (unsigned long)hcpu;
