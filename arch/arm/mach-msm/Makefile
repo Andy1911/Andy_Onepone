@@ -434,7 +434,3 @@ obj-$(CONFIG_CHARGE_LEVEL) += charge_level.o
 obj-$(CONFIG_MSM_HOTPLUG) += msm_hotplug.o
 obj-$(CONFIG_MSM_LIMITER) += msm_limiter.o
 obj-$(CONFIG_MSM_CPUFREQ_LIMITER) += cpufreq_limit.o
-<<<<<<< HEAD
-obj-$(CONFIG_INTELLI_HOTPLUG) += intelli_hotplug.o
-=======
->>>>>>> parent of 2b5ddc9... msm: intelli_hotplug: Add Intelli Hotplug driver

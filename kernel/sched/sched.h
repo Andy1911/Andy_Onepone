@@ -928,16 +928,6 @@ static inline void inc_nr_running(struct rq *rq)
 {
 	sched_update_nr_prod(cpu_of(rq), rq->nr_running, true);
 	rq->nr_running++;
-<<<<<<< HEAD
-	if (rq->nr_running >= 2) {
-		if (!rq->rd->overload)
-			rq->rd->overload = true;
-	}
-#ifdef CONFIG_INTELLI_HOTPLUG
-	write_seqcount_end(&nr_stats->ave_seqcnt);
-#endif
-=======
->>>>>>> parent of 2b5ddc9... msm: intelli_hotplug: Add Intelli Hotplug driver
 }
 
 static inline void dec_nr_running(struct rq *rq)
