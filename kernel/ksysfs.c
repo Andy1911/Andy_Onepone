@@ -280,15 +280,12 @@ static int __init ksysfs_init(void)
 	if (error)
 		goto kset_exit;
 
-<<<<<<< HEAD
-=======
 	sched_features_kobj = kobject_create_and_add("sched", kernel_kobj);
 		error = sysfs_create_group(sched_features_kobj, &sched_features_attr_group);
 
 	if (error)
 		kobject_put(sched_features_kobj);
 
->>>>>>> 874acc1... sched: cpu_power: Add controls for sched features
 	if (notes_size > 0) {
 		notes_attr.size = notes_size;
 		error = sysfs_create_bin_file(kernel_kobj, &notes_attr);
