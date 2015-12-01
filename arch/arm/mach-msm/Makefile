@@ -433,10 +433,5 @@ obj-$(CONFIG_MSM_LIMITER) += msm_limiter.o
 obj-$(CONFIG_CHARGE_LEVEL) += charge_level.o
 obj-$(CONFIG_MSM_HOTPLUG) += msm_hotplug.o
 obj-$(CONFIG_MSM_LIMITER) += msm_limiter.o
-<<<<<<< HEAD
 obj-$(CONFIG_MSM_CPUFREQ_LIMITER) += cpufreq_limit.o
 obj-$(CONFIG_ZEN_DECISION) += msm_zen_decision.o
-=======
-obj-$(CONFIG_BRICKED_HOTPLUG) += bricked_hotplug.o
-obj-$(CONFIG_CHARGE_LEVEL) += charge_level.o
->>>>>>> 22a37f3... fastcharge: qpnp-charger: Charge level interface

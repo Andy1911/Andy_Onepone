@@ -512,10 +512,4 @@ config PIC1503_FASTCG
 	help
 	  Say Y here to enable the PIC1503 fast charger
 
-config ANDY_CHARGER_CONTROL
-     bool "Enable Charger Current Control"
-     depends on SMB1360_CHARGER_FG
-     help
-       Say Y here to enable charger current control
-
 endif # POWER_SUPPLY

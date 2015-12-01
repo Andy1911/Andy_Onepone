@@ -1,13 +1,8 @@
 /*
-<<<<<<< HEAD
  * Author: andip71, 05.11.2014
  *
  * Version 1.1
  * 
-=======
- * Author: andip71, 18.09.2014
- *
->>>>>>> 22a37f3... fastcharge: qpnp-charger: Charge level interface
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
  * may be copied, distributed, and modified under those terms.
@@ -29,24 +24,13 @@
 
 static ssize_t charge_level_ac_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf)
 {
-<<<<<<< HEAD
 	// print current value
 	return sprintf(buf, "%d", ac_level);
-=======
-
-	// print current value
-	return sprintf(buf, "%d mA", ac_level);
-
->>>>>>> 22a37f3... fastcharge: qpnp-charger: Charge level interface
 }
 
 
 static ssize_t charge_level_ac_store(struct kobject *kobj, struct kobj_attribute *attr, const char *buf, size_t count)
 {
-<<<<<<< HEAD
-=======
-
->>>>>>> 22a37f3... fastcharge: qpnp-charger: Charge level interface
 	unsigned int ret = -EINVAL;
 	int val;
 
@@ -72,24 +56,13 @@ static ssize_t charge_level_ac_store(struct kobject *kobj, struct kobj_attribute
 
 static ssize_t charge_level_usb_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf)
 {
-<<<<<<< HEAD
 	// print current value
 	return sprintf(buf, "%d", usb_level);
-=======
-
-	// print current value
-	return sprintf(buf, "%d mA", usb_level);
-
->>>>>>> 22a37f3... fastcharge: qpnp-charger: Charge level interface
 }
 
 
 static ssize_t charge_level_usb_store(struct kobject *kobj, struct kobj_attribute *attr, const char *buf, size_t count)
 {
-<<<<<<< HEAD
-=======
-
->>>>>>> 22a37f3... fastcharge: qpnp-charger: Charge level interface
 	unsigned int ret = -EINVAL;
 	int val;
 
@@ -115,7 +88,6 @@ static ssize_t charge_level_usb_store(struct kobject *kobj, struct kobj_attribut
 
 static ssize_t charge_info_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf)
 {
-<<<<<<< HEAD
 	// no charging (both current and requested charge currents are zero)
 	if ((charge_info_level_req == 0) && (charge_info_level_cur == 0))
 		return sprintf(buf, "%s", charge_info_text);
@@ -126,12 +98,6 @@ static ssize_t charge_info_show(struct kobject *kobj, struct kobj_attribute *att
 
 	// non-stock charge logic
 		return sprintf(buf, "%d", charge_info_level_cur);
-=======
-
-	// print charge info
-	return sprintf(buf, "%s / %d mA", charge_info_text, charge_info_level);
-
->>>>>>> 22a37f3... fastcharge: qpnp-charger: Charge level interface
 }
 
 
