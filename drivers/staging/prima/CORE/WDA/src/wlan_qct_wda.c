@@ -6048,13 +6048,10 @@ void WDA_SetLinkStateCallback(WDI_Status status, void* pUserData)
    {
        VOS_TRACE( VOS_MODULE_ID_WDA, VOS_TRACE_LEVEL_ERROR,
                "%s:pWDA is NULL", __func__);
-<<<<<<< HEAD
        vos_mem_free(pWdaParams->wdaWdiApiMsgParam) ;
        vos_mem_free(pWdaParams->wdaMsgParam);
        vos_mem_free(pWdaParams);
 
-=======
->>>>>>> a80a9ce... wlan: Logging Improvements in WDA .
        VOS_ASSERT(0);
        return ;
    }
@@ -6500,13 +6497,10 @@ void WDA_AddBAReqCallback(WDI_AddBARspinfoType *pAddBARspParams,
    {
        VOS_TRACE( VOS_MODULE_ID_WDA, VOS_TRACE_LEVEL_ERROR,
                "%s:pWDA is NULL", __func__);
-<<<<<<< HEAD
        vos_mem_free(pWdaParams->wdaWdiApiMsgParam) ;
        vos_mem_free(pWdaParams->wdaMsgParam);
        vos_mem_free(pWdaParams);
 
-=======
->>>>>>> a80a9ce... wlan: Logging Improvements in WDA .
        VOS_ASSERT(0);
        return ;
    }
@@ -6601,12 +6595,9 @@ void WDA_AddBASessionReqCallback(
    {
        VOS_TRACE( VOS_MODULE_ID_WDA, VOS_TRACE_LEVEL_ERROR,
                "%s:pWDA is NULL", __func__);
-<<<<<<< HEAD
        vos_mem_free(pWdaParams->wdaWdiApiMsgParam) ;
        vos_mem_free(pWdaParams->wdaMsgParam);
        vos_mem_free(pWdaParams);
-=======
->>>>>>> a80a9ce... wlan: Logging Improvements in WDA .
        VOS_ASSERT(0);
        return ;
    }
@@ -7081,13 +7072,10 @@ void WDA_AddTSReqCallback(WDI_Status status, void* pUserData)
    {
        VOS_TRACE( VOS_MODULE_ID_WDA, VOS_TRACE_LEVEL_ERROR,
                "%s:pWDA is NULL", __func__);
-<<<<<<< HEAD
        vos_mem_free(pWdaParams->wdaWdiApiMsgParam) ;
        vos_mem_free(pWdaParams->wdaMsgParam);
        vos_mem_free(pWdaParams);
 
-=======
->>>>>>> a80a9ce... wlan: Logging Improvements in WDA .
        VOS_ASSERT(0);
        return ;
    }
@@ -7679,12 +7667,10 @@ void WDA_SetMaxTxPowerCallBack(WDI_SetMaxTxPowerRspMsg * pwdiSetMaxTxPowerRsp,
    {
        VOS_TRACE( VOS_MODULE_ID_WDA, VOS_TRACE_LEVEL_ERROR,
                "%s:pWDA is NULL", __func__);
-<<<<<<< HEAD
        vos_mem_free(pWdaParams->wdaWdiApiMsgParam);
        vos_mem_free(pWdaParams->wdaMsgParam);
        vos_mem_free(pWdaParams);
-=======
->>>>>>> a80a9ce... wlan: Logging Improvements in WDA .
+
        VOS_ASSERT(0);
        return ;
    }
@@ -7801,12 +7787,9 @@ void WDA_SetMaxTxPowerPerBandCallBack(WDI_SetMaxTxPowerPerBandRspMsg
    {
        VOS_TRACE( VOS_MODULE_ID_WDA, VOS_TRACE_LEVEL_ERROR,
                "%s:pWDA is NULL", __func__);
-<<<<<<< HEAD
        vos_mem_free(pWdaParams->wdaWdiApiMsgParam);
        vos_mem_free(pWdaParams->wdaMsgParam);
        vos_mem_free(pWdaParams);
-=======
->>>>>>> a80a9ce... wlan: Logging Improvements in WDA .
        VOS_ASSERT(0);
        return ;
    }
@@ -7922,12 +7905,10 @@ void WDA_SetTxPowerCallBack(WDI_SetTxPowerRspMsg * pwdiSetMaxTxPowerRsp,
    {
        VOS_TRACE( VOS_MODULE_ID_WDA, VOS_TRACE_LEVEL_ERROR,
                "%s:pWDA is NULL", __func__);
-<<<<<<< HEAD
        vos_mem_free(pWdaParams->wdaWdiApiMsgParam);
        vos_mem_free(pWdaParams->wdaMsgParam);
        vos_mem_free(pWdaParams);
-=======
->>>>>>> a80a9ce... wlan: Logging Improvements in WDA .
+
        VOS_ASSERT(0);
        return ;
    }
@@ -8139,12 +8120,9 @@ void WDA_SetTDLSLinkEstablishReqParamsCallback(WDI_SetTdlsLinkEstablishReqResp *
    {
        VOS_TRACE( VOS_MODULE_ID_WDA, VOS_TRACE_LEVEL_ERROR,
                "%s:pWDA is NULL", __func__);
-<<<<<<< HEAD
        vos_mem_free(pWdaParams->wdaWdiApiMsgParam);
        vos_mem_free(pWdaParams->wdaMsgParam);
        vos_mem_free(pWdaParams);
-=======
->>>>>>> a80a9ce... wlan: Logging Improvements in WDA .
        VOS_ASSERT(0);
        return ;
    }
@@ -8270,12 +8248,9 @@ void WDA_SetTDLSChanSwitchReqParamsCallback(WDI_SetTdlsChanSwitchReqResp *wdiSet
    {
        VOS_TRACE( VOS_MODULE_ID_WDA, VOS_TRACE_LEVEL_ERROR,
                "%s:pWDA is NULL", __func__);
-<<<<<<< HEAD
        vos_mem_free(pWdaParams->wdaWdiApiMsgParam);
        vos_mem_free(pWdaParams->wdaMsgParam);
        vos_mem_free(pWdaParams);
-=======
->>>>>>> a80a9ce... wlan: Logging Improvements in WDA .
        VOS_ASSERT(0);
        return ;
    }
@@ -8390,13 +8365,10 @@ void WDA_AggrAddTSReqCallback(WDI_Status status, void* pUserData)
    {
        VOS_TRACE( VOS_MODULE_ID_WDA, VOS_TRACE_LEVEL_ERROR,
                "%s:pWDA is NULL", __func__);
-<<<<<<< HEAD
        vos_mem_free(pWdaParams->wdaWdiApiMsgParam) ;
        vos_mem_free(pWdaParams->wdaMsgParam);
        vos_mem_free(pWdaParams);
 
-=======
->>>>>>> a80a9ce... wlan: Logging Improvements in WDA .
        VOS_ASSERT(0);
        return ;
    }
@@ -8570,12 +8542,9 @@ void WDA_EnterImpsRspCallback(WDI_Status status, void* pUserData)
    {
        VOS_TRACE( VOS_MODULE_ID_WDA, VOS_TRACE_LEVEL_ERROR,
                "%s:pWDA is NULL", __func__);
-<<<<<<< HEAD
        vos_mem_free(pWdaParams->wdaWdiApiMsgParam);
        vos_mem_free(pWdaParams->wdaMsgParam);
        vos_mem_free(pWdaParams);
-=======
->>>>>>> a80a9ce... wlan: Logging Improvements in WDA .
        VOS_ASSERT(0);
        return ;
    }
@@ -8613,13 +8582,10 @@ void WDA_EnterImpsReqCallback(WDI_Status wdiStatus, void* pUserData)
    {
        VOS_TRACE( VOS_MODULE_ID_WDA, VOS_TRACE_LEVEL_ERROR,
                "%s:pWDA is NULL", __func__);
-<<<<<<< HEAD
        vos_mem_free(pWdaParams->wdaWdiApiMsgParam);
        vos_mem_free(pWdaParams->wdaMsgParam);
        vos_mem_free(pWdaParams);
 
-=======
->>>>>>> a80a9ce... wlan: Logging Improvements in WDA .
        VOS_ASSERT(0);
        return ;
    }
@@ -8829,7 +8795,6 @@ void WDA_EnterBmpsRespCallback(WDI_EnterBmpsRspParamsType *pwdiEnterBmpsRsp, voi
    {
        VOS_TRACE( VOS_MODULE_ID_WDA, VOS_TRACE_LEVEL_ERROR,
                "%s:pWDA is NULL", __func__);
-<<<<<<< HEAD
 
        if(pWdaParams->wdaWdiApiMsgParam)
        {
@@ -8837,8 +8802,6 @@ void WDA_EnterBmpsRespCallback(WDI_EnterBmpsRspParamsType *pwdiEnterBmpsRsp, voi
        }
        vos_mem_free(pWdaParams);
 
-=======
->>>>>>> a80a9ce... wlan: Logging Improvements in WDA .
        VOS_ASSERT(0);
        return ;
    }
@@ -9003,7 +8966,6 @@ void WDA_ExitBmpsRespCallback(WDI_ExitBmpsRspParamsType *pwdiExitBmpsRsp, void* 
    {
        VOS_TRACE( VOS_MODULE_ID_WDA, VOS_TRACE_LEVEL_ERROR,
                "%s:pWDA is NULL", __func__);
-<<<<<<< HEAD
 
        if(pWdaParams->wdaWdiApiMsgParam)
        {
@@ -9011,8 +8973,6 @@ void WDA_ExitBmpsRespCallback(WDI_ExitBmpsRspParamsType *pwdiExitBmpsRsp, void* 
        }
        vos_mem_free(pWdaParams);
 
-=======
->>>>>>> a80a9ce... wlan: Logging Improvements in WDA .
        VOS_ASSERT(0);
        return ;
    }
@@ -9150,7 +9110,6 @@ void WDA_EnterUapsdRespCallback(  WDI_EnterUapsdRspParamsType *pwdiEnterUapsdRsp
    {
        VOS_TRACE( VOS_MODULE_ID_WDA, VOS_TRACE_LEVEL_ERROR,
                "%s:pWDA is NULL", __func__);
-<<<<<<< HEAD
 
        if(pWdaParams->wdaWdiApiMsgParam)
        {
@@ -9158,8 +9117,6 @@ void WDA_EnterUapsdRespCallback(  WDI_EnterUapsdRspParamsType *pwdiEnterUapsdRsp
        }
        vos_mem_free(pWdaParams);
 
-=======
->>>>>>> a80a9ce... wlan: Logging Improvements in WDA .
        VOS_ASSERT(0);
        return ;
    }
@@ -11402,7 +11359,6 @@ void WDA_WowlEnterRespCallback(WDI_WowlEnterRspParamsType *pwdiWowlEnterRspParam
    {
        VOS_TRACE( VOS_MODULE_ID_WDA, VOS_TRACE_LEVEL_ERROR,
                "%s:pWDA is NULL", __func__);
-<<<<<<< HEAD
 
        if(pWdaParams->wdaWdiApiMsgParam)
        {
@@ -11410,8 +11366,6 @@ void WDA_WowlEnterRespCallback(WDI_WowlEnterRspParamsType *pwdiWowlEnterRspParam
        }
        vos_mem_free(pWdaParams);
 
-=======
->>>>>>> a80a9ce... wlan: Logging Improvements in WDA .
        VOS_ASSERT(0);
        return ;
    }
@@ -11588,7 +11542,6 @@ void WDA_WowlExitRespCallback( WDI_WowlExitRspParamsType *pwdiWowlExitRsp, void*
    {
        VOS_TRACE( VOS_MODULE_ID_WDA, VOS_TRACE_LEVEL_ERROR,
                "%s:pWDA is NULL", __func__);
-<<<<<<< HEAD
 
        if(pWdaParams->wdaWdiApiMsgParam)
        {
@@ -11596,8 +11549,6 @@ void WDA_WowlExitRespCallback( WDI_WowlExitRspParamsType *pwdiWowlExitRsp, void*
        }
        vos_mem_free(pWdaParams);
 
-=======
->>>>>>> a80a9ce... wlan: Logging Improvements in WDA .
        VOS_ASSERT(0);
        return ;
    }
@@ -11769,16 +11720,12 @@ void WDA_NvDownloadReqCallback(WDI_NvDownloadRspInfoType *pNvDownloadRspParams,
    {
       VOS_TRACE( VOS_MODULE_ID_WDA, VOS_TRACE_LEVEL_ERROR,
                            "%s:pWDA is NULL", __func__);
-<<<<<<< HEAD
-
        if(pWdaParams->wdaWdiApiMsgParam)
        {
           vos_mem_free(pWdaParams->wdaWdiApiMsgParam);
        }
        vos_mem_free(pWdaParams);
 
-=======
->>>>>>> a80a9ce... wlan: Logging Improvements in WDA .
       VOS_ASSERT(0);
       return ;
    }
@@ -11982,13 +11929,10 @@ void WDA_BtAmpEventRespCallback(WDI_Status status, void* pUserData)
    {
        VOS_TRACE( VOS_MODULE_ID_WDA, VOS_TRACE_LEVEL_ERROR,
                "%s:pWDA is NULL", __func__);
-<<<<<<< HEAD
        vos_mem_free(pWdaParams->wdaMsgParam) ;
        vos_mem_free(pWdaParams->wdaWdiApiMsgParam);
        vos_mem_free(pWdaParams) ;
 
-=======
->>>>>>> a80a9ce... wlan: Logging Improvements in WDA .
        VOS_ASSERT(0);
        return ;
    }
