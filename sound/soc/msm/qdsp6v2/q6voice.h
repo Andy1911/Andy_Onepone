@@ -508,13 +508,10 @@ struct vss_imemory_cmd_unmap_t {
 #define VSS_IRECORD_PORT_ID_DEFAULT			0x0000FFFF
 /* Default AFE port ID. */
 
-<<<<<<< HEAD
 /* Port explicitly identifying TX and RX streams */
 #define VSS_IRECORD_PORT_ID_TX_RX			0x00008003
-=======
 #define VSS_IRECORD_PORT_ID_TX_RX			0x00008003
 /* Port explicitly identifying TX and RX streams */
->>>>>>> 206a3d8... stereo call recording support
 
 #define VSS_IRECORD_TAP_POINT_NONE			0x00010F78
 /* Indicates no tapping for specified path. */
