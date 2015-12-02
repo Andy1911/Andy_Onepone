@@ -207,8 +207,6 @@ static struct attribute_group kernel_attr_group = {
 	.attrs = kernel_attrs,
 };
 
-<<<<<<< HEAD
-=======
 static unsigned int Lgentle_fair_sleepers = 0;
 static unsigned int Larch_power = 0;
 
@@ -266,7 +264,6 @@ static struct attribute_group sched_features_attr_group = {
 /* Initialize fast charge sysfs folder */
 static struct kobject *sched_features_kobj;
 
->>>>>>> 874acc1... sched: cpu_power: Add controls for sched features
 static int __init ksysfs_init(void)
 {
 	int error;

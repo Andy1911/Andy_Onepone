@@ -445,11 +445,9 @@ void msm_gpio_show_resume_irq(void)
 		intstat = __msm_gpio_get_intr_status(i);
 		if (intstat)
 			irq = msm_gpio_to_irq(&msm_gpio.gpio_chip, i);
-<<<<<<< HEAD
 			log_base_wakeup_reason(irq);
 		}
-=======
->>>>>>> 721bda1... power: Remove wakeup reason API and clients
+
 	}
 	spin_unlock_irqrestore(&tlmm_lock, irq_flags);
 }

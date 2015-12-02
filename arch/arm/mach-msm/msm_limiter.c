@@ -30,15 +30,12 @@
 
 #define MSM_LIMIT			"msm_limiter"
 #define LIMITER_ENABLED			1
-<<<<<<< HEAD
 #define DEFAULT_SUSPEND_DEFER_TIME	10
 #define DEFAULT_SUSPEND_FREQUENCY	1728000
 #define DEFAULT_RESUME_FREQUENCY	2265600
-=======
 #define DEFAULT_SUSPEND_DEFER_TIME	10 
 #define DEFAULT_SUSPEND_FREQUENCY	729600
 #define DEFAULT_RESUME_FREQUENCY	2457600
->>>>>>> 90149509... cpufreq: limiter: set max off to 729Mhz and resume to 2457Mz
 #define DEFAULT_MIN_FREQUENCY		300000
 
 static unsigned int debug = 0;
