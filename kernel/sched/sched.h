@@ -976,11 +976,17 @@ static inline void inc_nr_running(struct rq *rq)
 	nr_stats->nr_last_stamp = rq->clock_task;
 #endif
 	rq->nr_running++;
+<<<<<<< HEAD
+#ifdef CONFIG_INTELLI_PLUG
+	write_seqcount_end(&nr_stats->ave_seqcnt);
+#endif
+=======
 
 	if (rq->nr_running >= 2) {
 		if (!rq->rd->overload)
 			rq->rd->overload = true;
 	}
+>>>>>>> 040131f... sched/fair: Implement fast idling of CPUs when the system is partially loaded
 }
 
 static inline void dec_nr_running(struct rq *rq)
