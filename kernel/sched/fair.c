@@ -3910,9 +3910,14 @@ static inline void update_sg_lb_stats(struct lb_env *env,
 	 * to do the newly idle load balance.
 	 */
 	if (local_group) {
+<<<<<<< HEAD
+		if (idle != CPU_NEWLY_IDLE) {
+			if (balance_cpu != this_cpu) {
+=======
 		if (env->idle != CPU_NEWLY_IDLE) {
 			if (balance_cpu != env->dst_cpu ||
 			    cmpxchg(&group->balance_cpu, -1, balance_cpu) != -1) {
+>>>>>>> c560d4e... sched/fair: Propagate 'struct lb_env' usage into find_busiest_group
 				*balance = 0;
 				return;
 			}
